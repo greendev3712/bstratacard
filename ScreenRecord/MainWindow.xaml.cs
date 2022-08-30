@@ -150,15 +150,25 @@ namespace ScreenRecord
                 long starttime = DateTime.Now.Ticks;
                 long oldtime = DateTime.Now.Ticks;
                 long delta = 10000000 / frameRate;          //its 10000000 ticks in 1 seccond
+                long curTime=0;
+                long frcount = 0;
 
                 while (recordingb)
                 {
+                    frcount++;
                     var bitmap = TakeScreenShoot();
                     var rect = new System.Drawing.Rectangle(System.Drawing.Point.Empty, bitmap.Size);
                     var bitLock = bitmap.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
                     var bitmapData = ImageData.FromPointer(bitLock.Scan0, ImagePixelFormat.Bgr24, bitmap.Size);
-                    TimeSpan ts = new TimeSpan(DateTime.Now.Ticks - starttime);
+
+                    while (DateTime.Now.Ticks - oldtime < 500000)
+                        Thread.Sleep(5);
+                    curTime = DateTime.Now.Ticks;
+                    TimeSpan ts = new TimeSpan(curTime - starttime);
+
+
                     fileMp4.Video.AddFrame(bitmapData,ts); // Encode the frame
+                    //fileMp4.Video.AddFrame(bitmapData);
                     bitmap.UnlockBits(bitLock);
 
                     //while (DateTime.Now.Ticks - oldtime < delta)
@@ -167,6 +177,8 @@ namespace ScreenRecord
                 }
                 fileMp4.Dispose();
                 
+
+
             });
             
         }
