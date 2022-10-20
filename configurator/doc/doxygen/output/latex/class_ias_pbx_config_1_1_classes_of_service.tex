@@ -1,0 +1,314 @@
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service}{
+\section{IasPbxConfig.ClassesOfService Class Reference}
+\label{class_ias_pbx_config_1_1_classes_of_service}\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+}
+
+
+The Classes of Service Form; shows a DataGridView (cosGrid) with all COS in database.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_classes_of_service_a5ee02eb862c50aaaa88efed9c438ccd8}{ClassesOfService} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_af549a6af675cf68b774598a0b26f3070}{Dispose} (bool disposing)
+\begin{DoxyCompactList}\small\item\em Clean up any resources being used. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_afe758d8a2d66ee16d2c23401a6c62894}{load} ()
+\begin{DoxyCompactList}\small\item\em called from end of constructor. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a1c71bf32df4e9f1c83dfb22383f54188}{checkIfCosDeletable} (string \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a6f26462284ed1484ad0fb62dd6c82975}{cosId})
+\begin{DoxyCompactList}\small\item\em based on rules specified here, checks COS in database to see if we are allowed to delete it. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_classes_of_service_ade0a8c01686723c46356a0118b50cb8a}{cosRefresh} ()
+\begin{DoxyCompactList}\small\item\em (re)load the cosGrid from the COS database table. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a289f97c10a4bc8cf69521227e97ed4c5}{ClassesOfService\_\-Load} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Load event; empty method. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_af8689629d28f48c61a3136122b8fb62d}{ClassesOfService\_\-CellDoubleClick} (Object sender, DataGridViewCellEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for CellDoubleClick event; launches COS Includes form. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a8353a8ba4d45caf1c2feebb4ca79b07e}{ClassesOfService\_\-CellEndEdit} (object sender, DataGridViewCellEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for CellEndEdit event; Inserts or Updates user change into database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_ad3ff80cdde49deb255892d69bb637e0e}{cosGrid\_\-CellContentClick} (object sender, DataGridViewCellEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for CellContentClick event; handles clicks in delete column and removes that COS from database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a5486a88fb21ad0789ddf5f1388a9b716}{cosRefreshButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for COS Refresh Button's Click event; refreshes the grid. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a384f92ca416d7a9cd4b17675d06c7b07}{InitializeComponent} ()
+\begin{DoxyCompactList}\small\item\em Required method for Designer support -\/ do not modify the contents of this method with the code editor. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+System.ComponentModel.IContainer \hyperlink{class_ias_pbx_config_1_1_classes_of_service_aec5a05c9db08d37a3f6925314fedbe7d}{components} = null
+\begin{DoxyCompactList}\small\item\em Required designer variable. \item\end{DoxyCompactList}\item 
+System.Windows.Forms.DataGridView \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a19d5713eed8f1042f28a0e5ea5ed6071}{cosGrid}
+\item 
+System.Windows.Forms.Label \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a55b81dc19715763881780e3a83d3128d}{cosLabel}
+\item 
+System.Windows.Forms.DataGridViewTextBoxColumn \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a6f26462284ed1484ad0fb62dd6c82975}{cosId}
+\item 
+System.Windows.Forms.DataGridViewTextBoxColumn \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a98321cd95fe0cb558ab4cc16dbed0937}{cosName}
+\item 
+System.Windows.Forms.DataGridViewTextBoxColumn \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a8a81e78ec29741481d934d0804f6322c}{cosDescription}
+\item 
+System.Windows.Forms.DataGridViewButtonColumn \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a213011b8964d3c83228bc86b511ef6ab}{cosDeleteMe}
+\item 
+System.Windows.Forms.Label \hyperlink{class_ias_pbx_config_1_1_classes_of_service_abfacee229a02347e3b82a912d417ede2}{cosIncludesInfoLabel}
+\item 
+System.Windows.Forms.Button \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a55630abdbdee23747de3d654e8beecaf}{cosRefreshButton}
+\item 
+System.Windows.Forms.Label \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a4b9654ea6da7c2e26c008eab8658f3cb}{cosMessageLabel}
+\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a0e880fa24b3e6353d0f88de7f293612e}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The Classes of Service Form; shows a DataGridView (cosGrid) with all COS in database. Allows adding, editing, and deleting of COS entries. cosGrid's 1st column (0) is hidden and contains each row's/COS's COS Id. 
+
+Definition at line 26 of file ClassesOfService.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a5ee02eb862c50aaaa88efed9c438ccd8}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!ClassesOfService@{ClassesOfService}}
+\index{ClassesOfService@{ClassesOfService}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{ClassesOfService}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.ClassesOfService.ClassesOfService ()}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a5ee02eb862c50aaaa88efed9c438ccd8}
+
+
+Constructor. Sets cosGrid's attributes. Populates cosGrid through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_afe758d8a2d66ee16d2c23401a6c62894}{load()}; 
+
+Definition at line 36 of file ClassesOfService.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a1c71bf32df4e9f1c83dfb22383f54188}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!checkIfCosDeletable@{checkIfCosDeletable}}
+\index{checkIfCosDeletable@{checkIfCosDeletable}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{checkIfCosDeletable}]{\setlength{\rightskip}{0pt plus 5cm}bool IasPbxConfig.ClassesOfService.checkIfCosDeletable (string {\em cosId})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a1c71bf32df4e9f1c83dfb22383f54188}
+
+
+based on rules specified here, checks COS in database to see if we are allowed to delete it. 
+\begin{DoxyParams}{Parameters}
+\item[{\em cosId}]database COS Id of COS we are checking if deletable \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether or not we are allowed to delete this COS 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000001}{Todo}]: get info about how to tell if cos is in use by phonegroup \end{Desc}
+
+
+Definition at line 65 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_af8689629d28f48c61a3136122b8fb62d}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!ClassesOfService\_\-CellDoubleClick@{ClassesOfService\_\-CellDoubleClick}}
+\index{ClassesOfService\_\-CellDoubleClick@{ClassesOfService\_\-CellDoubleClick}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{ClassesOfService\_\-CellDoubleClick}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.ClassesOfService\_\-CellDoubleClick (Object {\em sender}, \/  DataGridViewCellEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_af8689629d28f48c61a3136122b8fb62d}
+
+
+Callback for CellDoubleClick event; launches COS Includes form. Checks to make sure the cell double clicked is not the delete button column, then opens COSI form in new tab, passing the clicked COS Id. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the cosGrid \item[{\em e}]DataGridViewCellEventArgs with row and column index of clicked cell \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000004}{Todo}]handle error opening new form? \end{Desc}
+
+
+Definition at line 162 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a8353a8ba4d45caf1c2feebb4ca79b07e}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!ClassesOfService\_\-CellEndEdit@{ClassesOfService\_\-CellEndEdit}}
+\index{ClassesOfService\_\-CellEndEdit@{ClassesOfService\_\-CellEndEdit}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{ClassesOfService\_\-CellEndEdit}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.ClassesOfService\_\-CellEndEdit (object {\em sender}, \/  DataGridViewCellEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a8353a8ba4d45caf1c2feebb4ca79b07e}
+
+
+Callback for CellEndEdit event; Inserts or Updates user change into database. Handles if needed data is missing by highliting columns.Detects if Insert or Update needed. Handles errors during Insert process.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the cosGrid \item[{\em e}]DataGridViewCellEventArgs with row and column index of edited cell \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000005}{Todo}]Add error messages/handling for Update call. 
+
+modify to use DBHelper's reactToGridUpdate()? \end{Desc}
+
+
+Definition at line 180 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a289f97c10a4bc8cf69521227e97ed4c5}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!ClassesOfService\_\-Load@{ClassesOfService\_\-Load}}
+\index{ClassesOfService\_\-Load@{ClassesOfService\_\-Load}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{ClassesOfService\_\-Load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.ClassesOfService\_\-Load (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a289f97c10a4bc8cf69521227e97ed4c5}
+
+
+Callback for Load event; empty method. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]self? \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000003}{Todo}]investigate why control never enters this function. \end{Desc}
+
+
+Definition at line 150 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_ad3ff80cdde49deb255892d69bb637e0e}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosGrid\_\-CellContentClick@{cosGrid\_\-CellContentClick}}
+\index{cosGrid\_\-CellContentClick@{cosGrid\_\-CellContentClick}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosGrid\_\-CellContentClick}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.cosGrid\_\-CellContentClick (object {\em sender}, \/  DataGridViewCellEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_ad3ff80cdde49deb255892d69bb637e0e}
+
+
+Callback for CellContentClick event; handles clicks in delete column and removes that COS from database. Also checks if able to delete that COS through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_a1c71bf32df4e9f1c83dfb22383f54188}{checkIfCosDeletable()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the cosGrid \item[{\em e}]DataGridViewCellEventArgs with row and column index of clicked cell \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000006}{Todo}]new database error? test/debug. 
+
+handle db delete errors \end{Desc}
+
+
+Definition at line 250 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_ade0a8c01686723c46356a0118b50cb8a}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosRefresh@{cosRefresh}}
+\index{cosRefresh@{cosRefresh}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosRefresh}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.ClassesOfService.cosRefresh ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_ade0a8c01686723c46356a0118b50cb8a}
+
+
+(re)load the cosGrid from the COS database table. Uses the DBHelper getTable(), also handles errors. Also tries to keep currently selected cell sane. \begin{DoxyReturn}{Returns}
+error code based on \hyperlink{namespace_ias_pbx_config_afbeaf23ebc85892dc4c2cb09f7f2a0cb}{IasPbxConfig.Errors} 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000002}{Todo}]: make saving selected cell smarter? \end{Desc}
+
+
+Definition at line 119 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a5486a88fb21ad0789ddf5f1388a9b716}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosRefreshButton\_\-Click@{cosRefreshButton\_\-Click}}
+\index{cosRefreshButton\_\-Click@{cosRefreshButton\_\-Click}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosRefreshButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.cosRefreshButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a5486a88fb21ad0789ddf5f1388a9b716}
+
+
+Callback for COS Refresh Button's Click event; refreshes the grid. ...Through a call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_ade0a8c01686723c46356a0118b50cb8a}{cosRefresh()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the Button \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 277 of file ClassesOfService.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_af549a6af675cf68b774598a0b26f3070}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!Dispose@{Dispose}}
+\index{Dispose@{Dispose}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{Dispose}]{\setlength{\rightskip}{0pt plus 5cm}override void IasPbxConfig.ClassesOfService.Dispose (bool {\em disposing})\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_af549a6af675cf68b774598a0b26f3070}
+
+
+Clean up any resources being used. 
+\begin{DoxyParams}{Parameters}
+\item[{\em disposing}]true if managed resources should be disposed; otherwise, false.\end{DoxyParams}
+
+
+Definition at line 14 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a384f92ca416d7a9cd4b17675d06c7b07}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!InitializeComponent@{InitializeComponent}}
+\index{InitializeComponent@{InitializeComponent}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{InitializeComponent}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.InitializeComponent ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a384f92ca416d7a9cd4b17675d06c7b07}
+
+
+Required method for Designer support -\/ do not modify the contents of this method with the code editor. 
+
+Definition at line 29 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_afe758d8a2d66ee16d2c23401a6c62894}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!load@{load}}
+\index{load@{load}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfService.load ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_afe758d8a2d66ee16d2c23401a6c62894}
+
+
+called from end of constructor. Populates cosGrid through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_ade0a8c01686723c46356a0118b50cb8a}{cosRefresh()} and handles any errors. 
+
+Definition at line 49 of file ClassesOfService.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_aec5a05c9db08d37a3f6925314fedbe7d}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!components@{components}}
+\index{components@{components}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{components}]{\setlength{\rightskip}{0pt plus 5cm}System.ComponentModel.IContainer {\bf IasPbxConfig.ClassesOfService.components} = null\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_aec5a05c9db08d37a3f6925314fedbe7d}
+
+
+Required designer variable. 
+
+Definition at line 8 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a213011b8964d3c83228bc86b511ef6ab}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosDeleteMe@{cosDeleteMe}}
+\index{cosDeleteMe@{cosDeleteMe}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosDeleteMe}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.DataGridViewButtonColumn {\bf IasPbxConfig.ClassesOfService.cosDeleteMe}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a213011b8964d3c83228bc86b511ef6ab}
+
+
+Definition at line 150 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a8a81e78ec29741481d934d0804f6322c}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosDescription@{cosDescription}}
+\index{cosDescription@{cosDescription}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosDescription}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.DataGridViewTextBoxColumn {\bf IasPbxConfig.ClassesOfService.cosDescription}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a8a81e78ec29741481d934d0804f6322c}
+
+
+Definition at line 149 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a19d5713eed8f1042f28a0e5ea5ed6071}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosGrid@{cosGrid}}
+\index{cosGrid@{cosGrid}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosGrid}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.DataGridView {\bf IasPbxConfig.ClassesOfService.cosGrid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a19d5713eed8f1042f28a0e5ea5ed6071}
+
+
+Definition at line 145 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a6f26462284ed1484ad0fb62dd6c82975}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosId@{cosId}}
+\index{cosId@{cosId}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosId}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.DataGridViewTextBoxColumn {\bf IasPbxConfig.ClassesOfService.cosId}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a6f26462284ed1484ad0fb62dd6c82975}
+
+
+Definition at line 147 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_abfacee229a02347e3b82a912d417ede2}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosIncludesInfoLabel@{cosIncludesInfoLabel}}
+\index{cosIncludesInfoLabel@{cosIncludesInfoLabel}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosIncludesInfoLabel}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.Label {\bf IasPbxConfig.ClassesOfService.cosIncludesInfoLabel}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_abfacee229a02347e3b82a912d417ede2}
+
+
+Definition at line 151 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a55b81dc19715763881780e3a83d3128d}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosLabel@{cosLabel}}
+\index{cosLabel@{cosLabel}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosLabel}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.Label {\bf IasPbxConfig.ClassesOfService.cosLabel}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a55b81dc19715763881780e3a83d3128d}
+
+
+Definition at line 146 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a4b9654ea6da7c2e26c008eab8658f3cb}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosMessageLabel@{cosMessageLabel}}
+\index{cosMessageLabel@{cosMessageLabel}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosMessageLabel}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.Label {\bf IasPbxConfig.ClassesOfService.cosMessageLabel}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a4b9654ea6da7c2e26c008eab8658f3cb}
+
+
+Definition at line 153 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a98321cd95fe0cb558ab4cc16dbed0937}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosName@{cosName}}
+\index{cosName@{cosName}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosName}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.DataGridViewTextBoxColumn {\bf IasPbxConfig.ClassesOfService.cosName}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a98321cd95fe0cb558ab4cc16dbed0937}
+
+
+Definition at line 148 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a55630abdbdee23747de3d654e8beecaf}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!cosRefreshButton@{cosRefreshButton}}
+\index{cosRefreshButton@{cosRefreshButton}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{cosRefreshButton}]{\setlength{\rightskip}{0pt plus 5cm}System.Windows.Forms.Button {\bf IasPbxConfig.ClassesOfService.cosRefreshButton}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a55630abdbdee23747de3d654e8beecaf}
+
+
+Definition at line 152 of file ClassesOfService.designer.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_a0e880fa24b3e6353d0f88de7f293612e}{
+\index{IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}!log@{log}}
+\index{log@{log}!IasPbxConfig::ClassesOfService@{IasPbxConfig::ClassesOfService}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.ClassesOfService.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_a0e880fa24b3e6353d0f88de7f293612e}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 28 of file ClassesOfService.cs.
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_classes_of_service_8cs}{ClassesOfService.cs}\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_classes_of_service_8designer_8cs}{ClassesOfService.designer.cs}\end{DoxyCompactItemize}

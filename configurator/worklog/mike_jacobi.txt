@@ -1,0 +1,1268 @@
+total unpaid: 	78	(03/25 thru 04/27)
+
+total hours: 	650
+
+configurator:	350.5
+intellaQueue:	275.5
+SCM,Confluence: 17
+Research:	7
+
+Daily Log
+--
+04/27/2011 Wednesday Bellwood
+5 hours
+finish drop grid cell coloring
+	debug issue where bottom grid coloring seems to use thresholds from wrong queue
+		(it uses queue thresholds based on the shown dropgrid's queue, not the threshold of the queue that agent is active on)
+debug new bug where some data is empty for a single update (temp db error when missed calls goes up)
+consolidate grid cell coloring code
+fix issue where ext was no longer getting 'x' prefix and last name was not being appended
+other minor bugs fixes and cleanups
+
+04/26/2011 Tuesday Bellwood
+3.5 hours
+quick fix and added debug messages for unreproducable bug
+fix drop grid heading alignment
+Add Missed Calls column to manager drop grid
+start drop grid cell coloring
+
+04/25/2011 Monday Philladelphia
+3.5 hours
+row color changing changed to cell color changing: column chosen based on appropriate data: (longest hold, longest talk, longest wait)
+fix unhandled  exception crash when db connection fails
+fix longest talk not updating bug
+
+04/22/2011 Friday Bellwood
+0 hours
+testing/gather feedback with Mark
+
+04/21/2011 Thursday Bellwood
+5 hours
+continue multiconnection changes
+
+04/20/2011 Wednesday Bellwood
+8 hours
+continue multiple simultaneous connections: ui; settings saving, loading, and importing old registry settings
+fix bug: minimize creates visual artifacts until dropdown is toggled
+investigate: txt logs get too big too fast (confirmed limited to 10x 10MB files = 100MB log limit)
+code cleanup: remove any unneeded calls to drawForm() (X and rename to layoutForm())
+continue threading stability testing (no issues recreated)
+configurator updated to compile with new Lib changes
+
+04/19/2011 Tuesday Bellwood
+9 hours
+continued testing of threading code:
+	no bugs reproduced
+visual bug fixes:
+	fix drop grid resize bugs and frame resize bugs
+		dropgrid and frame now consistently resize simulataneoulsy, pixel-perfect
+	fix drop grid position hack when threading is enabled
+	fix drop grid poition bug after a server change/reconnect
+	fix detailtext label not immediatley disappearing after a server change/reconnect when dropgrid is visible
+minor visual fixes:
+	change dropgrid label from "callers" to "callers waiting"
+	move "intellaQueue" label a little to the right to line up with end of left border
+	fix bug where dropgrid headingtext labels not perfectly centered: need to account for space for up/down arrow sorting indicator since columns are sortable
+	more look and feel adjustments to drop grid to make it look more like the main grid. includes thinner rows, and more rows before scrollbar appears (10)
+minor code cleanups
+begin multiple simultaneous connections/servers implementation
+
+04/18/2011 Monday Bellwood
+9 hours
+continue threading issues:
+	finish completely phasing out SimpleDB; now 100% DBHelper
+	put lock(m_db){} around all new and remaining db object uses
+	more testing... issue reproduced once
+	additional error catching and logging added
+	more testing...
+another sql optimization:
+	getAgentCallDataFromDb: change to a single query instead of 1 query per queue (using group by query suggested by Scott)
+new up arrow selected dropdown indicator image makes it easier to tell which button toggle arrow is active
+begin debugging threading issues with admin/server settings area
+begin debugging to find a fix for the threading drop grid position hack
+
+04/17/2011 Sunday State College
+4 hr
+work on threading issues:
+	put lock(m_db){} around any code we access dbhelper object m_db
+	testing.. let app run until crash occurs in debugger
+	begin converting all uses of SimpleDB to DBHelper class (since 
+		both instances are sharing the same underlying 
+		npgsqlconnection object/connection)
+
+04/01/2011 Friday Bellwood
+1 Hour
+minor ui tweaks (add borders to drop grids)
+research WPF - Windows Presentation Foundation
+
+03/31/2011 Thursday Bellwood
+10 hours
+finish threading (still needs heavy testing for side-effects)
+make drop grids look and feel more consistent with maingrid's
+hide select cursor on dropgrid like we do in main grid
+fatter midbar and new subtitle label for dropgrid
+look at sql queries with Scott and plan one more sql optimization (see todo)
+
+03/30/2011 Wednesday Bellwood
+9 hours
+- finish db performance testing tweaks to minimize sql transactions: 
+	- final refresh time 40% of previous version
+	- refresh interval time now begins after refresh is done: 
+		easier testing and guarantees app and server interval seconds 
+		of breathing time on slow connections 
+- finish test/debugging of new dbhelper functionality
+	todo: test and fix configurator to make sure getTable() changes don't break it
+- SimpleDB methods are no longer used by intellaQueue
+	todo: remove any remaining simpledb references left in iq code
+- implemented DBHelper.getDbData() -- implemented but not currently used (only initially tested)
+	todo: fully test DBHelper.getDbData() and use it instead of getTable() where a gridview is not needed
+- begin multithreading db refresh implementation
+	
+03/29/2011 Tuesday Bellwood
+4 hours 
+- testing of drop grids with live data (some new visual tweak todos added:)
+	- resize window when visible drop grid's rowcount changes
+	- make drop grids' colors/size same as maingrid
+- debugging new dbhelper functionality
+	add new DBHelper.tackOnWhereConditionV2()
+		todo: change all dbhelper methods to use hash for whereConditions and use DBHelper.tackOnWhereConditionV2() 
+				and remove DBHelper.tackOnWhereCondition()
+		
+03/28/2011 Monday State College
+5 hours
+sql performance tweaks, switch some more functionality from simpledb to some dbhelper 
+
+03/25/2011 Friday State College
+1 hour
+begin sql performance measurments/improvements
+
+--- Paid 56 @ RATE C
+
+03/11/11 Friday Belwood 
+1.5 hours
+code check in, give demo, plan new features and update todo, etc
+
+03/10/11 Thursday Bellwood
+9 hours
+- allow user window moving by drag clicking on main grid (except buttons)
+- visual enhancment: make drop up transition smoother and faster (had at least 1 badly rendered frame during the transition)
+	- also remove some redundant calls to resize()/drawForm() (slightly better performance and code readability
+- fix hard coding of button column widths
+- minor code cleanup and refactoring
+
+- Admin now goes directly to db menu, no more "main config" screen
+	- remove QueueAppConfigMainForm - no longer needed
+	- create QueueAppConfigMainFormHelper to provide it's limited functionality
+- handle disconnecting and reconnecting to new server with new login, resetting state variables as needed
+- handle 0 subscribed queues a little better
+- if db gets a null result for a maingrid cell, leave the old value instead of clearing it.
+- autohide drop grid on new connect/login
+- fix 3 db / config bugs from Mark:
+	- fix crash/exit on other servers: acs-londonderry.client.intellasoft.local
+	- fix crash/exit on other servers: acs-passaic.client.intellasoft.local
+	- fix (2:02:43 PM) Mark Murawski: if i go into admin and then database settings and then close out of settings i get System.NullReferenceException: Object reference not set to an instance of an object. 
+		at QueueLib.ToolbarConfiguration.UpdateToolbarConfiguration() in C:\Documents and Settings\mike\Desktop\intellasoft\intellaQueue\src\QueueLib\ToolbarConfiguration.cs:line 107 
+
+03/09/11 Wednesday Bellwood
+11 hours 
+- visual tweaks: 
+	fix visual inconsistencies during timed refresh event:
+		- maintain color of button if mouse is over
+		- maintain color of button if mouse is down
+	fix issue where grid and ui is not refreshed before first timed refresh, 
+		which could cause visual issues if user interacts within 2 seconds of app load
+	fix issue where drop grids are not trimmed until first refresh, 
+		which is too late if dropGrid is shown before it happens, causing visual bug
+- one more special case performance optimization to drawTiledImageWithCaps()
+
+- clean up cruft:
+	- remove lots of code previously used with previous UI for main area
+    - move unused image assets out of source dir
+    - remove references in ui builder to old image files
+    - remove other old commented code..
+    - minor refactoring
+- fix testing code which caused queues to always be orange
+- fix new invisible area below form
+- remove updateRegion() - not used since we no longer have any concave or convex form shapes
+- remove copyAndAddControlWithOffset() -- no longer used with current UI.
+   	This idea (and all the code that goes with it) exists in git history if needed
+- fixed longest talk data missing
+- remove setLabel() code; no longer used
+
+- fix issue of disconnection when reconnecting through db menu and pressing close
+	- also remove old code now redundant in QueueAppConfigMainForm and ToolBarHelper
+- fix double click on a dropdown button only creating 1 drop event (now creates 2)
+- disable user window resizing (bool global easily toggles this)
+- visual tweaks to drop buttons:
+	- don't visually depress a button when mouse is drag pressed over it
+	- if mouse is drag-pressed onto a button that the press originated down, visually re-depress it 
+- fix bug where only first of any dropdown buttons show triangle image
+- fix bug where agent button header still appears
+- better debug printing: only print messages of refresh methods make changes
+- on main grid's data update don't clear and re-create rows and cells each time, just update them; helps with better/easier retention of data and better performance
+- fix new bug where bar coloring would always be according to agent rules even if user is manager
+- limit drop buttons to left mouse button only
+- more minor code cleanup and refactoring
+		
+03/08/11 Tuesday Bellwood
+9 hours
+performance optimizations added to draw functions
+add bg coloring for mainGrid rows
+visual tweaks: 
+	draw images nicely when caps are larger than image, 
+	flicker/buffering issues, 
+	switch down/up triangle buttons from DataGridViewButtonCell to DataGridViewTextBoxCell to allow custom hover color
+	keep dropdown buttons a constant narrow width
+add needed configs, references, and declarations to make log4net work with
+    intellaQueue project and its libraries. (just like it works with configurator)
+
+03/07/11 Monday Bellwood
+8 hours
+fix 2 visual bugs: 
+	fixed resize grid/form size adjust 
+	fixed down/up arrow change lag
+added separator between two grids:
+		width variable by form width
+		height variable by const set in code
+		made from 9 new pngs, 5 of which are tiled
+		created new drawTiledImage function for above (and future other use) that handles tiled caps on 4 sides
+	
+03/04/11 Friday Bellwood
+9.5 hours
+finish new ui 
+(still need to 
+	add separator window graphics between 2 grids
+	add bg coloring for rows, 
+	fix 2 major ugly visual bugs (see todo.txt), 
+	tweak look and feel of main grid to resemble toolbar4.png even more closely,
+	code cleanup
+)
+
+03/03/11 Thursday Bellwood
+8 hrs
+start new DataGridView ui: jmaug.com/toolbar4.png
+
+--- Paid 45.5 @ RATE C
+
+02/16/11 Wednesday Bellwood
+8 hours
+when visible, show grid inside custom window decorations and resize form as needed
+
+02/15/11 Tuesday Bellwood
+7 hours
+dynamic UI Sizing
+
+02/10/11 Thursday Bellwood
+3 hours
+add max hold time, left align fields, size columns for better consistency
+
+02/09/11 Wednesday Bellwood
+1 hour
+Publish 3.0.0.12
+
+01/25/11 Tuesday Bellwood
+6 hours
+	- planning new features and bug fixes with Mark W, then Mark M.; look into longest call time/seconds desync bug
+    - fixed bad and missing titles on popup errors and other message boxes
+    - fixed bugs where some windows and message boxes would appear below other windows and be unreachable with mouse
+    - properly handle and draw case of no queues; this also prevents some rare unhandled exceptions from ocurring
+    - add code for setting and readjusting as needed of the Form.Region to allow mouse click passthrough of transparent form areas;
+        also seems to fix buf where grid partially off screen is closed creates artifact when form is moved
+
+01/19/2011 Wednesday Bellwood
+2 hours
+Windows Install/update systems: discuss, research, and document links on confluence
+
+01/17/2011 Monday State College
+8 hours
+fix bugs during acs install
+
+01/14/2011 Friday Bellwood
+10.5 hours
+finish acs featureset/publishing/etc
+
+-- Paid 60 hours @ RATE C
+
+01/13/2011 Thursday Bellwood
+12 hours
+
+01/12/2011 Wed Bellwood
+12 hours
+
+01/11/2011 Tuesday Bellwood
+8 hours
+
+01/10/2011 Monday Bellwood
+4 hours
+
+01/07/2011 Friday Bellwood
+1 hour
+continue IQ ui 
+
+01/05/2011 Wednesday Bellwood
+6 hours
+continue IQ ui 
+
+01/04/2011 Tuesday Bellwood
+8 hours
+continue IQ ui
+
+01/03/2011 Monday Bellwood
+3 hours
+Move IntellaQueue's lib classes into separate project and make it into a dll; 
+Add Configurator's Lib.dll project code too (intellaQueue solution uses same Lib.dll project as configurator's soluttion uses. expects git repos to be next to each other)
+Begin working on new IQ ui.
+
+12/31/2010 Friday Bellwood
+3 hours
+plan and chop up new art into smaller images
+
+12/27/2010 Monday Newburgh
+3 hrs
+add sql function call ability and call to (and creation of stub) set_agent_extension() on login
+begin planning for multiqueue features and new art (setup image editing software, etc)
+
+-- Paid 36 Hours @ RATE C
+
+12/20/2010 Monday Bellwood
+4 hours
+- adjust login behavior: 
+	- should always prompt (pin not stored locally)
+	- add extension option to login
+	- prepopulate ext and agent number if stored locally
+- minor cleanup/refactoring
+
+12/17/2010 Friday Bellwood
+8 hours
+- finish adding add login dialog and is_manager check          
+- port and merge agent functioanlity into project, avoiding duplicate code (agent mode is new default)
+	- switch agent data from listbox to datagridview
+	- simplify some verbose code
+- actually exit app now on 
+- minor clean ups
+
+12/16/2010 Thursday Bellwood
+8 hours
+- fix and cleanup some issues from code merge
+- begin adding add login dialog and is_manager check          
+        - login prompt happens on first run if not setup yet
+        - switch to manager ui and behavior is login user is a manger
+
+12/15/2010 Wednesday Bellwood
+8 hours
+finish VB.net -> C# conversion; mostly tested
+
+12/14/2010 Tuesday Bellwood
+8 hours
+begin intellaQueueManager work, create git repo
+begin merging of iqAgent and iqMAnager code bases
+begin VB.net -> C# conversion
+
+--PAID 40.5 hours @ RATE C on 11/24/2010 
+
+11/23/2010 Tuesday Tipton
+5.5 hours
+- add support for event column Types and new Type of "Unixtime"
+- implemnt secondary (AssemblyVersion) workaround to vs2010 bug below to allow building with designer open. (Seems to work 99% of time)
+- add verical scrollbar to event detail textbox
+- add loglevel column
+- make event grid's columns nonsortable 
+- demo + plan trace viewer and queueManager with Mark and Scot (todos in jira)
+- implement and test adding new events on-the-fly
+- fix issue were details don't show up on initial load of traceviewer
+- Debug/research build fail "copy Lib.dll from obj to bin" until VS studio restarted. 
+	- Happened when Lib.dll project code is modified and project is rebuilt in Debug configuration
+	- Failed solutions: disable indexing service, disable antivirus, uninstall antivirus, searching proj files for supposedly
+	- Apparent solution/workaround: close all open (or just open ui designer) tabs
+	- More info:
+		A workaround has been suggested by Andrew Hall - MSFT at http://social.msdn.microsoft.com/Forums/en/vsdebug/thread/6533739e-6554-4f03-a286-336716bcb954
+		Either one of these should be a working workaround:
+		1. Close the form designer when editing .cs/.vb files, just have the code files open
+		2. For your project, in "Properties\AssemblyInfo.cs" comment out the [assembly: AssemblyVersion(....)] line of code. If your final project requires correct versioning remember to uncomment this line afer you are finished development.
+- minor code cleanups (functionalize repeated code, etc.)
+- trace viewer todos updated in todo file
+
+11/22/2010 Monday Tipton
+4 hours
+- Add event data set/update methods to LiveDataFilter and create new test objects in TraceViewer instead of hardcoding test data on the fly
+- Add deepTextDump(obj) to static Helper class
+- Make detail box show all contents of currently selected event
+- Move IasPbxConfig.TraceFilter fuctionality into Lib.LiveDataFilter
+(TV now inherits from LDF)
+- Minor cleanup: Remove unneeded Lib.F namespace
+
+11/20/2010 Saturday Bellwood
+2 hours
+investigate DataGridViewAutoFilter.dll
+
+11/19/2010 Friday Tipton
+8 hours
+Trace viewer UI: working search filter with synced header panel
+
+11/18/2010 Thursday Tipton
+6 hours
+more ui experiments for columned data list with filtered headers
+2 hours
+help/debugging on intellaqueue manager 
+
+11/17/2010 Wednesday Tipton
+8 hours
+experiment/start ui for trace viewer form
+debug VS 2010 build error/bug 
+	(Lib.dll copy error if designer tab is open. Solution: close designer tabs, restart VS, rebuild.)
+
+11/16/2010 Tuesday Tipton
+1 hour
+create tracer req doc/todo
+add dev feature: connection with name __test_debug will open form nodes even if connection fails
+
+11/6/2010 Tipton
+2 hours
+Titanium / Appcellerator research + testing
+
+10/28/2010 Tipton
+2 hours
+Planning trace viewer specs screen for configurator w/ Mark
+
+---paid: 42 hours ~10/22/2010
+
+10/22/2010 Friday Tipton
+3 hours (SCM, Confluence)
+- recover cached confluence pages
+- fisheye/git integration and Configurator setup
+- reformat some recovered Confluence pages
+
+10/20/2010 Wednesday Tipton
+7 hours
+- Configurator testing: confirm device attributes changes work
+- revert device type drop down on trk form to use device_types table temporarily 
+	(not yet an enum type) (same as #54 but for trk form)
+- #48 maintain grid ordering on refresh
+- #55 pull current git revision number into about box on compile
+		new perl script that uses git so should work on other projects/platforms 
+
+10/19/2010 Tuesday Tipton
+6 hours (SCM)
+experiment with fresh gitolite repos
+finish git documentation
+convert/pretify documentation to confluence
+play with git branching 
+
+10/18/2010 Monday Tipton
+8 hours (SCM)
+git and gitolite setup
+Migrate Configurator repo to git
+Start git documentation
+
+10/13/2010 Tuesday Tipton
+1 hour
+- Testing and working with Mark on server side todos
+- #54 revert device type drop down on ext form to use device_types table temporarily 
+		(not yet an enum type)
+
+10/12/2010 Tuesday Tipton
+1 hour
+- Testing and working with Mark on server side todos
+
+9/20/2010 Monday Tipton
+2 hours
+- Continue List of 30:
+	36 Have *includes screens support adding/removing multiple entries
+		- only support multiple delete due to possible errors if a selected option becomes unavailable.
+		- disallow multiple row selection in available grid
+	33 fix error in code found by Nick (parameter order reversed?)
+		- assumed fixed by previous changes (also perused DBHelper.cs's overloaded methods' parameters)
+
+9/18,19/2010 Saturday,Sunday US-322, PRG
+6 hours
+- Continue List of 30:
+	35 add about pop up
+		- also added getData callback functionality to allow lib classes to request data from client classes
+		- standardized app and company names/messages
+		- added support to show images to PopupQuery class
+
+9/14/2010 Tuesday Tipton
+8 hours
+- Continue List of 30:
+	41 Uprade Timing class to keep a stack of Timers
+	47 optimize getNextAvailableUniqueId() /// @todo find a better way to do this (1 sql transaction)
+	40 fix bug where Delete Selected button sometimes does nothing (delete keyboard key still works fine)
+	52 Confirmation yes/no popup on delete row(s)
+	51 DB Protocol Version check
+- Fix bug where unhandled exception would occur when a tableGrid's grid's cell was left empty: we instead return it to the previous value
+- Fix new bug caused by autoedit cell feature: can no longer delete rows because delete key edits cell.
+	Added manual delete row button and keypress functionality. New keypress for delete selected rows is Ctrl-d. This change fixes both the 
+	key combo and ui button issues, and also handles the intermitent bug LOT#40
+- minor code cleanup
+
+--- paid: 29.5 hours 9/10/2010
+
+9/7/2010 Tuesday Tipton
+3 hours
+- Continue List of 30:
+	46 tableform's grid autosizing (just autosize, don't expand to full width if not needed)
+	45 immediate cell edit (both textbox and combo (also immediate combobox cell dropdown))
+	49 logViewer: refresh on resize
+- Bugfixes/Cleanup:
+	- Added some Error checking to NVGrid for better log messages on otherwise unhandled exceptions
+	- cleanup some unused NVGrid code
+	- Fix bug where sometimes top left cell of NVGrid could be temporarily editable
+	- fix bug where unhandled exception occured when switching from an iax ext to sip ext on extd screen
+		(now handle both increase and decrease in row count of an NVGrid)
+		
+9/3/2010 Friday Tipton
+3 hours
+- Continue List of 30:
+	26 switch main detail grids to use custom db types
+		revamp NVGrid to support mixed init from both Program Data and DB in a single Grid
+
+9/2/2010 Thursday Tipton
+3 hours
+- Continue List of 30:
+	- finish 43 cos dropdown on extensions screen
+		(added generic support for comboboxes from table column data to TableGrid) 
+- minor refactoring: rename TableForm ui vars to more generic names
+- testing, new items added / discussed with Mark, update todo
+
+9/1/2010 Tipton
+1 hour
+Continue List of 30:
+	- 14 remove cos_id from extensions (once Mark gives ok)
+		changed to cos from cos_id; tested on demo1
+	- start 43 cos dropdown on extensions screen
+
+8/31/2010 Tipton
+1 hour 
+Continue List of 30:
+	24 Details -> reload voicemail grid on voicemail change
+
+8/24/2010 Tipton
+3 hours
+Continue list of 30:
+	- finish 37 change delete multiple to use 1 sql statement
+	- 38 fix bug where a TableForm's grid cannot be added to when it is empty
+Other small fixes/cleanup
+	- add ON sql keyword support to deleteFromDb() and tackOnWhereCondition()
+	- fix bug with copy functionality
+
+8/23/2010 Tipton
+2 hours
+Continue list of 30:
+    - finish 10: test remaining forms for grid ordering issues
+	- 34: apply changes made in LOT #9, #11 to all relevant screens
+		(ext, trk, tg, tgi affected)
+	- 13: SQL queries on draw finish
+		(on double click that changes to an already open tab, we make sure to finish drawing that tab's form after 
+		 switching to it but before we start getting data from the SQL datasource)
+	- start 37 change delete multiple to use 1 sql statement
+		
+8/20/2010 Tipton
+2 hours
+Continue list of 30:
+    - continue 10: grid ordering (all grids except ordered ones (includes screens' included grids))
+		- handle NameValueGrid user sorting (used by Extd, Trkd, and FC):
+			(keeping track of the order using a hidden 3rd column in the grid
+			 which stores data indexes)
+				@todo: clients need to keep track of order in some situations (see
+				 extd and trkd New copy Of current button); change so everything is 
+				 handled in NVG class
+
+8/19/2010 Tipton
+1 hour
+Continue list of 30:
+    - start 10: grid ordering (all grids except ordered ones (includes screens' included grids))
+        - don't allow sorting rows in cosi included grid
+- fix bug where copy button on Extensions page did not work (added framework feature which allows for adding additional required fileds (in this case, phonegroup_id))
+- update todo (add remaining in list 0f 30)
+
+8/18/2010 Tipton
+1 hour
+- Continue List of 30:
+	7: Create Timing class for measuring code execution time and printing result to log. 
+		- Added calls to tab/form creation.
+- fix possible infinite loop in cos include load() if called from another screen with bad data
+- fix copy selected button on cos screen (created bad data since cos_name needs to be unique)
+
+8/17/2010 Tipton 
+1 hour
+- Continue List of 30:
+	9: fix crash when double clicking cos heading
+		- handle double clicking newly created cos
+		- handle refreshing cos include screen's cos list when alreay open and a double clicked cos is not yet present on the cos include screen's dropdown
+		- make cos include screen's refresh button also refresh the cos dropdown
+		- @todo: apply above fixes to other similar screens, consolidating code where possible
+
+8/16/2010 Tipton
+1 hour
+- re-rampup for more configurator development! (0 hours)
+	updates, etc
+- Continue List of 30:
+	8: Highlight entire row when appropriate on *include screens (1 hour)
+
+4/9/2010 SC
+3 hours
+LogViewer Tweaks:
+	- maintain scrollback size; fix issue after clear()
+	- experiment with various ways to prevent draw to richtextbox without importdll
+		for future mono use. (documented in code, along with some todos for trying
+		other methods.)
+
+4/8/2010 Tipton
+4.5hours
+Log viewer Tweaks:
+	- add always on top checkbox
+	- add clear button
+Noticed performance tweak needed:
+	@todo other performance tweak: ext/trk details: too many sql queries on initial load; make more along the lines of 
+		refresh button press: convert single calls to getColumn() into one call
+LogViewer performance tweaks: 
+    - count max lines from end of file
+    - keep track of previous eof and start there on FileSystemWatcher Changed
+More Log viewer Tweaks:
+	keep scrollback at MaxLines as new data is added
+		@todo: investigate possible performance tweak: modify richTextBox1.Text directly instead of copy
+Even More Log Viewer Tweaks: (State College)
+	- increase default scrollback from 10 to 100 lines
+	- minor ui placement tweaks
+	- fix flicker when appending to log caused by removeFirstLine() call which has sideeffect of scrolling to top of text for a 
+		split second. 
+			@todo: find way to do this without dllimport to prevent draw (not likely to work in mono/linux) 
+			(maybe by clear() and the appendtext())?
+Make sure a popup query window is always on top, even over an always on top LogViewer window
+		
+--- paid: 31.5 hours 4/8/2010
+
+4/7/2010 SC
+5 hours
+- Continue List of 30:
+	16: finish converting Extensions to a TableForm
+		@todo: add more phonegroups to database and test pg combo on ext and extd forms
+	21: Log Viewer, version 1
+		Actively displays tail of log file as it is updated
+		@todo: debug why MaxLines is off on LogViewer open
+		@todo: truncate size of visible log (to MaxLines) after each log update
+	11: COS double click on NewRow row caused exception crash.
+		@todo: test on other forms
+- Fix Table Form bug with user row creation
+	@todo: test user row creation more
+
+04/06/2010 SC
+2.5 hours
+- Continue List of 30:
+	20: finish fix for unneeded sql update on cell end edit
+		- Applied to TableForm's grid
+		- checked all forms' grids for this behavior: only COS form behaves badly now
+			@todo: convert COS Form to TableForm
+	16: begin converting Extensions to a TableForm
+- Converted Cos Form to TableForm
+	@todo: use moved over func private bool checkIfCosDeletable(string cosId) (may need addition to TableForm)
+	
+04/05/2010 Tipton
+4 hours
+- Continue List of 30:
+	31: Name: (Host) Connection Node labels
+	32: Popup Query Location center of screen (like Navicat)
+- Fix bug where ui would lose open state of open connections if more than 1 was open when adding or removing a new conenction
+- Continue List of 30:
+	27: Don't allow manual typing in mccb dropdowns: still allow cursor movement and ctrl-c copy
+- Continue List of 30:
+	29: fix exception crash whne middle clicking non current tab
+	30: fix possible state where no tab is selected; fix bug where middle clicking non current tab would switch out of current 
+		tab
+- Continue List of 30:
+	06: COSI Available gridview: add description column
+- Continue List of 30:
+	25: Details pages: Don't reload all 3 grids on uid rename
+		- add suppress flag to refreshList and MCCB select methods
+		- notify Mark of server bug: UPDATE asterisk.v_trunks SET "trunk_name" = 'answerlinkstt' WHERE "trunk_name" = 
+			'answerlinks' (fixed)
+- Continue List of 30:
+	20: begin fix for unneeded sql update on cell end edit
+		- created new TweakedDataGridView inherited class
+		
+04/04/2010 SC
+1.5 hours
+Continue List of 30:
+	MCCB: 
+		- default column width is set to greater of column content width and header content width when mccb is
+			created
+		- handle case where max width is used: need to increase height to allow for horizontal scrollbar without 
+			having to show vertical scrollbar..
+		12: add message labels for empty mccb default texts
+Fix bug where copy of current fails when nothing is currently selected in Trunk/Ext Details pages
+
+04/02/2010 Tipton
+3.5 hours
+Continue List of 30:
+	MCCB: 
+		03: show min (15 items and total number of items)
+		05: fix issue with extra empty item getting shown
+		- handle case where max items is used: need to increase width to allow for vertical scrollbar without 
+			having to show horizontal scrollbar..
+
+04/01/2010 SC
+0.5 hours
+Continue List of 30:
+	02,22: finish tablelayoutpanels: COSI, TGI, EXT, FC
+
+3/31/2010 SC
+4.5 hours
+Begin List of 30:
+	04: expand cos labels
+	17: min mainForm size: 640 x 480
+	01: refresh buttons on all forms
+		- added buttonRefresh callback and function to ParamForms; made all client forms a paramform which set 
+		the callback on init
+		- remove old refresh buttons in some subforms and their event callbacks
+	02: begin working on table layouts so all subforms resize nicely on parent resize
+		done: COS, TableForm (Trunks, Routes, PG, TG, RI, RS)
+		todo: COSI, EXT, TGI, FC?
+Minor cleanup
+
+3/30/2010 SC
+4 hours
+- Ui Support for multiple simultaneous connections: added new TabSetManager class
+- Move ParamForm, TabManager, and TabSetManager to Lib dll/assembly: minor refactoring needed
+
+3/29/2010 SC
+3 hours
+- finish multiple simultaneous connections, start ui support for it (tabcontrol managing)
+- Create new TabManager class and move relevant code out of MainForm
+- Create new ParamForm class inherited by IasPbxConfig forms that take in parameters. This aleviates some 
+	repeated code in these Forms and allows for TabManager to handle the parameter features of ParamForms without 
+	having to know about IasPbxConfig-specific Forms
+
+3/19/2010 SC
+2 hr
+- begin work on multiple simultaneous connections
+
+3/18/2010 SC
+1 hr
+- move Connection Manager from IasPbxConfig to Lib dll; required some refactoring:
+	- Settings not accessible from dll, so added some save/load callbacks to connectionmanager;
+		ConnectionManager still handles all masaging of connection data needed for save/load, but MainForm does 
+		the settings.save() and load.
+- update status bar on disconnect
+- put New Connection menu item back under File menu (grab it from connection manager)
+
+--- paid: 36 hours
+
+3/17/2010 Tipton
+3.5 hours
+- fix bug where connection edit, uncheck save pass box, save, connection edit again would try to decrypt unencrypted pass
+	and create unhandled exception crash
+- convert space indents to tab indents
+- refactor conenction managing methods out of MainForm into new ConnectionManager
+
+3/16/2010 SC
+6 hours
+Continue Connection Manager (1.5 Hours):
+	- fix crash when deleting open connection
+	- fix password prompt not appearing in some cases
+	- look and feel of popups: separate Heading (bold, padding) and Label types; use them to make each popup 
+		nicer
+Refactor/Cleanup (2 hr 23 min):
+	- move all-non PbxConfig-specific classes (except MainForm) into new Lib project/namespace
+	- PopupQuery TabIndex support (tab through controls)
+	- MultiCOlumnCombo was getting compiled into .NET 3.5 DLL. switched to 2.0 (still works afait ;)
+	- move all MyCustomControls project classes (MultiColumnCombo, etc.) into new Lib project/namespace
+	- other minor fixes
+More Refactoring (2 hr 7 min):
+	- rename Lib project folder from MultiCOlumnCombo to Lib
+	- move more static helper methods into Helper
+	- move DbHelper instance m_db out of Program into MainForm
+		- m_db now gets passed into each subform which needs it
+		- this allows mainform passing error handling call back on construction of m_db, and should allow 
+			eventual moving of MainForm into Lib project
+	- DbHelper and NameValueGrid now take in Error Handling callbacks on construction
+	- change default namespace and assembly name (dll name) from MyCustomControls to Lib
+
+3/15/2010 SC
+3 hours
+Continue Connection Manager:
+	- fix bug where passwords would get re-encrypted
+	- highlight active connection node
+	- look and feel polishing
+	- connect option becomes a disconnect option for open connection nodes
+	- warn user if an action will close currently open tabs
+
+3/14/2010 SC
+6 hours
+Continue Connection Manager:
+	- created some deepClone() methods for 
+		List<string>, 
+		Dictionary<string, Hashtable>, 
+		and Hashtable (recursivley deepClones List<string>, Dictionary<string, Hashatable>, and Hashtable values)
+	- added edit connection feature
+	- proper saving/loading bool values into/from config file (CheckBox)
+	- password features: 
+		save password option, 
+		mask password on screen, 
+		prompt for password if not saved,
+		encrypt/decrypt stored password
+	- more polished heading labels
+
+3/13/2010 SC
+5.5 hours
+Continue Connection Manager:
+	- PopupQuery enhancements
+	- intuitive TabPAge and TreeView Node behavior on changing Connection
+	- better handling of failed connection
+	- context menus for connection nodes: connect, delete options
+	- etc.
+
+3/12/2010 SC
+6 hours
+Continue Connection Manager: 
+	- implement generic PopupQuery class for dynamic popup form generation to query user for data. Will be reused 
+		for wizards.
+
+03/11/2010 SC
+4 hours
+Connection manager: research and implement user config
+
+3/5/2010 Tipton
+2 hours
+continue connection manager work
+	dbhelper now builds connection strings from parts in a hash
+	etc.
+	
+--- paid 43.5 hours on 3/5
+
+3/4/2010 SC
+0.5 hours
+research, begin connection manager 
+
+02/27,28/2010 SC
+2.5 Hours
+1. Very Smart Tabs:
+	- Switch to same type of already open tab instead of opening new one.
+	- Switching to an already open tab can still pass in parameters to it; eg double clicking a trunk in Trunks
+		will switch to TrunkDetails and still auto-open that Trunk.
+	- keep list of previously selected tabs and switch back to last previous tab right before closing a tab. This
+		should also provide a workaround to a mono bug where closing the current tab causes a crash.
+2. Add double/click cell and parameters to TrunkGroups and TrunkGroupIncludes respectively.	
+
+02/25,26/2010 SC
+5 hours
+- revamp MultiColumnComboBox to version 2.0 - now without bugs! used by Trunk Details
+- update ExtensionDetails to use MCCB for ext and pg selection
+	- additional functionality to MCCB as needed
+- functionality for TableForm forms to act on cell double click by overloading TableForm method. used by Trunks.
+- programatically selecting a MCCB's item now raises RowSelected event (fixes bugs; eg. where double clicking a 
+	trunk would open TrunkDetails with that that trunk selected, but TrunkDetails Grids would not be populated.)
+- update TrunkGroupIncludes, Extensions, and ClassOfServiceIncludes to use new MCCombos
+	- minor cleanup in classes which useMCCombos, add convenience overload to dbhelper.gettable()
+	
+
+02-24-2010 Tipton
+1 hour
+- added multicombo column ordering
+- multicombo reload bug struggling..
+
+02-22-2010 SC
+4 hours
+- multicolumn combo integration with with IsaPbxConfig:
+	- added new DBHelper.getTable() which returns a string[][] instead of a DataGridView (through conversion)
+	- added MultiColumnComboBox.initWithData(string[][])
+	- added some features (events and properties) to MultiColumnComboBox that it was missing:
+		SelectedItem, RowSelected (equiv of SelectedValueChanged), SelectedIndex, etc.
+	- etc.
+
+02-19-2010 SC
+1 hour
+- import modified multicolumn project into iaspbxconfig solution
+
+02-18-2010 SC
+4 hours:
+1 hour
+{
+	- finish adding custom db type comboboxes to TableForm grid (option on DBHelper.getTable(); defaults to true)
+	- getTable is now easier to understand, with less special cases: 
+		if grid columns are defined in ui, corresponding db column name must be entered as each grid column's 
+		Name attribute.
+	- minor cleanups/fixes
+	- remove TrunksOld and RoutesOld, which were present for testing new replacements
+}
+3 hours
+{
+	- get multiColumnCobmboBox code from http://www.codeproject.com/KB/combobox/multicolumncombo.aspx working
+		with Pbx Configurator's copy-form's-controls-to-tabpage system. (multiColumnCombo wasn't appearing at 
+		first; needed some modification and research)
+}
+
+02-17-2010 SC
+2.5 hours
+begin process of adding custom db type comboboxes to TableForm grids:
+	- change DBHelper.getTable() to to make initial query for table columnnames instead of getting them 
+		on the fly from its own "select *"
+	- change visibleColumns from Hashtable to Dictionary<string,string> (to maintain order)
+
+02-15-2010 SC
+1.5 hours
+- complete/test feature codes form
+	- DBHelper.updateDbField() now quotes columnName to support mixed case column names
+- mostly complete trunk group includes form; waiting for _available table in db
+- initial mono setup and testing: can't close current tab, can't use form marked not visible?, other issues
+
+02-13-2010 SC
+1.5 hours
+- create initial trunk group includes page. 
+- create initial feature codes form; add support to NVGrid to use db table with only one row and no unique key
+
+02-11-2010 SC
+3 hours
+- created TableForm:Form parent class out of common components fron Trunks and Routes classes
+- moved current Trunks and Routes classes/forms to TrunksOld and RoutesOld (for comparison testing)
+- created new Routes class: a child of TableForm containing data only relevant to Routes
+- add more classes/forms which use TableForm: Trunks, PhoneGroups, TrunkGroups, RegistrationsIax, 
+	Registrations.SIP
+
+02-10-2010 SC
+2.5 hours
+- add routes form; near identical to Trunks.cs. should we have a parent class for this, or maybe a TableGrid 
+	object?
+- move data to front of routes, trunks, extensions. change visibleColumns passed into getTablE from two arrays 
+	to a hash (preparation for the new parent class)
+- implement IDisposable interface on DBHelper; got rid of ocasional bug on exit if connection was gced before
+	DBHelper was gced.
+
+02-09-2010 SC
+3 hours
+- modified DBHelper to support npgsql in addition to odbc.
+	+ now default to npgsql
+	+ made DBHelperConnection and DBHelperCommand wrapper classes to avoid adding complexity to DBHelper code; 
+		should also allow for easier-to-add new connection types.
+- fixed app.config xml file to adhere to more strict rules: Npgsql's NpgsqlConnection.Open() was throwing an 
+	exception because of it, even though it's not using anything in the config file
+- minor performance tweaks (less sql queries, etc.)
+- fixed bug where double clicking extension on ext form would cause exception/crash
+
+02-02-2010 Tipton
+2.5hr
+- nvgrid: when refreshing nvgrids values, set to empty when db call returns nothing or error; 
+also deactivate nvgrid if all cells are empty
+- DBHelper.getMultiple - returns multiple column results from single row
+- convert nvgrid.refresh to use getMultiple instead of getSingle
+
+01-28-2010 Tipton, SC
+3 hours
+- Convert Extension Details form to use nvgrids for general options and device options
+- add voicemail options to Extension Details page with new nvgrid
+- fix recently created bugs when sql builtin functions are passed into DBHelper.getSingle:
+	now there is a bool doNotQuote parameter
+
+01-27-2010 SC
+4 hours
+- make NVGrid changeTable work upon NVGrid initial load, not just user initiated; added checkChangeTable functions
+- move deactivateGrid call to constructor to prevent cellBeginEdit event re-entry; set cells' colors to 
+	deactivated after they are added;
+- add support for more than 1 affected grids for changeTable actions
+- when no data is present in a table, don't activate the grid.
+- NVGrid cleanup:
+	move anonymous delegate functions out of addUpdateEvents();
+	remove residual code from when addUpdateEvents took in a Control
+	do a todo: functionalize addUpdateEvents()
+	fixed dbhelper getsingle bug when null passed in result param
+	etc.
+
+01-26-2010 SC
+2 hours
+-  finish NVGrid changeDatabaseTable feature: 
+	required saving eventhandlers before they are added to Cell Edit Events so they can
+	be removed before changing the table, which causes re-adding rows to the grid, which
+	causes a celledit event to re-enter(bad).
+-  additional optional init data to an NVGrid: 1.name/2.value combination that triggers
+	change to 3.dbTableName in 4.NVGrid
+
+--paid: 35 hours
+
+01-25-2010 Tipton
+3.5 hours
+minor fixes, cleanup, additional documentation, code checkin
+implemented NameValueGrid.changeTable()
+begin implementing NVGrid option "changeTableOnDataInField"
+
+01-21-2010 SC
+1.5 hrs
+made grids take up all available space
+handle resizingin app (trunk details, and mainform ui objects)
+
+01-20-2010 SC
+1 hr
+continue work on autogrid feature
+minor fixes (DBHelper getSingleFromDB not handles no data returned)
+
+01-19-2010 SC
+4 hours
+continue db autoadd to nvgrid,
+add hiddenrows, exclude columns to NVGrid 
+discuss bugs in device server side with Mark
+
+01-15-2010 Tipton
+3 hours
+1. Figure out tsql for returning all possible values for each enum column in a table.
+2. create/test public Hashtable getValidValuesForAllEnumColumnsInTable(string tableName) in DBHelper class.
+   Uses above query and returns a hash of lists.
+3. begin implementation of auto-add in NVGrid
+4.continue, add options to nvgrid
+nvgridautoaddcolumns?
+
+01-13-2010 State College
+0.5 hours
+planning nvgrid autoaddcolumns
+
+01-12-2010 Tipton
+3 hours
+1. figure out tsql for getting possible values of a column with a custom datatype through enum
+2. implement/test dbhelper method for the above 
+
+01-11-2010 Tipton
+3 hours
+1. Add active/nonactive functionality to NameValue Grid. If nvgrid is loaded without key selected, defaults to 
+	not active.
+2. make namevluegrid/trunkdetails New Instance button handle comboboxes with byId option (new instance now works 
+   again with newly added trunk options), also new instance button should now handle any number of options in 
+   the grid, without having to add default value cases
+
+01-03-2010 Lafayette Hill
+3.5 hours
+1. added missing general options to Trunk Details nvgrid (record, cid num, trunk_group)
+2. fixed issue in nvgrid where selected value would not change back on validation error, 
+   and program ui became locked to the combobox cell until the user manually changed it 
+   back (majority of time spent on this)
+3. created an option field in nvgrid's initdata for comboboxes which allows setting id instead of name on 
+	validation
+4. above issue (2.) also affected TextBox, fixed
+5. Minor other fixes, added a couple new friendly error messages when perl script returns certain errors
+
+1-02-2010 Lafayette Hill
+3 hours
+Move new name-value grid into NameValueGrid Class
+Complete name-value grid documentation
+Minor code cleanups
+
+12-27,28,29,30,31-2009 Lafayette Hill
+8 hours
+New generic name/value grid functionality
+Convert TrunkDetails' General options from individual Controls to use new generic functionality
+Minor code cleanups
+
+12-26-2009 Lafayette Hill
+1 hour
+Created a func in mainform for detecting known errors and providing user friendly strings.
+COS form now uses global error handling.
+Created a new Tool Menu with a View Log item which launches notepad and the configurator log file.
+
+--paid 18.5 hours
+
+12-14-2009 Tipton
+3.5 hours
+research loggers: csharp logger, log4net
+configure project for use with log4net
+add some logging calls on errors, sql connect + queries
+add more/better exception/error handling, mostly to DBHelper
+
+12-11-2009 Tipton
+2 hours
+finish documenting TrunkDetails.cs and ExtensionDetails.cs
+minor doc and code cleanup
+
+12-8-2009 Tipton
+5 hours
+documented ClassesOfService.cs
+documented ClassesOfServiceIncludes.cs
+documented Extensions.cs
+documented Trunks.cs
+began documenting TrunkDetails.cs and ExtensionDetails.cs
+other files minor cleanup
+
+12-2-2009 Home
+3 hours
+finished documenting DbHelper.cs
+minor code cleanup
+
+12-1-2009 Home
+3 hours
+documented Program.cs
+began documenting DbHelper.cs
+
+11-18-2009 Home
+2 hours
+changed doxygen config to parse private members too
+documented MainForm.cs
+
+-- paid 48.5 hours
+
+11-17-2009 Tipton
+3 Hours
+helped debug error is db server when inserting trunk with dhadi device type
+added some additional exception handling to catch this error; todo: change message to generic db error message
+fixed status bar to only show last generated message
+added doxygen generated documentation and config file; todo: add tons of comments!, configure to output documentation on private methods too
+planned future work with scot+mark, added todo file
+
+10-26-2009 Greyhound Bus
+1 hour
+begin work on global error/exception handling. added graceful handling of failed connection to some screens
+
+10-21-2009 Home
+0 hours
+bugfixes, bzr commit
+
+10-18-2009 Home
+1 hour
+[dbhelper] [new feature] added parsing of to increment just the tailing number in a newly created string in a unique field
+ 
+10-17-2009 Home
+1 hour
+[dbhelper] [new feature] getsingleFromDB now handles null
+[dbhelper] [new feature] added prefix param to getNextAvailableUniqueId
+
+10-16-2009 Home
+2 Hours
+[trkd] [new feature] created new trunk details page
+[extd] [cleanup] renamed variable to more generic name (same as trkd) for possible future detailForm parent class
+
+10-15-2009 Home
+1 Hour
+[trk] created new trunks page
+[ext, trk] [cleanup, performance] move string literal constants for table name and key name into consts
+
+10-07-2009 Home
+3.5 hours
+[ext det] [new feature] new ext copy of current functionality added
+[ext det] [new feature] sanity checking added (ext, phngrp, cos, cid_name, device_type)
+[dbhelper] [performance] only make one db connection instead of opening and closing for each query 
+[ext det] [cleanup, performance] move string literal constants for table name and key name into consts
+[ext, ext det, dbhelper] [cleanup] move helper functions in Extensions and ExtensionDetails classes into dbhelper class
+ 
+10-06-2009 Home
+1 hour (total unpaid hours: 36)
+extension detail page: new extension functionality
+
+10-5-2009
+3 hours
+fixed bug where changing first item in a combo box used as a unique id did not refresh jumpto combobox
+added cos combobox to extension detail screen: added framework functionality to update id instead of name based on a name combobox
+
+10-1-2009 Home
+1 hour
+extended method below to work with comboboxes also
+
+9-28-2009 Home
+4 hours
+extension details page textbox updates added:
+	created generic method for adding event callbacks to any textbox, on db fail textbox restores old value, if unique key value is changed, passed in key list refresh function is called.
+
+9-27-2009 Home
+1 hour
+extension details page loading cont.
+
+9-22-2009 Home
+1 Hour
+extension details page loading
+
+9-21-2009 Tipton
+4 hours
+extension page "delete selected" button implemented
+create extension detail page design
+pass phonegroup and extension into detail page when double clicking extension in extension page
+
+9-18-2009 Tipton
+4 hours
+continue with extension page:
+	finish gridview update/insert helper func
+	create delete functionality
+	autoselect top phonegroup if present
+	copy selected button functionality added
+
+9-17-2009 Home
+1 hours
+continue work on extension page: 
+	continue work on gridview update/insert function; added hidden column in grid used to store current/previous unique id value
+ 
+9-16-2009 Home
+3 hours
+worked on extension page grid view: creating general gridview update/insert method which will probably go into dbhelper
+ 
+9-15-2009 Home
+3 hours
+added welcome tab present whenever no other tabs are open
+added middle click a tab to close that tab
+functionalized adding a close Tab Button
+Added File menu and Exit option.
+add parameter option when opening new tabs
+add double click on cos to open cosi page with certain cos selected
+
+9-14-09 Home
+2 hours
+switch to double click for tab creation
+auto select newly created tab
+create tab immediatley, then load form in it for immediate user feedback
+add close-tab button dynamically within each TabPage
+
+9-12-09 Home
+2 hours
+populate tree view with form names, click to create new tab
+exception handling added when db connection fails/not present (ongoing)
+
+9-11-09 Home
+3 hours 
+implement tabs; new layout
+
+9-10-09 Home
+3 hours
+Investigate reorganizing app into 1 form, split view, tabs
+
+--paid 43.5 hours
+
+9-8-09 Tipton
+6.5 hours
+cosi_pos adjust up/down buttons
+form menu: created FormMenu class (drop down menu that can be added to each form for form navigation)
+don't pass around db object anymore
+added business logic check before trying to delete v_cos
+created extension screen
+code review
+
+9-4-09 Home
+3 hours
+cosi include/exclude + misc. fixes
+
+9-3-09 Home
+0 hours
+fixed include grid bug showing incorrect content after 1st display
+
+9-2-09 Tipton
+6 hours
+clean up
+code review
+
+9-1-09 Home
+5 hours
+form switching system
+dbhelper changes/additions for cosi form
+
+8-31-2009 Home
+4 hours
+create cosi class
+separate db code into dbhelper class
+
+8-28-2009 Home
+3 hours
+add and modify
+
+8-27-2009 Home
+6 hours
+delete
+
+8-26-09 Tipton
+6 hours
+events
+
+8-25-09 Tipton 
+4 hours
+initial ramp up
+odbc in .net, connect to ias psql server
+gridview

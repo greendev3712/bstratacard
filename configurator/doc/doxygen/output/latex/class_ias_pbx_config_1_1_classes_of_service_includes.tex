@@ -1,0 +1,255 @@
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes}{
+\section{IasPbxConfig.ClassesOfServiceIncludes Class Reference}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes}\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+}
+
+
+The Classes of Service Includes Form: for any given COS, shows grids for both available and included COS Includes.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_aa06075d98cbf9682a7d70b214235e0b8}{ClassesOfServiceIncludes} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a3775e0a1f9a546857f5ca4ae6cc83786}{ClassesOfServiceIncludes} (ref string\mbox{[}$\,$\mbox{]} parameterNames, ref string\mbox{[}$\,$\mbox{]} parameterValues)
+\begin{DoxyCompactList}\small\item\em Constructor with parameters. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}{load} ()
+\begin{DoxyCompactList}\small\item\em called from end of constructor. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a67961a306356b33f1533714abb1008e1}{refresh} ()
+\begin{DoxyCompactList}\small\item\em (re)populates cosiGrid and cosaGrid (COS Includes Included and COS Includes Available). \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a1a77c41288db274dbe205da6b34ccb1f}{adjustPos} (string newPos)
+\begin{DoxyCompactList}\small\item\em Adjusts order of selected included COS Include. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_ab305108947e8a6f0bfd118ba379ca272}{ClassesOfServiceIncludes\_\-Load} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Load event; empty method. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a799b3b7cb516a53d3082b9e547630af4}{cosComboBox\_\-SelectedIndexChanged} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for cosComboBox's SelectedIndexChanged event; refreshes both grids. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_ad40df8ec47f50d714bf251013124f78e}{unincludeButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Uninclude Buttons's Click event; deletes selected included Include from database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a4288e7154a66a346e90956e347431c53}{includeButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Include Buttons's Click event; Inserts selected available Include into database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a17c623b9aeb6cc338cb883a48cd9150f}{moveUpButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Move Selected Include Position Up Buttons's Click event; adjusts selected Includes position up by reducing its value by 1. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_abb1231755250bc18b9dcaf0e9437b5b1}{moveDownButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Move Selected Include Position Down Buttons's Click event; adjusts selected Includes position up by increasing its value by 1. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_aa035102cce05d98ea04f1efa76ba8038}{m\_\-cosIds}
+\begin{DoxyCompactList}\small\item\em list of database COS Id's correspoding to cosCombobox \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a3b65b51c4adc787d70721576ed36f517}{m\_\-cosNames}
+\begin{DoxyCompactList}\small\item\em list of COS names shown in cosCombobox \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a49839fa27002d5efe394c25bea712e5d}{m\_\-parameterNames}
+\begin{DoxyCompactList}\small\item\em list of parameter names passed to this form on creation \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a797acd582bd34a112372aa3b957b4ddc}{m\_\-parameterValues}
+\begin{DoxyCompactList}\small\item\em corresponding list of parameter values \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_ad1e2f3e94e3693fcc43a769bbfd3a203}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The Classes of Service Includes Form: for any given COS, shows grids for both available and included COS Includes. Allows including/unincluding the COS Includes, and adjusting order of included COS Includes. 
+
+Definition at line 26 of file ClassesOfServiceIncludes.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_aa06075d98cbf9682a7d70b214235e0b8}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!ClassesOfServiceIncludes@{ClassesOfServiceIncludes}}
+\index{ClassesOfServiceIncludes@{ClassesOfServiceIncludes}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{ClassesOfServiceIncludes}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.ClassesOfServiceIncludes.ClassesOfServiceIncludes ()}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_aa06075d98cbf9682a7d70b214235e0b8}
+
+
+Constructor. allocates members. populates cosComboBox through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}{load()}; 
+
+Definition at line 45 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a3775e0a1f9a546857f5ca4ae6cc83786}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!ClassesOfServiceIncludes@{ClassesOfServiceIncludes}}
+\index{ClassesOfServiceIncludes@{ClassesOfServiceIncludes}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{ClassesOfServiceIncludes}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.ClassesOfServiceIncludes.ClassesOfServiceIncludes (ref string\mbox{[}$\,$\mbox{]} {\em parameterNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em parameterValues})}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a3775e0a1f9a546857f5ca4ae6cc83786}
+
+
+Constructor with parameters. allocates members and copies passed parameters in. populates cosComboBox through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}{load()}; 
+\begin{DoxyParams}{Parameters}
+\item[{\em parameterNames}]ref to names of parameters supplied by caller. \item[{\em parameterValues}]ref to corresponding values of parameters. \end{DoxyParams}
+
+
+Definition at line 62 of file ClassesOfServiceIncludes.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a1a77c41288db274dbe205da6b34ccb1f}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!adjustPos@{adjustPos}}
+\index{adjustPos@{adjustPos}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{adjustPos}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.adjustPos (string {\em newPos})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a1a77c41288db274dbe205da6b34ccb1f}
+
+
+Adjusts order of selected included COS Include. Acts on cosiGrid. Adjusted position through update call on v\_\-cos\_\-includes.cosi\_\-pos. Back end handles renumbering etc. We simply refresh both grids at the end. 
+\begin{DoxyParams}{Parameters}
+\item[{\em newPos}]new position \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000009}{Todo}]better handling of db error conditions (call global error func) \end{Desc}
+
+
+Definition at line 125 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_ab305108947e8a6f0bfd118ba379ca272}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!ClassesOfServiceIncludes\_\-Load@{ClassesOfServiceIncludes\_\-Load}}
+\index{ClassesOfServiceIncludes\_\-Load@{ClassesOfServiceIncludes\_\-Load}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{ClassesOfServiceIncludes\_\-Load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.ClassesOfServiceIncludes\_\-Load (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_ab305108947e8a6f0bfd118ba379ca272}
+
+
+Callback for Load event; empty method. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]self? \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000010}{Todo}]investigate why control never enters this function. \end{Desc}
+
+
+Definition at line 147 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a799b3b7cb516a53d3082b9e547630af4}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!cosComboBox\_\-SelectedIndexChanged@{cosComboBox\_\-SelectedIndexChanged}}
+\index{cosComboBox\_\-SelectedIndexChanged@{cosComboBox\_\-SelectedIndexChanged}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{cosComboBox\_\-SelectedIndexChanged}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.cosComboBox\_\-SelectedIndexChanged (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a799b3b7cb516a53d3082b9e547630af4}
+
+
+Callback for cosComboBox's SelectedIndexChanged event; refreshes both grids. ... through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a67961a306356b33f1533714abb1008e1}{refresh()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]cosComboBox \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 157 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a4288e7154a66a346e90956e347431c53}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!includeButton\_\-Click@{includeButton\_\-Click}}
+\index{includeButton\_\-Click@{includeButton\_\-Click}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{includeButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.includeButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a4288e7154a66a346e90956e347431c53}
+
+
+Callback for Include Buttons's Click event; Inserts selected available Include into database. ...through call to DBHelper's insertIntoDb(). Backend does rest (update included Includes). We simply refresh both grids at the end. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]includeButton \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000012}{Todo}]handle db errors better (use global error method). \end{Desc}
+
+
+Definition at line 189 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!load@{load}}
+\index{load@{load}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.load ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}
+
+
+called from end of constructor. Populates cosComboBox through call to DBHelper's getColumn(). If supplied as a form parameter, sets the selected COS in the cosComboBox. \begin{Desc}
+\item[\hyperlink{todo__todo000007}{Todo}]handle errors on getColumn calls like Extension.cs's \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_afba25c0ca7c6b26bcd5e8b6984758908}{load()} \end{Desc}
+
+
+Definition at line 85 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_abb1231755250bc18b9dcaf0e9437b5b1}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!moveDownButton\_\-Click@{moveDownButton\_\-Click}}
+\index{moveDownButton\_\-Click@{moveDownButton\_\-Click}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{moveDownButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.moveDownButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_abb1231755250bc18b9dcaf0e9437b5b1}
+
+
+Callback for Move Selected Include Position Down Buttons's Click event; adjusts selected Includes position up by increasing its value by 1. ...through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a1a77c41288db274dbe205da6b34ccb1f}{adjustPos()}. The supplied value is then passed on and evaluated in SQL. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]moveDownButton \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 223 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a17c623b9aeb6cc338cb883a48cd9150f}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!moveUpButton\_\-Click@{moveUpButton\_\-Click}}
+\index{moveUpButton\_\-Click@{moveUpButton\_\-Click}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{moveUpButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.moveUpButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a17c623b9aeb6cc338cb883a48cd9150f}
+
+
+Callback for Move Selected Include Position Up Buttons's Click event; adjusts selected Includes position up by reducing its value by 1. ...through call to \hyperlink{class_ias_pbx_config_1_1_classes_of_service_includes_a1a77c41288db274dbe205da6b34ccb1f}{adjustPos()}. The supplied value is then passed on and evaluated in SQL. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]moveUpButton \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 210 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a67961a306356b33f1533714abb1008e1}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!refresh@{refresh}}
+\index{refresh@{refresh}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{refresh}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.refresh ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a67961a306356b33f1533714abb1008e1}
+
+
+(re)populates cosiGrid and cosaGrid (COS Includes Included and COS Includes Available). ...through call to DBHelpers getTable(). Called when cosComboBox selection changes. \begin{Desc}
+\item[\hyperlink{todo__todo000008}{Todo}]handle getTable errors 
+
+handle empty cosComboBox selection? \end{Desc}
+
+
+Definition at line 111 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_ad40df8ec47f50d714bf251013124f78e}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!unincludeButton\_\-Click@{unincludeButton\_\-Click}}
+\index{unincludeButton\_\-Click@{unincludeButton\_\-Click}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{unincludeButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ClassesOfServiceIncludes.unincludeButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_ad40df8ec47f50d714bf251013124f78e}
+
+
+Callback for Uninclude Buttons's Click event; deletes selected included Include from database. ...through call to DBHelper's deleteFromDb(). Backend does rest (update available Includes). We simply refresh both grids at the end. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]unincludeButton \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000011}{Todo}]handle db errors. \end{Desc}
+
+
+Definition at line 171 of file ClassesOfServiceIncludes.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_ad1e2f3e94e3693fcc43a769bbfd3a203}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!log@{log}}
+\index{log@{log}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.ClassesOfServiceIncludes.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_ad1e2f3e94e3693fcc43a769bbfd3a203}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 28 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_aa035102cce05d98ea04f1efa76ba8038}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!m\_\-cosIds@{m\_\-cosIds}}
+\index{m\_\-cosIds@{m\_\-cosIds}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{m\_\-cosIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ClassesOfServiceIncludes.m\_\-cosIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_aa035102cce05d98ea04f1efa76ba8038}
+
+
+list of database COS Id's correspoding to cosCombobox 
+
+Definition at line 32 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a3b65b51c4adc787d70721576ed36f517}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!m\_\-cosNames@{m\_\-cosNames}}
+\index{m\_\-cosNames@{m\_\-cosNames}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{m\_\-cosNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ClassesOfServiceIncludes.m\_\-cosNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a3b65b51c4adc787d70721576ed36f517}
+
+
+list of COS names shown in cosCombobox 
+
+Definition at line 34 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a49839fa27002d5efe394c25bea712e5d}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!m\_\-parameterNames@{m\_\-parameterNames}}
+\index{m\_\-parameterNames@{m\_\-parameterNames}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{m\_\-parameterNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ClassesOfServiceIncludes.m\_\-parameterNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a49839fa27002d5efe394c25bea712e5d}
+
+
+list of parameter names passed to this form on creation 
+
+Definition at line 36 of file ClassesOfServiceIncludes.cs.\hypertarget{class_ias_pbx_config_1_1_classes_of_service_includes_a797acd582bd34a112372aa3b957b4ddc}{
+\index{IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}!m\_\-parameterValues@{m\_\-parameterValues}}
+\index{m\_\-parameterValues@{m\_\-parameterValues}!IasPbxConfig::ClassesOfServiceIncludes@{IasPbxConfig::ClassesOfServiceIncludes}}
+\subsubsection[{m\_\-parameterValues}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ClassesOfServiceIncludes.m\_\-parameterValues}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_classes_of_service_includes_a797acd582bd34a112372aa3b957b4ddc}
+
+
+corresponding list of parameter values 
+
+Definition at line 38 of file ClassesOfServiceIncludes.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_classes_of_service_includes_8cs}{ClassesOfServiceIncludes.cs}\end{DoxyCompactItemize}

@@ -1,0 +1,242 @@
+\hypertarget{class_ias_pbx_config_1_1_trunks}{
+\section{IasPbxConfig.Trunks Class Reference}
+\label{class_ias_pbx_config_1_1_trunks}\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+}
+
+
+The \hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks} Form; shows a DataGridView (trkGrid) with all trunks in database.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_trunks_a8cb3b643f7704d55d9b3857e064c0132}{Trunks} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_ac6c14b9634426a42541b8fa28adfd6c9}{load} ()
+\begin{DoxyCompactList}\small\item\em called from end of constructor. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}{refresh} ()
+\begin{DoxyCompactList}\small\item\em (re)populates trkGrid (Grid of \hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks}). \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a966dcab2782c249c4dc9728bc90c627e}{Trunks\_\-Load} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Load event; empty method. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a991c7f28f689229614bd13673f9a9fe9}{trkGrid\_\-CellEndEdit} (object sender, DataGridViewCellEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for CellEndEdit event; Inserts or Updates user change into database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a14b41e3440a986850334bbfc0e096d37}{trkGrid\_\-UserDeletedRow} (object sender, DataGridViewRowEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for UserDeletedRow event; empty. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a707a8fb3145ec2a85fccff41d1057532}{trkGrid\_\-UserDeletingRow} (object sender, DataGridViewRowCancelEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for UserDeletingRow event; delete selected row in the database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_ac79232f97537a0549ea51b8c2c2cd775}{trkRefreshButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Refresh Button's Click event; refreshes the grid. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_af34b4b2a4839c640dedb158ecd9b4756}{trkCopySelectedButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Copy Selected Button's Click event; makes similar but unique copies of selected rows. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a0bcc050f33753a70b2918424ad6ceca9}{trkDeleteSelectedButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Delete Selected Button's Click event; deletes all selected rows. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunks_a040a120f3c938eef87f022132d28185b}{trkGrid\_\-CellDoubleClick} (object sender, DataGridViewCellEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for CellDoubleClick event; launches Trkd (Trunk Details) form. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const string \hyperlink{class_ias_pbx_config_1_1_trunks_ae79cf02106338e52ae7613b5dff2a705}{TableName} = \char`\"{}Asterisk.v\_\-trunks\char`\"{}
+\begin{DoxyCompactList}\small\item\em database table name associated with trunks \item\end{DoxyCompactList}\item 
+const string \hyperlink{class_ias_pbx_config_1_1_trunks_a399bf6ea5158c3c43fd2350be772fe45}{KeyName} = \char`\"{}trunk\_\-name\char`\"{}
+\begin{DoxyCompactList}\small\item\em unique key column name in TableName table \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_trunks_a1b85e00c7fd451b3a368edef2210df49}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks} Form; shows a DataGridView (trkGrid) with all trunks in database. Allows adding, editing, and deleting (with delete key) of Trunk entries. Provides buttons for deleting and copying all selected \hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks}. 
+
+Definition at line 24 of file Trunks.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunks_a8cb3b643f7704d55d9b3857e064c0132}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!Trunks@{Trunks}}
+\index{Trunks@{Trunks}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{Trunks}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.Trunks.Trunks ()}}
+\label{class_ias_pbx_config_1_1_trunks_a8cb3b643f7704d55d9b3857e064c0132}
+
+
+Constructor. allocates members. calls \hyperlink{class_ias_pbx_config_1_1_trunks_ac6c14b9634426a42541b8fa28adfd6c9}{load()}, which in turn populates extGrid through a call to \hyperlink{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}{refresh()}. 
+
+Definition at line 39 of file Trunks.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunks_ac6c14b9634426a42541b8fa28adfd6c9}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!load@{load}}
+\index{load@{load}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.load ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_ac6c14b9634426a42541b8fa28adfd6c9}
+
+
+called from end of constructor. Calls \hyperlink{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}{refresh()} to populate grid. We could call refresh directly from the constructor but having a load method keeps a similar pattern to other Forms. 
+
+Definition at line 51 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!refresh@{refresh}}
+\index{refresh@{refresh}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{refresh}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.refresh ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}
+
+
+(re)populates trkGrid (Grid of \hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks}). ...through call to DBHelpers getTable(). Called when refresh button is clicked. \begin{Desc}
+\item[\hyperlink{todo__todo000050}{Todo}]handle getTable errors \end{Desc}
+
+
+Definition at line 61 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_af34b4b2a4839c640dedb158ecd9b4756}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkCopySelectedButton\_\-Click@{trkCopySelectedButton\_\-Click}}
+\index{trkCopySelectedButton\_\-Click@{trkCopySelectedButton\_\-Click}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkCopySelectedButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkCopySelectedButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_af34b4b2a4839c640dedb158ecd9b4756}
+
+
+Callback for Copy Selected Button's Click event; makes similar but unique copies of selected rows. Handles unique naming through DbHelper's getNextAvailableUniqueId(). Creates new enties in database with reactToGridUpdate(). Follow see link for inline comments. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the Button \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000053}{Todo}]handle errors from reactToGridUpdate() 
+
+find way to combine with Extensions.trkCopySelectedButton\_\-Click() \end{Desc}
+\begin{DoxySeeAlso}{See also}
+Extensions.trkCopySelectedButton\_\-Click() 
+\end{DoxySeeAlso}
+
+
+Definition at line 139 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a0bcc050f33753a70b2918424ad6ceca9}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkDeleteSelectedButton\_\-Click@{trkDeleteSelectedButton\_\-Click}}
+\index{trkDeleteSelectedButton\_\-Click@{trkDeleteSelectedButton\_\-Click}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkDeleteSelectedButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkDeleteSelectedButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a0bcc050f33753a70b2918424ad6ceca9}
+
+
+Callback for Delete Selected Button's Click event; deletes all selected rows. ...Through mimicing a user keypress of the delete key. This works because .NET already handles creating a UserDeletingRow Event for each selected row. This event is handled in \hyperlink{class_ias_pbx_config_1_1_trunks_a707a8fb3145ec2a85fccff41d1057532}{trkGrid\_\-UserDeletingRow()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the Button \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000054}{Todo}]find way to combine with Extension's version? \end{Desc}
+
+
+Definition at line 170 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a040a120f3c938eef87f022132d28185b}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkGrid\_\-CellDoubleClick@{trkGrid\_\-CellDoubleClick}}
+\index{trkGrid\_\-CellDoubleClick@{trkGrid\_\-CellDoubleClick}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkGrid\_\-CellDoubleClick}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkGrid\_\-CellDoubleClick (object {\em sender}, \/  DataGridViewCellEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a040a120f3c938eef87f022132d28185b}
+
+
+Callback for CellDoubleClick event; launches Trkd (Trunk Details) form. Opens Trkd form in new tab, passing the clicked Trk Id 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the grid \item[{\em e}]DataGridViewCellEventArgs with row and column index of clicked cell \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000055}{Todo}]handle error opening new form? \end{Desc}
+
+
+Definition at line 183 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a991c7f28f689229614bd13673f9a9fe9}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkGrid\_\-CellEndEdit@{trkGrid\_\-CellEndEdit}}
+\index{trkGrid\_\-CellEndEdit@{trkGrid\_\-CellEndEdit}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkGrid\_\-CellEndEdit}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkGrid\_\-CellEndEdit (object {\em sender}, \/  DataGridViewCellEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a991c7f28f689229614bd13673f9a9fe9}
+
+
+Callback for CellEndEdit event; Inserts or Updates user change into database. ...through call to DBHelper's reactToGridUpdate().
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the trkGrid \item[{\em e}]DataGridViewCellEventArgs with row and column index of edited cell \end{DoxyParams}
+
+
+Definition at line 83 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a14b41e3440a986850334bbfc0e096d37}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkGrid\_\-UserDeletedRow@{trkGrid\_\-UserDeletedRow}}
+\index{trkGrid\_\-UserDeletedRow@{trkGrid\_\-UserDeletedRow}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkGrid\_\-UserDeletedRow}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkGrid\_\-UserDeletedRow (object {\em sender}, \/  DataGridViewRowEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a14b41e3440a986850334bbfc0e096d37}
+
+
+Callback for UserDeletedRow event; empty. Probably not needed.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the grid \item[{\em e}]DataGridViewRowEventArgs with row index of deleted row \end{DoxyParams}
+
+
+Definition at line 95 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a707a8fb3145ec2a85fccff41d1057532}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkGrid\_\-UserDeletingRow@{trkGrid\_\-UserDeletingRow}}
+\index{trkGrid\_\-UserDeletingRow@{trkGrid\_\-UserDeletingRow}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkGrid\_\-UserDeletingRow}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkGrid\_\-UserDeletingRow (object {\em sender}, \/  DataGridViewRowCancelEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a707a8fb3145ec2a85fccff41d1057532}
+
+
+Callback for UserDeletingRow event; delete selected row in the database. ...through DBHelper's deleteFromDb(). Check if unique key is present in grid first.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the grid \item[{\em e}]DataGridViewRowCancelEventArgs with row index of deleted row \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000052}{Todo}]error handling on db delete, and make use of cancel event args \end{Desc}
+
+
+Definition at line 108 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_ac79232f97537a0549ea51b8c2c2cd775}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!trkRefreshButton\_\-Click@{trkRefreshButton\_\-Click}}
+\index{trkRefreshButton\_\-Click@{trkRefreshButton\_\-Click}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{trkRefreshButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.trkRefreshButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_ac79232f97537a0549ea51b8c2c2cd775}
+
+
+Callback for Refresh Button's Click event; refreshes the grid. ...Through a call to \hyperlink{class_ias_pbx_config_1_1_trunks_a6499b1bd73dbd347476a9e2df5538691}{refresh()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the Button \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 122 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a966dcab2782c249c4dc9728bc90c627e}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!Trunks\_\-Load@{Trunks\_\-Load}}
+\index{Trunks\_\-Load@{Trunks\_\-Load}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{Trunks\_\-Load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.Trunks.Trunks\_\-Load (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a966dcab2782c249c4dc9728bc90c627e}
+
+
+Callback for Load event; empty method. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]self? \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000051}{Todo}]investigate why control never enters this function. \end{Desc}
+
+
+Definition at line 72 of file Trunks.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunks_a399bf6ea5158c3c43fd2350be772fe45}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!KeyName@{KeyName}}
+\index{KeyName@{KeyName}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{KeyName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.Trunks.KeyName} = \char`\"{}trunk\_\-name\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a399bf6ea5158c3c43fd2350be772fe45}
+
+
+unique key column name in TableName table 
+
+Definition at line 32 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_a1b85e00c7fd451b3a368edef2210df49}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!log@{log}}
+\index{log@{log}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.Trunks.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_a1b85e00c7fd451b3a368edef2210df49}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 26 of file Trunks.cs.\hypertarget{class_ias_pbx_config_1_1_trunks_ae79cf02106338e52ae7613b5dff2a705}{
+\index{IasPbxConfig::Trunks@{IasPbxConfig::Trunks}!TableName@{TableName}}
+\index{TableName@{TableName}!IasPbxConfig::Trunks@{IasPbxConfig::Trunks}}
+\subsubsection[{TableName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.Trunks.TableName} = \char`\"{}Asterisk.v\_\-trunks\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunks_ae79cf02106338e52ae7613b5dff2a705}
+
+
+database table name associated with trunks 
+
+Definition at line 30 of file Trunks.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_trunks_8cs}{Trunks.cs}\end{DoxyCompactItemize}

@@ -1,0 +1,3134 @@
+// TODO: While running and connected to one system, changing to another system doesn't switch until restarting the app
+//
+
+using KellermanSoftware.CompareNetObjects;
+using Lib;
+using log4net;
+using Microsoft.VisualBasic;
+using QueueLib;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Resources;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace intellaQueue
+{
+    public partial class IntellaQueueForm : System.Windows.Forms.Form {
+        private static readonly ILog log = LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
+
+        // Live Data Grids
+        LiveDataGrid m_ldg_agents;
+
+        private static int MidBarHeight = 20;
+
+        private static bool UserResizeEnabled = false;
+
+        private static Color QueueColorEmpty = Color.FromArgb(173, 173, 173);
+        private static Color QueueColorOk = Color.FromArgb(141, 193, 102);
+        private static Color QueueColorWarning1 = Color.FromArgb(243, 219, 119);
+        private static Color QueueColorWarning2 = Color.FromArgb(233, 138, 75);
+        private static Color QueueColorWarning3 = Color.FromArgb(211, 101, 101);
+
+        private const Boolean EnableTeamView = true;
+        public static Boolean m_isManager = false;
+
+        private static Point m_statusLightBaseLocation;
+        private static Point m_dropGridBaseLocation;
+        private static Point m_sizeAdjustorBaseLocation;
+        private static Point m_closeButtonBaseLocation;
+        private static Point m_minimizeButtonBaseLocation;
+        private static Point m_settingsButtonBaseLocation;
+        private static List<Control> m_dynamicControls;
+
+        private ToolbarConfiguration m_toolbarConfig; // so timer refs and settings stay resident
+        private System.Windows.Forms.Timer m_updateDisplayTimer;
+        private SortedList<string, Hashtable> m_subscribedQueues; // Populated by fillQueuesFromDb()
+        private Hashtable m_subscribedQueuesHidden = new Hashtable(); // 
+
+        private string QueueRightClickContextMenu_SelectedQueue;
+            // When we right click on a queue row, this is the queue we clicked on
+
+        private string cmpAgentManagerRightClickContextMenu_selectedAgentDevice;
+            // When we right click on a the agent status grid, this is the agent we clicked on
+
+        private TreeView m_connectionTreeView = null;
+        private ConnectionManager m_cm = null;
+        private static DbHelper m_db;
+        private int m_databaseFailures = 0;
+
+        // Current Logged in Agent (To this toolbar)
+        private string m_agentName = "";
+        private string m_agentNum = "";
+        private string m_agentDevice = "";
+
+        // Screen Pop Related
+        public bool m_screenPopsEnabled = false;
+        public string m_screenPopURL = "";
+
+        // Status Code Related
+        public bool m_statusCodesEnabled = true;
+        private StatusCodesForm m_statusCodesForm;
+        private Panel m_statusCodesPanel;
+
+        // Columns Enabled or Disabled
+        private bool showQueueCallerColumn = true; // TODO: Make this a db config item
+
+        private Panel m_statusCodesCenteringPanel;
+            // Used to align the Pause Codes panel x-center with respect to toolbar form
+
+        private Hashtable m_currentChannelsTalkingTo = new Hashtable();
+
+        private bool m_lightStatus = false;
+
+        // Top Menubar Related
+        private QueueToolbarAboutForm m_aboutForm;
+        private ToolStripItem cmpCallQueueSnapshotToolStripItem;
+
+        private QueueAppConfigMainForm m_mainForm;
+        //private QueueAppConfigMainFormHelper m_mainHelper; // for new connection manager stuff which is broken
+
+        private bool m_doUpdateFormAndGrids = false;
+
+        private static int m_mouseDownCellRowIndex = -1, m_mouseDownCellColumnIndex = -1;
+
+        private static int m_managerColumnDropDownWidth = 0, m_agentColumnDropDownWidth = 0;
+
+        /// 3 vars to handle user dragging of windows without border decorations
+        private bool isFormDragging = false;
+
+        private Point dragCursorPoint;
+        private Point dragFormPoint;
+
+        private bool m_doNotShowSettingsDropdownOnNextClick = false;
+
+        public enum PictureBoxButtonEvents {
+            Enter,
+            Leave,
+            Down,
+            UpInside,
+            UpOutside
+        };
+
+        public enum ButtonCellColorState {
+            Base,
+            Light,
+            Dark
+        };
+
+        // used for mouse drag window/form resizing by user (disabled)
+        private bool m_isFormResizing;
+        private Point m_resizeCursorPoint;
+        private Size m_resizeFormSize;
+
+        private static bool m_isMinimized = false;
+        private string m_interfaceSize = "small";
+
+        // Space for Additional Controls at the bottom of the toolbar (Used when pause codes are enabled)
+        private Panel m_extraControl = null;
+        public int m_extraControlHeight = 0; // FIXME... shouldn'd be public
+
+        // Debugging/Exception related
+        private Boolean m_ExceptionPerQueueConfigThrown = false;
+
+        // Grids
+        //---------------
+        // mainGrid (defined in intellaQueue.Designer.cs) -- Top Grid -- The Per-Queue Overall realtime data
+        // 
+        // Queue Callers and Agent Status grids are built in setupGrids()
+
+        //----------------------------------------------------------------------
+
+        public void ProgramError() {
+            StopRefreshTimer();
+        }
+
+        // Start building the form
+        public IntellaQueueForm()
+            : base() {
+            // This call is required by the Windows Form Designer.
+            InitializeComponent();
+
+            // StatusCode Bottom Widget is created in AgentLoginSuccess
+
+            string interface_size = Interaction.GetSetting("IntellaToolBar", "Config", "InterfaceSize");
+            if (interface_size != "") {
+                switch (interface_size) {
+                    case "small":
+                    case "medium":
+                    case "large":
+                        m_interfaceSize = interface_size;
+                        break;
+                }
+            }
+
+            SetInterFaceSize(m_interfaceSize, true);
+
+            m_toolbarConfig = new ToolbarConfiguration();
+
+            if (!System.Diagnostics.Debugger.IsAttached) {
+                this.TopMost = alwaysOnTopToolStripMenuItem.Checked;
+            }
+
+            // double buffering goodness
+            this.SetStyle(
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint |
+                ControlStyles.DoubleBuffer, true);
+
+            m_dynamicControls = new List<Control>();
+
+            m_statusLightBaseLocation = new Point(statusLight.Location.X, statusLight.Location.Y);
+            m_dropGridBaseLocation = new Point(dropGridTemplate.Location.X + queueResources.border_left_tiled.Width,
+                dropGridTemplate.Location.Y);
+            m_sizeAdjustorBaseLocation = new Point(sizeAdjustorPb.Location.X, sizeAdjustorPb.Location.Y);
+            m_closeButtonBaseLocation = new Point(closePb.Location.X, closePb.Location.Y);
+            m_minimizeButtonBaseLocation = new Point(minimizePb.Location.X, minimizePb.Location.Y);
+            m_settingsButtonBaseLocation = new Point(settingsPb.Location.X, settingsPb.Location.Y);
+
+            m_isManager = false;
+
+            m_updateDisplayTimer = new System.Windows.Forms.Timer();
+            m_updateDisplayTimer.Tick += UpdateDisplayTimer_Tick;
+
+            //m_connectionTreeView = new TreeView();
+            //Properties.Settings settings = Properties.Settings.Default;
+            //m_cm = new ConnectionManager(launchError, settings.ConnectionsInfo, m_connectionTreeView, handleConnectionStatusChange);
+            //this.fileToolStripMenuItem.DropDownItems.Insert(0, m_cm.NewConnectionMenuItem);
+            //m_cm.refreshDisplayedConnections();
+
+            hideUiManagedObjects();
+
+            LayoutForm();
+
+            if (!UserResizeEnabled) {
+                sizeAdjustorPb.MouseDown += intellaQueue_MouseDown;
+                sizeAdjustorPb.MouseUp += intellaQueue_MouseUp;
+                sizeAdjustorPb.MouseMove += intellaQueue_MouseMove;
+            }
+
+            mainGrid.MouseDown += intellaQueue_MouseDown;
+            mainGrid.MouseUp += intellaQueue_MouseUp;
+            mainGrid.MouseMove += intellaQueue_MouseMove;
+
+            // New: LiveDataGrid
+            ldg = new LiveDataGrid();
+            m_ldg_agents.Show();
+            BuildLiveAgentsGrid()
+        }
+
+        private void BuildLiveAgentsGrid(){
+            List<OrderedDictionary> queue_assignments_and_prefs = new List<OrderedDictionary>();
+            m_db.dbQueryWithParams("SELECT * FROM queue.v_queue_agent_assignments WHERE agent_num = '{0}'", queue_assignments_and_prefs, agent_num);
+
+
+            m_ldg_agents.addGridColumn();
+       }
+
+        private void CreateOrUpdateExtraControl(int additionalControlHeight) {
+            if (this.m_extraControl == null) {
+                m_extraControl = new Panel();
+                this.Controls.Add(m_extraControl);
+            }
+
+            this.m_extraControlHeight += additionalControlHeight;
+
+            // Extra space on the bottom for more controls
+            m_extraControl.Size = new Size(this.Width, m_extraControl.Size.Height + additionalControlHeight);
+        }
+
+        private void handleDatabaseSuccess() {
+            this.m_databaseFailures = 0;
+        }
+
+        // Called every time there is a query failure
+        // If we fail too many times in a row, then try to reconnect
+        // If reconnecting has failed... we must bail
+        //
+        private void handleDatabaseFailure() {
+            //if (this.m_databaseFailures++ >= 3) {
+            //    killDatabaseConnection_ReconnectAndResume();
+            //}
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        /// Handle an error based on a message.
+        ///
+        /// Put the error message into the status bar, log it, and make a message box appear.
+        /// Use a user friendly version if available.
+        /// @param errorMessage the error message to handle
+        public void launchError(string errorMessage) {
+            string friendlyMessage = Helper.findUserFriendlyErrorMessage(errorMessage);
+            if (friendlyMessage == "") {
+                friendlyMessage = errorMessage;
+            }
+            else {
+                log.Error(errorMessage);
+            }
+
+            MessageBox.Show(friendlyMessage);
+            //setStatus(friendlyMessage);
+            log.Error(friendlyMessage);
+        }
+
+        private int HandleConnectionStatusChange(ConnectionManager.Status status, string key) {
+            int cancel = 0;
+
+            switch (status) {
+                case ConnectionManager.Status.AskPermissionForDelete:
+                    if (m_cm.ClickedNode.Nodes.Count > 0) {
+                        //cancel = TabManager.clearTabs("Delete Connection and close all open tabs?");
+                    }
+                    if (cancel == 0) // user did not cancel
+                    {
+                        //m_tsm.removeTabSet(key);
+                    }
+                    break;
+                case ConnectionManager.Status.AskPermissionForDisconnect:
+                    //cancel = TabManager.clearTabs("Close current connection and all open tabs?");
+                    break;
+                case ConnectionManager.Status.Connected:
+                    //string dbProtocolVersion = null;
+                    //if (0 != m_cm.DB.getSingleFromDb(ref dbProtocolVersion,
+                    //                                    "configurator_protocol_version_required",
+                    //                                    "Asterisk.configurator_config"))
+                    //{
+                    //    cancel = 1;
+                    //    string m = "Connection failed to " + key + ": Unable to access protocol version on server. ";
+                    //    string f = "Please contact your administrator.";
+                    //    log.Error(m + " Local: " + Program.ProtocolVersion);
+                    //    setStatus(m + f);
+                    //    MessageBox.Show(f, m);
+                    //}
+                    //else if (dbProtocolVersion != Program.ProtocolVersion)
+                    //{
+                    //    cancel = 1;
+                    //    string m = "Connection failed to " + key + ": Protocol version mismatch. ";
+                    //    string f = "Please upgrade this software or contact your administrator.";
+                    //    log.Error(m + "Db: " + dbProtocolVersion + " Local: " + Program.ProtocolVersion);
+                    //    setStatus(m + f);
+                    //    MessageBox.Show(f, m);
+                    //}
+                    //else
+                    //    setStatus("Connected: " + key);
+
+                    break;
+                case ConnectionManager.Status.ConnectionFailed:
+                case ConnectionManager.Status.Disconnected:
+                case ConnectionManager.Status.ChangedCurrentConnection:
+                    //setStatus(key);
+                    break;
+                case ConnectionManager.Status.Connecting:
+                    //setStatus(key);
+                    //this.Update();
+                    break;
+                case ConnectionManager.Status.RefreshOpenConnectionNode:
+                    //addFormNodes(key);
+                    break;
+                case ConnectionManager.Status.DbHelperReset:
+                    //m_db = m_cm.DB;
+                    break;
+                case ConnectionManager.Status.SettingsLoad:
+//					Properties.Settings loadedSettings = Properties.Settings.Default;
+//					if (m_cm != null)
+//						m_cm.Settings = loadedSettings.ConnectionsInfo;
+                    break;
+                case ConnectionManager.Status.SettingsSave:
+//					Properties.Settings settingsToSave = Properties.Settings.Default;
+//					if (m_cm != null)
+//						settingsToSave.ConnectionsInfo = m_cm.Settings;
+//					settingsToSave.Save();
+                    break;
+                case ConnectionManager.Status.Error:
+                    log.Debug("No handling defined for Connection Manager status of <" + status.ToString() + ">.");
+                    break;
+                default:
+                    log.Error("Unknown Connection Manager Status <" + status.ToString() + "> recieved.");
+                    break;
+            }
+
+            return cancel;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        /// Callback for event when doubleclick is detected in the mainTreeView in left 
+        /// panel.
+        ///
+        /// A call is made to open a new tab and form correspoding to the doubleclicked 
+        /// item.
+        /// @param sender ref to the mainTreeView
+        /// @param e EventArgs
+        private void m_connectionTreeView_DoubleClick(object sender, EventArgs e) {
+            // if no node is selected, cancel
+            if (m_connectionTreeView.SelectedNode == null)
+                return;
+
+            // check if level of node is root (connections) 
+            if (m_connectionTreeView.Nodes.Contains(m_connectionTreeView.SelectedNode)) {
+                //if node is not already in connected state
+                if (m_connectionTreeView.SelectedNode.Nodes.Count == 0) {
+                    // open this node/connection
+                    m_cm.switchToConnection(m_connectionTreeView.SelectedNode.Name);
+                }
+            }
+            //else // if not in root level, node is in form level
+            //{
+            //    // open this node's parent node/connection
+            //    m_cm.switchToConnection(m_connectionTreeView.SelectedNode.Parent.Name);
+
+            //    // open form in new tab
+            //    TabManager.addFormInTab(Helper.find(Program.m_formNames, m_connectionTreeView.SelectedNode.Name));
+            //}
+        }
+
+        private void m_connectionTreeView_MouseDown(object sender, MouseEventArgs e) {
+            TreeViewHitTestInfo hti = ((TreeView) sender).HitTest(e.Location);
+
+            string rootNodeName = null;
+
+            if (hti.Node != null) {
+                if (hti.Node.Level == 0) {
+                    m_cm.ClickedNode = hti.Node;
+
+                    // prevent node from having selected forecolor and nonhilighted backcolor when context for 
+                    // non-selected node appears
+                    m_connectionTreeView.SelectedNode = m_cm.ClickedNode;
+                    rootNodeName = m_cm.ClickedNode.Name;
+                }
+                else if (hti.Node.Level == 1) {
+                    rootNodeName = hti.Node.Parent.Name;
+                }
+            }
+
+            if (rootNodeName != null) {
+                //m_tsm.switchToTabSetAndCreateIfNeeded(rootNodeName);
+            }
+        }
+
+        private DataGridView DroppedDownGrid {
+            get {
+                foreach (Control c in m_dynamicControls)
+                    if (c is DataGridView && c.Visible)
+                        return (DataGridView) c;
+
+                return null;
+            }
+        }
+
+        /// these are used for place holders and to some extent initializers for dynamically created ui elements
+        private void hideUiManagedObjects() {
+            titlePb.Visible = bodyPb.Visible = footerPb.Visible = dropGridTemplate.Visible = false;
+        }
+
+        private void clearDropGrids() {
+            List<Control> controlsToRemove = new List<Control>(m_dynamicControls.Count);
+
+            foreach (Control c in m_dynamicControls)
+                if (c is DataGridView) {
+                    Debug.Print("this.Remove! " + c.Name);
+                    this.Controls.Remove(c);
+                    controlsToRemove.Add(c);
+                }
+
+            foreach (Control c in controlsToRemove) {
+                Debug.Print("dyn.Remove! " + c.Name);
+                m_dynamicControls.Remove(c);
+            }
+
+            Debug.Print("clearDropGrids: not removed count: " + m_dynamicControls.Count);
+
+        }
+
+        private void clearDynamicControls() {
+            List<Control> controlsToRemove = new List<Control>(m_dynamicControls.Count);
+
+            foreach (Control c in m_dynamicControls)
+                if (!(c is DataGridView)) {
+                    Debug.Print("this.Remove! " + c.Name);
+                    this.Controls.Remove(c);
+                    controlsToRemove.Add(c);
+                }
+
+            foreach (Control c in controlsToRemove) {
+                Debug.Print("dyn.Remove! " + c.Name);
+                m_dynamicControls.Remove(c);
+            }
+
+            Debug.Print("clearDynamicControls: not removed count: " + m_dynamicControls.Count);
+        }
+
+        private void drawTiledImage(Graphics g, Bitmap tiledImage, Point location, Size size, Point offset) {
+            Bitmap leftCap = null, rightCap = null;
+            drawTiledImageWithCaps(g, tiledImage, leftCap, rightCap, location, size, offset);
+        }
+
+        private void drawTiledImageWithCaps(Graphics g, Bitmap tiledImage, Bitmap leftCap, Bitmap rightCap,
+            Point location, Size size) {
+            drawTiledImageWithCaps(g, tiledImage, leftCap, rightCap, location, size, new Point(0, 0));
+        }
+
+        /// @todo handle if tile width doesn't divide perfectly into available size.width (add one tile)
+        /// @todo also in above case crop last tile to only fill available size.width
+        /// @todo support above two items w/ height
+        private void drawTiledImageWithCaps(Graphics g, Bitmap tiledImage, Bitmap leftCap, Bitmap rightCap,
+            Point location, Size size, Point offset) {
+            int left_cap_width = leftCap == null ? 0 : leftCap.Width;
+            int right_cap_width = rightCap == null ? 0 : rightCap.Width;
+
+            if (left_cap_width + right_cap_width > size.Width) {
+                left_cap_width = right_cap_width = size.Width/2;
+                if (left_cap_width + right_cap_width < size.Width)
+                    right_cap_width++;
+            }
+
+            if (left_cap_width > 0) {
+                g.DrawImage(leftCap,
+                    location.X + offset.X,
+                    location.Y + offset.Y,
+                    left_cap_width,
+                    leftCap.Height);
+            }
+            if (right_cap_width > 0) {
+                g.DrawImage(rightCap,
+                    location.X + offset.X + size.Width - right_cap_width,
+                    location.Y + offset.Y,
+                    right_cap_width,
+                    rightCap.Height);
+            }
+
+            int tileNumWidth = (size.Width - left_cap_width - right_cap_width)/tiledImage.Width;
+            int tileNumHeight = size.Height/tiledImage.Height;
+
+            if (tileNumWidth > tiledImage.Height && tiledImage.Width == 1) {
+                // optimized special case
+                int baseStartX = location.X + offset.X + left_cap_width;
+                int baseEndX = baseStartX + tileNumWidth;
+                int baseY = location.Y + offset.Y;
+                for (int i = 0; i < tiledImage.Height; i++)
+                    g.DrawLine(new Pen(tiledImage.GetPixel(0, i)),
+                        baseStartX,
+                        baseY + i,
+                        baseEndX,
+                        baseY + i);
+            }
+            else if (tileNumHeight > tiledImage.Width && tiledImage.Height == 1) {
+                // optimized special case
+                // this one only has a minimal effect for our case.. maybe combine the two calls for the two grids into one?
+                // would have to make sure midbar gets drawn after/on top
+                int baseStartY = location.Y + offset.Y;
+                int baseEndY = baseStartY + tileNumHeight;
+                int baseX = location.X + offset.X + left_cap_width;
+                for (int i = 0; i < tiledImage.Width; i++)
+                    g.DrawLine(new Pen(tiledImage.GetPixel(i, 0)),
+                        baseX + i,
+                        baseStartY,
+                        baseX + i,
+                        baseEndY);
+            }
+            else
+                for (int j = 0; j < tileNumHeight; j++)
+                    for (int i = 0; i < tileNumWidth; i++)
+                        g.DrawImage(tiledImage,
+                            location.X + offset.X + left_cap_width + i*tiledImage.Width,
+                            location.Y + offset.Y + j*tiledImage.Height,
+                            tiledImage.Width,
+                            tiledImage.Height);
+        }
+
+        private void drawTiledImageWithCaps(Graphics g, Bitmap hvTiledImage, Bitmap hTiledImageTop,
+            Bitmap hTiledImageBottom, Bitmap vTiledLeftCap, Bitmap leftCapTop, Bitmap leftCapBottom,
+            Bitmap vTiledRightCap, Bitmap rightCapTop, Bitmap rightCapBottom, Point location, Size size) {
+            drawTiledImageWithCaps(g, hvTiledImage, hTiledImageTop, hTiledImageBottom, vTiledLeftCap, leftCapTop,
+                leftCapBottom, vTiledRightCap, rightCapTop, rightCapBottom, location, size, new Point(0, 0));
+        }
+
+        /// @todo handle if tile width doesn't divide perfectly into available size.width (add one tile)
+        /// @todo also in above case crop last tile to only fill available size.width
+        /// @todo support above two items w/ height
+        private void drawTiledImageWithCaps(Graphics g, Bitmap hvTiledImage, Bitmap hTiledImageTop,
+            Bitmap hTiledImageBottom, Bitmap vTiledLeftCap, Bitmap leftCapTop, Bitmap leftCapBottom,
+            Bitmap vTiledRightCap, Bitmap rightCapTop, Bitmap rightCapBottom, Point location, Size size, Point offset) {
+            // left top, left bottom, left middle
+            if (leftCapTop != null)
+                g.DrawImage(leftCapTop,
+                    location.X + offset.X,
+                    location.Y + offset.Y,
+                    leftCapTop.Width,
+                    leftCapTop.Height);
+            if (leftCapBottom != null)
+                g.DrawImage(leftCapBottom,
+                    location.X + offset.X,
+                    location.Y + size.Height - leftCapBottom.Height + offset.Y,
+                    leftCapBottom.Width,
+                    leftCapBottom.Height);
+            int tileNumHeight = (size.Height - leftCapTop.Height - leftCapBottom.Height)/vTiledLeftCap.Height;
+            for (int i = 0; i < tileNumHeight; i++)
+                g.DrawImage(vTiledLeftCap,
+                    location.X + offset.X,
+                    location.Y + leftCapTop.Height + offset.Y + i*vTiledLeftCap.Height,
+                    vTiledLeftCap.Width,
+                    vTiledLeftCap.Height);
+
+            // right top, right bottom, right middle
+            if (rightCapTop != null)
+                g.DrawImage(rightCapTop,
+                    location.X + size.Width - rightCapTop.Width + offset.X,
+                    location.Y + offset.Y,
+                    rightCapTop.Width,
+                    rightCapTop.Height);
+            if (rightCapBottom != null)
+                g.DrawImage(rightCapBottom,
+                    location.X + size.Width - rightCapTop.Width + offset.X,
+                    location.Y + size.Height - rightCapBottom.Height + offset.Y,
+                    rightCapBottom.Width,
+                    rightCapBottom.Height);
+            tileNumHeight = (size.Height - rightCapTop.Height - rightCapBottom.Height)/vTiledRightCap.Height;
+            for (int i = 0; i < tileNumHeight; i++)
+                g.DrawImage(vTiledRightCap,
+                    location.X + size.Width - rightCapTop.Width + offset.X,
+                    location.Y + rightCapTop.Height + offset.Y + i*vTiledRightCap.Height,
+                    vTiledRightCap.Width,
+                    vTiledRightCap.Height);
+
+            // center top
+            int tileNumWidth = (size.Width - leftCapTop.Width - rightCapTop.Width)/hTiledImageTop.Width;
+            if (tileNumWidth > hTiledImageTop.Height && hTiledImageTop.Width == 1) {
+                // special case optimization
+                int baseStartX = location.X + leftCapTop.Width + offset.X;
+                int baseY = location.Y + offset.Y;
+                int baseEndX = baseStartX + tileNumWidth;
+                for (int i = 0; i < hTiledImageTop.Height; i++)
+                    g.DrawLine(new Pen(hTiledImageTop.GetPixel(0, i)), baseStartX, baseY + i, baseEndX, baseY + i);
+            }
+            else
+                for (int i = 0; i < tileNumWidth; i++)
+                    g.DrawImage(hTiledImageTop,
+                        location.X + leftCapTop.Width + offset.X + i*hTiledImageTop.Width,
+                        location.Y + offset.Y,
+                        hTiledImageTop.Width,
+                        hTiledImageTop.Height);
+
+            // center bottom
+            tileNumWidth = (size.Width - leftCapBottom.Width - rightCapBottom.Width)/hTiledImageBottom.Width;
+            if (tileNumWidth > hTiledImageBottom.Height && hTiledImageBottom.Width == 1) {
+                // special case optimization
+                int baseStartX = location.X + leftCapBottom.Width + offset.X;
+                int baseY = location.Y + size.Height - hTiledImageBottom.Height + offset.Y;
+                int baseEndX = baseStartX + tileNumWidth;
+                for (int i = 0; i < hTiledImageBottom.Height; i++)
+                    g.DrawLine(new Pen(hTiledImageBottom.GetPixel(0, i)), baseStartX, baseY + i, baseEndX, baseY + i);
+            }
+            else
+                for (int i = 0; i < tileNumWidth; i++)
+                    g.DrawImage(hTiledImageBottom,
+                        location.X + leftCapBottom.Width + offset.X + i*hTiledImageBottom.Width,
+                        location.Y + size.Height - hTiledImageBottom.Height + offset.Y,
+                        hTiledImageBottom.Width,
+                        hTiledImageBottom.Height);
+
+            // center middle
+            tileNumWidth = (size.Width - leftCapTop.Width - rightCapTop.Width)/hvTiledImage.Width;
+            tileNumHeight = (size.Height - hTiledImageTop.Height - hTiledImageBottom.Height)/hvTiledImage.Height;
+
+            if (hvTiledImage.Width == 1 && hvTiledImage.Height == 1)
+                // special case optimization
+                g.FillRectangle(new SolidBrush(hvTiledImage.GetPixel(0, 0)),
+                    new Rectangle(location.X + offset.X + leftCapTop.Width,
+                        location.Y + offset.Y + hTiledImageTop.Height,
+                        tileNumWidth,
+                        tileNumHeight));
+            else
+                for (int j = 0; j < tileNumHeight; j++)
+                    for (int i = 0; i < tileNumWidth; i++)
+                        g.DrawImage(hvTiledImage,
+                            location.X + offset.X + leftCapTop.Width + i*hvTiledImage.Width,
+                            location.Y + offset.Y + hTiledImageTop.Height + j*hvTiledImage.Height,
+                            hvTiledImage.Width,
+                            hvTiledImage.Height);
+        }
+
+        private void LayoutForm() {
+            Debug.Print("layout form!");
+            clearDynamicControls();
+            if (m_subscribedQueues == null) {
+                return;
+            }
+
+            int queue_count = m_subscribedQueues.Count;
+            int grid_height = 0;
+            bool did_find_visible_dropgrid = false;
+
+            for (int i = 0; i < queue_count; i++) {
+                string queue_name = m_subscribedQueues.Keys[i];
+                List<DataGridView> grids = new List<DataGridView>(2) {
+                    (DataGridView) m_subscribedQueues[queue_name]["AgentGrid"]
+                };
+
+                if (m_subscribedQueues[queue_name].ContainsKey("TeamGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queue_name]["TeamGrid"]);
+
+                foreach (DataGridView grid in grids) {
+                    if (grid != null && grid.Visible) {
+                        did_find_visible_dropgrid = true;
+                        grid_height = grid.Height;
+                        break;
+                    }
+                }
+
+                if (grid_height > 0) {
+                    break;
+                }
+            }
+
+            if (!did_find_visible_dropgrid)
+                detailViewNameLabel.Text = "";
+
+            int predicted_body_height = mainGrid.Height;
+            int predicted_offset_y = mainGrid.Height + ((grid_height > 0) ? MidBarHeight : 0);
+            Bitmap bg = new Bitmap(this.Width,
+                titlePb.Height + predicted_body_height + footerPb.Height + grid_height +
+                ((grid_height > 0) ? MidBarHeight : 0));
+
+            using (Graphics g = Graphics.FromImage(bg)) {
+                // top window bar
+                drawTiledImageWithCaps(g,
+                    queueResources.title_empty_center_tile,
+                    queueResources.title_empty_left,
+                    queueResources.title_empty_right,
+                    titlePb.Location,
+                    new Size(this.Width, queueResources.title_empty_left.Height),
+                    new Point(0, 0));
+
+                titleViewNameLabel.Text = (m_isManager ? "Manager" : "Agent") + " Toolbar - (" + m_agentNum + ") " +
+                                          m_agentName;
+                titleViewNameLabel.Location = new Point(this.Width/2 - titleViewNameLabel.Width/2,
+                    titleViewNameLabel.Location.Y);
+
+                // left border
+                drawTiledImage(g,
+                    queueResources.border_left_tiled,
+                    new Point(titlePb.Location.X, titlePb.Location.Y + queueResources.title_empty_left.Height),
+                    new Size(queueResources.border_left_tiled.Width, mainGrid.Height),
+                    new Point(0, 0));
+
+                // right border
+                drawTiledImage(g,
+                    queueResources.border_right_tiled,
+                    new Point(titlePb.Location.X + this.Width - queueResources.border_right_tiled.Width,
+                        titlePb.Location.Y + queueResources.title_empty_left.Height),
+                    new Size(queueResources.border_right_tiled.Width, mainGrid.Height),
+                    new Point(0, 0));
+
+                // bottom
+                drawTiledImageWithCaps(g,
+                    queueResources.footer_center_tile,
+                    queueResources.footer_left,
+                    queueResources.footer_right,
+                    new Point(footerPb.Location.X,
+                        queueResources.title_empty_center_tile.Height + predicted_offset_y + grid_height),
+                    new Size(this.Width, 100 + queueResources.footer_left.Height));
+
+                if (grid_height > 0) {
+                    Point offset = new Point(0, predicted_offset_y);
+                    drawTiledImageWithCaps(g,
+                        queueResources.midbar_center_center_hvtiled,
+                        queueResources.midbar_center_top_htiled,
+                        queueResources.midbar_center_bottom_htiled,
+                        queueResources.midbar_left_center_vtiled,
+                        queueResources.midbar_left_top,
+                        queueResources.midbar_left_bottom,
+                        queueResources.midbar_right_center_vtiled,
+                        queueResources.midbar_right_top,
+                        queueResources.midbar_right_bottom,
+                        new Point(titlePb.Location.X, titlePb.Location.Y + titlePb.Height + mainGrid.Height),
+                        new Size(this.Width, MidBarHeight),
+                        new Point(0, 0));
+
+                    detailViewNameLabel.Location = new Point(
+                        this.Width/2 - detailViewNameLabel.Width/2,
+                        queueResources.title_empty_center_tile.Height + mainGrid.Height + MidBarHeight/2 -
+                        detailViewNameLabel.Height/2);
+
+                    // left border
+                    drawTiledImage(g,
+                        queueResources.border_left_tiled,
+                        bodyPb.Location,
+                        new Size(queueResources.border_left_tiled.Width, grid_height),
+                        offset);
+
+                    // right border
+                    drawTiledImage(g,
+                        queueResources.border_right_tiled,
+                        new Point(bodyPb.Location.X + this.Width - queueResources.border_right_tiled.Width,
+                            bodyPb.Location.Y),
+                        new Size(queueResources.border_right_tiled.Width, grid_height),
+                        offset);
+                }
+            }
+
+            this.BackgroundImage = bg;
+            this.BackgroundImageLayout = ImageLayout.None;
+
+            int width_diff = this.Width - bodyPb.Width;
+
+            AdjustFormHeight(grid_height);
+            sizeAdjustorPb.Location = new Point(m_sizeAdjustorBaseLocation.X + width_diff,
+                m_sizeAdjustorBaseLocation.Y + predicted_offset_y + grid_height);
+            statusLight.Location = new Point(m_statusLightBaseLocation.X + width_diff,
+                m_statusLightBaseLocation.Y + predicted_offset_y + grid_height);
+
+            int drop_grid_y = titlePb.Height + predicted_offset_y;
+            for (int i = 0; i < queue_count; i++) {
+                string queue_name = m_subscribedQueues.Keys[i];
+                List<DataGridView> grids = new List<DataGridView>(2);
+                grids.Add((DataGridView) m_subscribedQueues[queue_name]["AgentGrid"]);
+
+                if (m_subscribedQueues[queue_name].ContainsKey("TeamGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queue_name]["TeamGrid"]);
+
+                foreach (DataGridView grid in grids.Where(grid => grid != null && grid.Visible)) {
+                    grid.Location = new Point(queueResources.border_left_tiled.Width, drop_grid_y);
+                    break;
+                }
+            }
+
+            closePb.Location = new Point(m_closeButtonBaseLocation.X + width_diff, m_closeButtonBaseLocation.Y);
+            minimizePb.Location = new Point(m_minimizeButtonBaseLocation.X + width_diff, m_minimizeButtonBaseLocation.Y);
+            settingsPb.Location = new Point(m_settingsButtonBaseLocation.X + width_diff, m_settingsButtonBaseLocation.Y);
+
+            if (this.m_extraControl != null) {
+                m_extraControl.Location = new Point(0, this.Height - m_extraControlHeight);
+                m_extraControl.Size = new Size(this.Width, m_extraControlHeight);
+
+                if (m_statusCodesEnabled) {
+                    int unused_x = this.Width - m_statusCodesPanel.Width;
+
+                    m_statusCodesCenteringPanel.Width = this.Width;
+                    m_statusCodesPanel.Location = new Point(unused_x/2, 0);
+                }
+            }
+
+            SetInterFaceSize(m_interfaceSize, true);
+        }
+
+        private void SetInterFaceSize(string size, bool firstStart) {
+
+            switch (size) {
+                case "large":
+                    this.mainGrid.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.5F);
+                    this.mainGrid.ColumnHeadersHeight = 29;
+                    this.mainGrid.RowTemplate.Height = 26;
+                    this.smallToolStripMenuItem.Checked = false;
+                    this.mediumToolStripMenuItem.Checked = false;
+                    this.largeToolStripMenuItem.Checked = true;
+                    break;
+                case "medium":
+                    this.mainGrid.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.5F);
+                    this.mainGrid.ColumnHeadersHeight = 20;
+                    this.mainGrid.RowTemplate.Height = 18;
+                    this.smallToolStripMenuItem.Checked = false;
+                    this.mediumToolStripMenuItem.Checked = true;
+                    this.largeToolStripMenuItem.Checked = false;
+                    break;
+                case "small":
+                    this.mainGrid.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
+                    this.mainGrid.ColumnHeadersHeight = 16;
+                    this.mainGrid.RowTemplate.Height = 13;
+                    this.smallToolStripMenuItem.Checked = true;
+                    this.mediumToolStripMenuItem.Checked = false;
+                    this.largeToolStripMenuItem.Checked = false;
+                    break;
+                default:
+                    return;
+            }
+
+            m_interfaceSize = size;
+            Interaction.SaveSetting("IntellaToolBar", "Config", "InterfaceSize", size);
+
+            // Need a better way to redraw the interface... we don't really need to reconnect
+            if (!firstStart) {
+                killDatabaseConnection_ReconnectAndResume();
+            }
+        }
+
+        private void InitDropGridsAndQueueInfo() {
+            if (m_subscribedQueues != null) {
+                foreach (string queueName in m_subscribedQueues.Keys) {
+                    if (!m_subscribedQueues.ContainsKey(queueName))
+                        m_subscribedQueues.Add(queueName, new Hashtable());
+
+                    if (!m_subscribedQueues[queueName].ContainsKey("AgentGrid")) {
+                        m_subscribedQueues[queueName].Add("AgentGrid", new TweakedDataGridView());
+                        ((DataGridView) m_subscribedQueues[queueName]["AgentGrid"]).Visible = false;
+                        // uncomment to allow user window moving by drag clicking on agent grid
+                        //((DataGridView)m_subscribedQueues[queueName]["AgentGrid"]).MouseDown += intellaQueue_MouseDown;
+                        //((DataGridView)m_subscribedQueues[queueName]["AgentGrid"]).MouseUp += intellaQueue_MouseUp;
+                        //((DataGridView)m_subscribedQueues[queueName]["AgentGrid"]).MouseMove += intellaQueue_MouseMove;			
+                    }
+                    if (EnableTeamView && !m_subscribedQueues[queueName].ContainsKey("TeamGrid")) {
+                        m_subscribedQueues[queueName].Add("TeamGrid", new TweakedDataGridView());
+                        ((DataGridView) m_subscribedQueues[queueName]["TeamGrid"]).Visible = false;
+                        // uncomment to allow user window moving by drag clicking on manager grid
+                        //((DataGridView)m_subscribedQueues[queueName]["TeamGrid"]).MouseDown += intellaQueue_MouseDown;
+                        //((DataGridView)m_subscribedQueues[queueName]["TeamGrid"]).MouseUp += intellaQueue_MouseUp;
+                        //((DataGridView)m_subscribedQueues[queueName]["TeamGrid"]).MouseMove += intellaQueue_MouseMove;
+                    }
+                }
+            }
+
+            if (m_subscribedQueues == null) {
+                m_subscribedQueues = new SortedList<string, Hashtable>(0);
+            }
+            else if (m_subscribedQueues.Count <= 0) {
+                m_subscribedQueues = new SortedList<string, Hashtable>(0); // does this ever happen? doesn't make sense.
+            }
+        }
+
+        private void DrawImage(Graphics g, Bitmap b, Point location) {
+            try {
+                g.DrawImage(b, location.X, location.Y, b.Size.Width, b.Size.Height);
+            }
+            catch (Exception ex) {
+                Debug.Print(ex.Message);
+            }
+        }
+
+        private void DrawImage(Graphics g, Bitmap b, Point location, Point offset) {
+            try {
+                g.DrawImage(b, location.X + offset.X, location.Y + offset.Y, b.Size.Width, b.Size.Height);
+            }
+            catch (Exception ex) {
+                Debug.Print(ex.Message);
+            }
+        }
+
+        private void Form_Load(object sender, System.EventArgs e) {
+            // default interval until we get config from db
+            m_updateDisplayTimer.Interval = 2000;
+
+            if (m_screenPopsEnabled) {
+                m_screenPopURL = Interaction.GetSetting("IntellaToolBar", "Config", "ScreenPopURL");
+            }
+            else {
+                this.screenPopURLToolStripMenuItem.Dispose();
+            }
+
+            m_db = new DbHelper(handleError);
+            lock (m_db) {
+                ToolBarHelper.SetDbHelper(m_db);
+                ToolBarHelper.SetProgramErrorCallback(ProgramError);
+
+                // this also connects to the db
+                ToolBarHelper.DatabaseSetupCheck(ref m_db, DatabaseSuccess, StartupConfigurationFailure);
+            }
+        }
+
+        private void DatabaseSuccess() {
+            checkAgentLogin();
+        }
+
+        public void handleError(string errorMessage) {
+            MessageBox.Show(errorMessage);
+            Environment.Exit(1);
+        }
+
+        private void fillQueuesFromDb() {
+            string agent_num = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentNumber");
+
+            // TODO: Should make a separate view for what queues to allow in the toolbar, and if they are currently hidden, whether the user can unhide them
+            List<OrderedDictionary> queue_assignments_and_prefs = new List<OrderedDictionary>();
+            m_db.dbQueryWithParams("SELECT * FROM queue.v_queue_agent_assignments WHERE agent_num = '{0}'",
+                queue_assignments_and_prefs, agent_num);
+
+            displayQueuesToolStripMenuItem.DropDownItems.Clear();
+            m_subscribedQueues = new SortedList<string, Hashtable>();
+
+            //////////////////////////////
+            // Build list of hidden queues. TODO: This can go away once we do the above todo
+
+            Hashtable showqueues = new Hashtable();
+            List<OrderedDictionary> showqueues_result = new List<OrderedDictionary>();
+            lock (m_db) {
+                m_db.dbQueryWithParams("SELECT queue_name FROM queue.cfg_get_agents_toolbar_show_queues('{0}')", showqueues_result, agent_num);
+            }
+
+            if (showqueues_result.Any()) {
+                foreach (OrderedDictionary showqueue_item in showqueues_result) {
+                    showqueues.Add((string) showqueue_item["queue_name"], 1);
+                }
+            }
+
+            // End hidden queue list processing
+
+            foreach (OrderedDictionary queue_assignment in queue_assignments_and_prefs) {
+                string queue_name = (string) queue_assignment["queue_name"];
+                string queue_longname = (string) queue_assignment["queue_longname"];
+
+                // If showqueues is blank, don't do any filtering
+                if (showqueues.Keys.Count != 0) {
+                    if (!showqueues.ContainsKey(queue_name) && !m_subscribedQueuesHidden.ContainsKey(queue_name)) {
+                        m_subscribedQueuesHidden.Add(queue_name, 1);
+                    }
+                }
+
+                if (!m_subscribedQueuesHidden.ContainsKey(queue_name)) {
+                    m_subscribedQueues.Add(queue_name, new Hashtable());
+                    m_subscribedQueues[queue_name].Add("HeadingText", queue_longname);
+                }
+
+                // Populate Preferences menu (inside the MonkeyWrench menu)
+                // With queues to hide/show
+                var item = new System.Windows.Forms.ToolStripMenuItem() {
+                    Text = queue_longname
+                };
+
+//                if ((string) queue_assignment["toolbar_show_queue"] == "T") {
+//                    item.Checked = true;
+//                }
+
+                if (m_subscribedQueuesHidden.ContainsKey(queue_name)) {
+                    item.Checked = false;
+                }
+                else {
+                    item.Checked = true;
+                }
+
+                item.Click += HideShowQueueitem_Click;
+                item.Tag = queue_assignment;
+
+                displayQueuesToolStripMenuItem.DropDownItems.Add(item);
+            }
+        }
+
+        private void HideShowQueueitem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem menu_item = (ToolStripMenuItem) sender;
+            OrderedDictionary queue_assignment = (OrderedDictionary) menu_item.Tag;
+            string queue_name = (string) queue_assignment["queue_name"];
+
+            if (m_subscribedQueuesHidden.ContainsKey(queue_name)) {
+                m_subscribedQueuesHidden.Remove(queue_name);
+            }
+            else {
+                m_subscribedQueuesHidden.Add(queue_name, "1");
+            }
+
+            AgentLoginSuccess();
+                // TODO: we should redo this so we have a dynamic hide versus rebuilding the entire interface
+        }
+
+        // Database successfully configured, queue successfully configured
+        private void ConfigurationSuccess() {
+            lock (m_db) {
+                QueueVersion.CheckVersion();
+                fillQueuesFromDb();
+            }
+
+            m_toolbarConfig.m_agentStatusCodesEnabled = m_statusCodesEnabled; // TODO: Get option from DB
+            m_toolbarConfig.SetQueue(m_subscribedQueues);
+            m_toolbarConfig.SetUpdateDisplayTimer(m_updateDisplayTimer);
+            
+            bool result = m_toolbarConfig.UpdateToolbarConfiguration();
+            InitDropGridsAndQueueInfo();
+            refresh();
+
+            if ((result == true))
+                StartRefreshTimer();
+        }
+
+        private void StartupConfigurationFailure() {
+            TopMost = false;
+            MessageBox.Show(this, "Configuration not successful, toolbar will exit");
+            Environment.Exit(0);
+        }
+
+        private int updateAgentMaxes(string queueName, string[] agentCallData) {
+            int longestTalkSeconds = 0;
+
+            try {
+                longestTalkSeconds = (agentCallData[0] == null || agentCallData[0] == "")
+                    ? 0
+                    : Int32.Parse(agentCallData[0]);
+            }
+            catch (FormatException ex) {
+                Debug.Print("Format exception " + ex.Message + " on myMaxTalkSeconds of " + agentCallData[0]);
+            }
+            mainGrid["max_agent_talk_duration_time", m_subscribedQueues.IndexOfKey(queueName)].Value =
+                (agentCallData[1] != null && agentCallData[1] != "") ? agentCallData[1] : "00:00:00";
+
+            return longestTalkSeconds;
+        }
+
+        private static void manuallyAutoSizeGrid(DataGridView grid) {
+            if (grid.AutoSizeColumnsMode == DataGridViewAutoSizeColumnsMode.Fill) {
+                grid.Columns[0].Width = m_agentColumnDropDownWidth;
+                if (EnableTeamView) {
+                    grid.Columns[1].Width = m_agentColumnDropDownWidth;
+                    grid.Columns[0].Width = m_managerColumnDropDownWidth;
+                }
+                return;
+            }
+
+            int newWidth = 0, newHeight = 0;
+            foreach (DataGridViewColumn c in grid.Columns) {
+                if (c.Visible)
+                    newWidth += c.Width;
+            }
+
+            foreach (DataGridViewRow r in grid.Rows) {
+                newHeight += r.Height;
+            }
+
+            if (grid.RowHeadersVisible)
+                newWidth += grid.RowHeadersWidth;
+            if (grid.ColumnHeadersVisible)
+                newHeight += grid.ColumnHeadersHeight;
+
+            // todo: does not support all various border styles (scollbars may appear); 
+            // add support for other border styles?
+            if (grid.CellBorderStyle == DataGridViewCellBorderStyle.Single)
+                newWidth += 1;
+
+            grid.Size = new Size(newWidth, newHeight);
+        }
+
+        private void SetupMainGrid() {
+
+            mainGrid.Location = new Point(queueResources.border_left_tiled.Width,
+                queueResources.title_empty_center_tile.Height);
+            mainGrid.Size = new Size(this.Width - 2*queueResources.border_left_tiled.Width, 20);
+
+            mainGrid.Columns.Clear();
+
+            if (EnableTeamView) {
+                mainGrid.Columns.Add("button-TeamGrid", "Agents");
+            }
+            mainGrid.Columns.Add("button-agentGrid", "Callers");
+            if (EnableTeamView) {
+                mainGrid.Columns.Add("agents_logged_in", "Staffed");
+                mainGrid.Columns.Add("agents_idle", "Avaliable");
+                mainGrid.Columns.Add("max_agent_talk_duration_time", "Longest Talk");
+                mainGrid.Columns.Add("longest_current_hold_time", "Longest Hold");
+            }
+            mainGrid.Columns.Add("callers_waiting", "Callers Waiting");
+            mainGrid.Columns.Add("longest_waiting_time", "Longest Waiting");
+
+            Font old_font = mainGrid.DefaultCellStyle.Font;
+
+            mainGrid.Columns.Add("queue", "Queue Name");
+            mainGrid.Columns[mainGrid.Columns.Count - 1].DefaultCellStyle.Font = new Font(old_font,
+                old_font.Style | FontStyle.Bold);
+            mainGrid.Columns[mainGrid.Columns.Count - 1].DefaultCellStyle.Padding = new Padding(15, 0, 15, 0);
+
+            if (m_toolbarConfig.m_showLocationField) {
+                mainGrid.Columns.Add("host", "Location");
+                mainGrid.Columns[mainGrid.Columns.Count - 1].DefaultCellStyle.Font = new Font(old_font,
+                    old_font.Style | FontStyle.Bold);
+                mainGrid.Columns[mainGrid.Columns.Count - 1].DefaultCellStyle.Padding = new Padding(15, 0, 15, 0);
+            }
+            else {
+                // Make the queue column big so the titlebar can fit its text
+                mainGrid.Columns[mainGrid.Columns.Count - 1].DefaultCellStyle.Padding = new Padding(100, 0, 100, 0);
+            }
+
+            foreach (DataGridViewColumn c in mainGrid.Columns)
+                c.SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
+
+        private void TrimAdjustAndPositionAllDropGrids() {
+            Debug.Print("TRIM ALL GRIDS!!");
+
+            foreach (string queue_name in m_subscribedQueues.Keys) {
+                List<DataGridView> grids = new List<DataGridView>(2);
+
+                if (m_subscribedQueues[queue_name].ContainsKey("AgentGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queue_name]["AgentGrid"]);
+
+                if (m_subscribedQueues[queue_name].ContainsKey("TeamGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queue_name]["TeamGrid"]);
+
+                foreach (DataGridView grid in grids)
+                    trimAndAdjustGrid(0, grid);
+            }
+        }
+
+        private void setupGrids() {
+            Debug.Print("SETUP GRIDS!!");
+
+            if (m_subscribedQueues.Count == 0) {
+                System.Windows.Forms.MessageBox.Show("You are not assigned to any queues.", "Unable to continue");
+                Application.Exit();
+            }
+
+            foreach (string queueName in m_subscribedQueues.Keys) {
+                // Two Grids: Agent Grid (Shows Calls in Queue), Manager Grid (Shows Agents Activity)
+                List<DataGridView> grids = new List<DataGridView>(2);
+
+                if (m_subscribedQueues[queueName].ContainsKey("AgentGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queueName]["AgentGrid"]);
+
+                if (m_subscribedQueues[queueName].ContainsKey("TeamGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queueName]["TeamGrid"]);
+
+                bool is_teamview_grid = false;
+
+                foreach (DataGridView grid in grids) {
+                    grid.BackgroundColor = mainGrid.BackgroundColor;
+                    grid.ColumnHeadersDefaultCellStyle = mainGrid.ColumnHeadersDefaultCellStyle.Clone();
+                    //grid.ColumnHeadersDefaultCellStyle.Font = new Font(grid.ColumnHeadersDefaultCellStyle.Font.FontFamily, grid.ColumnHeadersDefaultCellStyle.Font.Size - 4);
+                    grid.DefaultCellStyle = mainGrid.DefaultCellStyle.Clone();
+                    grid.Font = (Font) mainGrid.Font.Clone();
+                    grid.RowHeadersDefaultCellStyle = mainGrid.RowHeadersDefaultCellStyle.Clone();
+                    grid.RowHeadersVisible = mainGrid.RowHeadersVisible;
+                    grid.RowTemplate = (DataGridViewRow) mainGrid.RowTemplate.Clone();
+                    grid.RowTemplate.Height = mainGrid.RowTemplate.Height;
+                    grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    grid.AutoSizeRowsMode = mainGrid.AutoSizeRowsMode;
+                    grid.ShowEditingIcon = mainGrid.ShowEditingIcon;
+                    grid.AllowUserToAddRows = mainGrid.AllowUserToAddRows;
+                    grid.AllowUserToDeleteRows = mainGrid.AllowUserToDeleteRows;
+                    grid.AllowUserToResizeRows = false;
+                    grid.ColumnHeadersHeightSizeMode = mainGrid.ColumnHeadersHeightSizeMode;
+                    grid.ColumnHeadersBorderStyle = mainGrid.ColumnHeadersBorderStyle;
+                        //DataGridViewHeaderBorderStyle.None;
+                    grid.ReadOnly = mainGrid.ReadOnly;
+                    grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                    grid.Size = dropGridTemplate.Size;
+                    grid.BorderStyle = dropGridTemplate.BorderStyle;
+                    grid.CellBorderStyle = mainGrid.CellBorderStyle; //dropGrid.CellBorderStyle;
+                    grid.ColumnHeadersHeight = mainGrid.ColumnHeadersHeight + 1;
+                    grid.DefaultCellStyle.SelectionBackColor = Helper.darkenColor(grid.DefaultCellStyle.BackColor);
+                    grid.ShowCellToolTips = mainGrid.ShowCellToolTips;
+
+                    grid.CellDoubleClick += DropGridTemplate_CellDoubleClick;
+                    grid.SelectionChanged += dropGrid_SelectionChanged;
+                    grid.MouseDown += dropGrid_MouseDown;
+                    grid.CellMouseUp += dropGrid_CellMouseUp;
+                    grid.Visible = false;
+
+                    grid.Tag = is_teamview_grid;
+                    grid.Name = queueName;
+
+                    grid.Rows.Clear();
+                    grid.Columns.Clear();
+
+                    grid.GridColor = Color.Black;
+                    grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+                    grid.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
+
+                    const string dropGridHeadingTextPrefix = "         ";
+
+                    if (is_teamview_grid) {
+                        grid.Columns.Add("agent_callerid_num", dropGridHeadingTextPrefix + "Ext");
+                        grid.Columns.Add("agent_fullname", dropGridHeadingTextPrefix + "Agent Name");
+
+                        if (this.m_statusCodesEnabled) {
+                            int agent_status_col = grid.Columns.Add("agent_status",
+                                dropGridHeadingTextPrefix + "Agent Status");
+                            grid.Columns[agent_status_col].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                            grid.Columns[agent_status_col].DefaultCellStyle.Font = new Font(mainGrid.Font.FontFamily,
+                                mainGrid.Font.Size - 1);
+                        }
+
+                        if (showQueueCallerColumn) {
+                            grid.Columns.Add("queue_name_caller", dropGridHeadingTextPrefix + "Queue");
+                        }
+
+                        grid.Columns.Add("talk_duration_time", dropGridHeadingTextPrefix + "Talk Time");
+                        grid.Columns.Add("caller_callerid_name", dropGridHeadingTextPrefix + "Caller Name");
+                        grid.Columns.Add("caller_callerid_num", dropGridHeadingTextPrefix + "Caller Number");
+                        grid.Columns.Add("call_type", dropGridHeadingTextPrefix + "Call Type");
+                        grid.Columns.Add("current_hold_duration_time", dropGridHeadingTextPrefix + "Hold Time");
+                        grid.Columns.Add("agent_failed_to_respond_today", dropGridHeadingTextPrefix + "Missed Rings");
+
+                        grid.Columns.Add("agent_device", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                        grid.Columns.Add("caller_channel", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                        grid.Columns.Add("agent_id", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                        grid.Columns.Add("talk_duration_seconds", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                        grid.Columns.Add("current_hold_duration_seconds", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+
+                        grid.CellMouseClick += AgentStatusGrid_CellMouseClick;
+                            // right mouse click on an agent to get 'Set Agent Status' 
+
+                        // Agent Name is default sort
+                        grid.Columns[1].HeaderCell.SortGlyphDirection = SortOrder.Ascending;
+                    }
+                    else {
+                        grid.Columns.Add("callerid_num", dropGridHeadingTextPrefix + "Caller Number");
+                        grid.Columns.Add("callerid_name", dropGridHeadingTextPrefix + "Caller Name");
+                        grid.Columns.Add("waiting_time", dropGridHeadingTextPrefix + "Waiting Time");
+
+                        grid.Columns.Add("live_queue_callers_item_id", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                        grid.Columns.Add("waiting_seconds", "");
+                        grid.Columns[grid.Columns.Count - 1].Visible = false;
+                    }
+
+                    // uncomment to disable user row sorting by column
+                    //foreach (DataGridViewColumn c in grid.Columns)
+                    //    c.SortMode = DataGridViewColumnSortMode.NotSortable;
+
+                    grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    grid.MultiSelect = false;
+
+                    // add it to the form
+                    Debug.Print("Adding! " + grid.Name);
+                    this.Controls.Add(grid);
+                    m_dynamicControls.Add(grid);
+
+                    // if this loop goes a second time, next grid is a team view grid
+                    // (if it's enabled)
+                    is_teamview_grid = EnableTeamView;
+                }
+            }
+
+            TrimAdjustAndPositionAllDropGrids();
+        }
+
+        private void toggleStatusLight() {
+            m_lightStatus = !m_lightStatus;
+            statusLight.BackgroundImage = m_lightStatus ? queueResources.status_ok : queueResources.status_off;
+        }
+
+        private Hashtable m_liveDatas = new Hashtable(5);
+
+        //
+        // m_liveDatas has been populated by the background db update thread
+        //
+        private bool UpdateUiDataComponents() {
+            bool need_to_resize_frame = updateGridData(
+                m_liveDatas["caller"] == null
+                    ? new Dictionary<string, List<OrderedDictionary>>()
+                    : (Dictionary<string, List<OrderedDictionary>>) m_liveDatas["caller"],
+                (Dictionary<string, List<OrderedDictionary>>) m_liveDatas["agent"]);
+
+            try {
+                UpdateMainGridData((Dictionary<string, List<OrderedDictionary>>) m_liveDatas["queue"]);
+
+                if (this.m_statusCodesEnabled) {
+                    var agent_status = (Dictionary<string, List<OrderedDictionary>>) m_liveDatas["status"];
+                    m_statusCodesForm.UpdateAgentStatusIfNeeded(agent_status);
+                }
+
+                UpdateBarColors(m_liveDatas);
+                return need_to_resize_frame;
+            }
+            catch (Exception e) {
+                MessageBox.Show("Exception: " + e.ToString());
+            }
+
+            return false;
+        }
+
+        private void dbRefreshWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+            throw new NotImplementedException();
+        }
+
+        private void dbRefreshWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            m_liveDatas = (Hashtable) e.Result;
+
+            if (m_liveDatas == null) {
+                // We had a failure (probably database connection lost) while trying to update the data
+                // We'll detect the database error on the next run
+                if (!m_updateDisplayTimer.Enabled)
+                    m_updateDisplayTimer.Start();
+
+                return;
+            }
+
+            bool need_to_resize_frame = UpdateUiDataComponents();
+            log.Info("updates done!");
+
+            if (need_to_resize_frame)
+                LayoutForm();
+
+            if (!m_updateDisplayTimer.Enabled)
+                m_updateDisplayTimer.Start();
+        }
+
+        private void dbRefreshWorker_DoWork(object sender, DoWorkEventArgs e) {
+            Hashtable new_live_datas = new Hashtable(5);
+
+            lock (m_db) {
+                try {
+                    Dictionary<string, List<OrderedDictionary>> live_caller_data = getLiveCallerData();
+                    Dictionary<string, List<OrderedDictionary>> live_agent_data = EnableTeamView
+                        ? getLiveAgentData()
+                        : null;
+                    Dictionary<string, List<OrderedDictionary>> live_queue_data = getLiveQueueData();
+                    Dictionary<string, List<OrderedDictionary>> agent_status_available = getAvailableStatusCodes();
+                    Hashtable agent_call_data = new Hashtable(m_subscribedQueues.Keys.Count);
+
+                    screenPopIfNecessary();
+
+                    // populate maximums for longest talk
+                    foreach (string queue_name in live_queue_data.Keys) {
+                        agent_call_data.Add(queue_name,
+                            new string[] {
+                                (string) live_queue_data[queue_name][0]["longest_talk_seconds"],
+                                (string) live_queue_data[queue_name][0]["longest_talk_time"]
+                            });
+                    }
+
+                    new_live_datas.Add("caller", live_caller_data);
+                    new_live_datas.Add("agent", live_agent_data);
+                    new_live_datas.Add("queue", live_queue_data);
+                    new_live_datas.Add("call", agent_call_data);
+                    new_live_datas.Add("status", agent_status_available);
+
+                    e.Result = new_live_datas;
+                }
+                catch (DatabaseException ex) {
+                    Debug.Print(ex.Message + ex.StackTrace +
+                                (ex.InnerException != null
+                                    ? (ex.InnerException.Message + ex.InnerException.StackTrace)
+                                    : ""));
+                    e.Result = null;
+                }
+                catch (Exception ex) {
+                    Debug.Print(ex.Message + ex.StackTrace +
+                                (ex.InnerException != null
+                                    ? (ex.InnerException.Message + ex.InnerException.StackTrace)
+                                    : ""));
+                    e.Result = null;
+                }
+            }
+        }
+
+        private void UpdateQueueDisplay() {
+            toggleStatusLight();
+
+            // Are we still connected?
+            var arguments = new List<string>();
+            var result_data = new List<OrderedDictionary>();
+
+            int result = m_db.callSqlFunction("NOW", arguments, result_data);
+            if (result != 0) {
+                killDatabaseConnection_ReconnectAndResume();
+                return;
+            }
+
+            var db_refresh_worker = new BackgroundWorker();
+            db_refresh_worker.DoWork += new DoWorkEventHandler(dbRefreshWorker_DoWork);
+            db_refresh_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(dbRefreshWorker_RunWorkerCompleted);
+            db_refresh_worker.ProgressChanged += new ProgressChangedEventHandler(dbRefreshWorker_ProgressChanged);
+
+            try {
+                db_refresh_worker.RunWorkerAsync(m_liveDatas);
+            }
+            catch (TargetInvocationException ex) {
+                log.Error("Threading error: creating new thread worker: target invocation exception: \n" + ex.Message +
+                          "\n trace:" + ex.StackTrace + "\n");
+                if (ex.InnerException != null)
+                    log.Error("Threading error: creating new thread worker: target invocation inner exception: \n" +
+                              ex.InnerException.Message + "\n trace:" + ex.InnerException.StackTrace + "\n");
+            }
+            catch (Exception ex) {
+                log.Error("Threading error: creating new thread worker: exception: \n" + ex.Message + "\n trace:" +
+                          ex.StackTrace + "\n");
+                if (ex.InnerException != null)
+                    log.Error("Threading error: creating new thread worker: inner exception: \n" +
+                              ex.InnerException.Message + "\n trace:" + ex.InnerException.StackTrace + "\n");
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // DB Querys
+
+        private Dictionary<string, List<OrderedDictionary>> getLiveAgentData() {
+            Dictionary<string, List<OrderedDictionary>> result = null;
+            Hashtable h = new Hashtable() {
+                {"queue_name", new List<string>(m_subscribedQueues.Keys)}
+            };
+
+            try {
+                m_db.getTable(ref result, "live_queue.v_toolbar_agents", h, "queue_name");
+                handleDatabaseSuccess();
+            }
+            catch (Exception ex) {
+                Debug.Print("!!! getLiveAgentData() Error getting live data: " + ex.Message);
+                throw ex;
+            }
+
+            return result;
+        }
+
+        private Dictionary<string, List<OrderedDictionary>> getLiveCallerData() {
+            Dictionary<string, List<OrderedDictionary>> result = null;
+            Hashtable h = new Hashtable() {
+                {"queue_name", new List<string>(m_subscribedQueues.Keys)},
+            };
+
+            try {
+                m_db.getTable(ref result, "live_queue.v_toolbar_callers", h, "queue_name");
+                handleDatabaseSuccess();
+            }
+            catch (Exception ex) {
+                Debug.Print("!!! getLiveCallerData() Error getting live data: status: " + ex.Message);
+                throw ex;
+            }
+
+            return result;
+        }
+
+        // Return a list of status codes indexed per-queue
+        private Dictionary<string, List<OrderedDictionary>> getAvailableStatusCodes() {
+            Dictionary<string, List<OrderedDictionary>> result = null;
+
+            try {
+                m_db.getTable(ref result, "live_queue.v_agent_status_codes_self",
+                    new Hashtable() {{"agent_device", this.m_agentDevice}}, "queue_name");
+                handleDatabaseSuccess();
+            }
+            catch (Exception ex) {
+                Debug.Print("!!! getAvailableStatusCodes() Error getting available status codes: " + ex.Message);
+                throw ex;
+            }
+
+            return result;
+        }
+
+        private Dictionary<string, List<OrderedDictionary>> getLiveQueueData() {
+            Dictionary<string, List<OrderedDictionary>> result = null;
+            Hashtable h = new Hashtable() {{"queue_name", new List<string>(m_subscribedQueues.Keys)}};
+
+            try {
+                m_db.getTable(ref result, "live_queue.v_toolbar_queues", h, "queue_name");
+                handleDatabaseSuccess();
+            }
+            catch (Exception ex) {
+                Debug.Print("!!! getLiveQueueData() Error getting live data: " + ex.Message);
+                throw ex;
+            }
+
+            return result;
+        }
+
+        // ---------------------------------------------------------------------
+
+        private Boolean screenPopIfNecessary() {
+            if (!m_screenPopsEnabled || (m_screenPopURL == "")) {
+                return false;
+            }
+
+            Dictionary<string, List<OrderedDictionary>> result = null;
+            Hashtable h = new Hashtable() {
+                {"queue_name", new List<string>(m_subscribedQueues.Keys)}
+            };
+
+            try {
+                m_db.getTable(ref result, "live_queue.v_callers", h, "queue_name");
+            }
+            catch (Exception ex) {
+                Debug.Print("error getting agents' status: " + ex.Message);
+                throw new DatabaseException();
+            }
+
+            Hashtable currentChannelsTalkingTo = new Hashtable();
+
+            // find our current call to do screen pop
+            foreach (KeyValuePair<string, List<OrderedDictionary>> element in result) {
+                string queue_name = element.Key;
+                List<OrderedDictionary> queue_caller_data = element.Value;
+
+                foreach (OrderedDictionary queue_caller in queue_caller_data) {
+                    string on_call_with_agent_number = (string) queue_caller["on_call_with_agent_number"];
+                    string talk_seconds_string = (string) queue_caller["talk_duration_seconds"];
+                    int talk_seconds = 0;
+
+                    if (talk_seconds_string != "") {
+                        talk_seconds = Convert.ToInt32(queue_caller["talk_duration_seconds"].ToString());
+                    }
+
+                    if ((on_call_with_agent_number == m_agentNum) && (talk_seconds > 0)) {
+                        if (queue_caller["callerid_num"].ToString().Length != 10) {
+                            // Don't pop for internal calls
+                            continue;
+                        }
+
+                        if (!m_currentChannelsTalkingTo.ContainsKey(queue_caller["call_log_id"])) {
+                            // MessageBox.Show(String.Format("Screen POP! {0}", queue_caller["call_log_id"]));
+                            System.Diagnostics.Process.Start(String.Format("{0}{1}", m_screenPopURL,
+                                queue_caller["callerid_num"]));
+                        }
+
+                        currentChannelsTalkingTo.Add(queue_caller["call_log_id"], true);
+                    }
+                }
+            }
+
+            // Keep the global list up to date
+            m_currentChannelsTalkingTo = currentChannelsTalkingTo;
+
+            return true;
+        }
+
+        ////
+        // Update either the 'Calls in Queue' grid, or the 'Agent Status' grid, which ever one is active
+        //
+        private bool updateGridData(Dictionary<string, List<OrderedDictionary>> liveCallerData,
+            Dictionary<string, List<OrderedDictionary>> liveAgentData) {
+            //Debug.Print("updateGridData");
+
+            bool visibleDropgridDidChangeSize = false;
+
+            IList<string> queueNames = m_subscribedQueues.Keys;
+            if (queueNames.Count < 1)
+                return visibleDropgridDidChangeSize;
+
+            foreach (string queueName in m_subscribedQueues.Keys) {
+                bool isTeamGrid = false;
+                List<DataGridView> grids = new List<DataGridView>(2);
+
+                if (m_subscribedQueues[queueName].ContainsKey("AgentGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queueName]["AgentGrid"]);
+
+                if (m_subscribedQueues[queueName].ContainsKey("TeamGrid"))
+                    grids.Add((DataGridView) m_subscribedQueues[queueName]["TeamGrid"]);
+
+                foreach (DataGridView grid in grids) {
+                    Dictionary<string, List<OrderedDictionary>> result = isTeamGrid ? liveAgentData : liveCallerData;
+
+                    if (result == null) {
+                        Debug.Print("Result is null");
+                        isTeamGrid = true;
+                        continue;
+                    }
+
+                    // save user row sorting by column
+                    SortOrder sortOrder = grid.SortOrder;
+                    DataGridViewColumn sortedColumn = grid.SortedColumn;
+
+                    string selectedRowUniqueIdValue = "";
+                    try {
+                        if (grid.SelectedRows.Count > 0)
+                            selectedRowUniqueIdValue =
+                                grid[isTeamGrid ? "agent_id" : "live_queue_callers_item_id", grid.SelectedRows[0].Index]
+                                    .Value.ToString();
+                    }
+                    catch (Exception e) {
+                        Debug.Print("Failed a grid update: " + e.ToString());
+                    }
+
+                    int current_row = 0;
+                    int total_rows = grid.RowCount;
+
+                    try {
+                        foreach (string key in result.Keys)
+                            foreach (OrderedDictionary resultRow in result[key]) {
+                                if (!key.Equals(grid.Name))
+                                    break;
+
+                                if ((current_row + 1) > total_rows) {
+                                    // Add an empty at the end
+                                    grid.Rows.Add("", "", "", "", "");
+                                }
+
+                                // Store the full agent status db row in the grid tag
+                                grid.Rows[current_row].Tag = resultRow;
+
+                                foreach (DataGridViewColumn c in grid.Columns) {
+                                    string newValue = "";
+
+                                    // !!! possible null dereference
+                                    if (resultRow[c.Name] == null) {
+                                        resultRow[c.Name] = "";
+                                        Debug.Print(String.Format("!!! Got null on field name {0}", c.Name));
+                                    }
+
+                                    newValue = resultRow[c.Name].ToString();
+
+                                    if (c.Name == "agent_callerid_num")
+                                        newValue = "x" + newValue;
+
+                                    if (c.Name == "agent_firstname") {
+                                        newValue += " " + resultRow["agent_lastname"];
+                                        if (string.IsNullOrEmpty(newValue))
+                                            newValue = "(Unknown)";
+                                    }
+
+                                    grid[c.Name, current_row].Value = newValue;
+                                }
+
+                                current_row++;
+                            }
+                    }
+                    catch (Exception ex) {
+                        ProgramError();
+                        Debug.Print("agent or caller dropgrid processing failed");
+                        MessageBox.Show("Exception: " + ex.ToString(), "Error");
+                        return visibleDropgridDidChangeSize;
+                    }
+
+                    // restore user row sorting by column
+                    if (sortOrder != SortOrder.None && sortedColumn != null && selectedRowUniqueIdValue != "") {
+                        grid.Sort(sortedColumn,
+                            sortOrder == SortOrder.Ascending
+                                ? ListSortDirection.Ascending
+                                : ListSortDirection.Descending);
+
+                        foreach (DataGridViewRow r in grid.Rows)
+                            if (r.Cells[isTeamGrid ? "agent_id" : "live_queue_callers_item_id"].Value.ToString() ==
+                                selectedRowUniqueIdValue)
+                                r.Selected = true;
+                    }
+
+                    visibleDropgridDidChangeSize = trimAndAdjustGrid(current_row, grid) || visibleDropgridDidChangeSize;
+
+                    // if this loop goes a 2nd time, process as a team grid
+                    isTeamGrid = true;
+                }
+            }
+
+            return visibleDropgridDidChangeSize;
+        }
+
+        private void userDisconnect() {
+            hideAnyVisibleGridsExcept(null);
+
+            if (m_subscribedQueues != null)
+                m_subscribedQueues.Clear();
+
+            clearDropGrids();
+            mainGrid.Rows.Clear();
+            mainGrid.Columns.Clear();
+            StopRefreshTimer();
+        }
+
+        private void AdjustFormHeight(int gridHeight) {
+            int old_height = this.Height;
+            this.Height = m_extraControlHeight + titlePb.Height + mainGrid.Height + footerPb.Height + gridHeight +
+                          (gridHeight > 0 ? MidBarHeight : 0);
+
+            if (old_height != this.Height)
+                Debug.Print("ADJUST HEIGHT " + old_height + "->" + this.Height);
+        }
+
+        private void UpdateMainGridData(Dictionary<string, List<OrderedDictionary>> liveQueueData) {
+            if (mainGrid.Rows.Count != m_subscribedQueues.Keys.Count) {
+                mainGrid.Rows.Clear();
+
+                if (m_subscribedQueues.Keys.Count > 0)
+                    mainGrid.Rows.Add(m_subscribedQueues.Keys.Count);
+            }
+
+            for (int i = 0; i < m_subscribedQueues.Keys.Count; i++) {
+                string queue_name = m_subscribedQueues.Keys[i];
+                string queue_heading_text = "";
+
+                if (queue_name != "") {
+                    queue_heading_text = m_subscribedQueues[queue_name].ContainsKey("HeadingText")
+                        ? m_subscribedQueues[queue_name]["HeadingText"].ToString()
+                        : queue_name;
+                }
+
+                foreach (DataGridViewColumn col in mainGrid.Columns) {
+                    if (col.Name.StartsWith("button-")) {
+                        string grid_name = EnableTeamView && col.Index == 0 ? "TeamGrid" : "AgentGrid";
+
+                        if (mainGrid[col.Name, i].Tag == null) {
+                            DataGridViewCell new_button = new DataGridViewTextBoxCell();
+
+                            new_button.Style.BackColor = mainGrid[col.Name, i].Style.BackColor;
+                            new_button.Tag = new Hashtable() {
+                                {"QueueName", queue_name},
+                                {"GridName", grid_name}, {
+                                    "Image",
+                                    ((DataGridView) m_subscribedQueues[queue_name][grid_name]).Visible
+                                        ? "up_triangle"
+                                        : "down_triangle"
+                                },
+                                {"Color", mainGrid[col.Name, i].Style.BackColor}
+                            };
+
+                            mainGrid[col.Name, i] = new_button;
+                        }
+                        else {
+                            ((Hashtable) mainGrid[col.Name, i].Tag)["Image"] =
+                                ((DataGridView) m_subscribedQueues[queue_name][grid_name]).Visible
+                                    ? "up_triangle"
+                                    : "down_triangle";
+                        }
+
+                        continue;
+                    }
+                    else {
+                        switch (col.Name) {
+                            case "queue":
+                                mainGrid[col.Name, i].Value = queue_heading_text;
+                                continue;
+                            case "host":
+                                mainGrid[col.Name, i].Value = Interaction.GetSetting("IntellaToolBar", "Config",
+                                    "DB_Host");
+                                continue;
+                        }
+                    }
+
+                    string new_value = "";
+
+                    if (debugCrash(col.Name, queue_name, liveQueueData))
+                        new_value = (string) liveQueueData[queue_name][0][col.Name];
+
+                    if (new_value != null)
+                        mainGrid[col.Name, i].Value = new_value;
+                }
+            }
+
+            ResizeMainGrid();
+        }
+
+        ////
+        // newAgentStatus is expected to be the longname, 
+        // TODO: use .Tag on the combobox to store the agent status row so we can pass the status_code_name
+        // 
+        internal void setNewAgentStatus(string newAgentStatus) {
+            try {
+                lock (m_db) {
+
+                    // TODO: FIXME: This is assuming one status for all queues
+                    m_db.dbQueryWithParams(@"
+                  SELECT
+                    live_queue.agent_set_status(
+                      '{0}',
+                      (SELECT status_code_name FROM live_queue.v_agent_status_codes_self WHERE agent_device = '{0}' AND status_code_longname = '{1}' LIMIT 1)
+                    )
+                ", null, this.m_agentDevice, newAgentStatus);
+                }
+            }
+            catch (Exception e) {
+                MessageBox.Show(e.InnerException.ToString());
+            }
+        }
+
+        internal void setNewAgentStatus(string newAgentStatus, string agentDevice) {
+            lock (m_db) {
+                m_db.dbQueryWithParams(@"
+                  SELECT
+                    live_queue.agent_set_status('{0}','{1}')
+                ", null, agentDevice, newAgentStatus);
+            }
+        }
+
+        public void setNewAgentStatus(string newAgentStatus, string agentDevice, string queueName) {
+            try {
+                lock (m_db) {
+                    // TODO: FIXME: This is assuming one status for all queues
+                    m_db.dbQueryWithParams(@"
+                      SELECT
+                        live_queue.agent_set_status(
+                          '{0}',
+                          (SELECT status_code_name FROM live_queue.v_agent_status_codes_self WHERE agent_device = '{0}' AND status_code_longname = '{1}' LIMIT 1),
+                          '{2}'
+                        )
+                ", null, this.m_agentDevice, newAgentStatus, queueName);
+                }
+            }
+            catch (Exception e) {
+                MessageBox.Show(e.InnerException.ToString());
+            }
+        }
+
+        // temp func to debug a null ref condition that used to cause a crash. need to figure out 
+        private bool debugCrash(string colName, string queueName, Dictionary<string, List<OrderedDictionary>> lqd) {
+            bool no_error = true;
+            string error_message = "";
+
+            if (colName == null && queueName == null && lqd == null)
+                error_message += "Everything is null!";
+            else if (colName == null && queueName == null)
+                error_message += "colname and queuename are null. lqd is " + lqd.ToString();
+            else if (colName == null)
+                error_message += "colname is null. queueName is " + queueName + " lqd is " + lqd.ToString();
+            else if (queueName == null)
+                error_message += "queueName is null. colName is " + colName + " lqd is " + lqd.ToString();
+
+            if (error_message != "") {
+                no_error = false;
+                log.Warn("bad data!: " + error_message);
+            }
+
+            return no_error;
+        }
+
+        private void ResizeMainGrid() {
+            ResizeMainGrid(false);
+        }
+
+        private void ResizeMainGrid(bool doForceRedraw) {
+            DataGridView g = DroppedDownGrid;
+            if (g == null) // small mode
+            {
+                //g.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                mainGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                mainGrid.AutoResizeColumns();
+                manuallyAutoSizeGrid(mainGrid);
+
+                if (EnableTeamView) {
+                    m_managerColumnDropDownWidth = mainGrid.Columns[0].Width;
+                    m_agentColumnDropDownWidth = mainGrid.Columns[1].Width;
+                }
+                else
+                    m_agentColumnDropDownWidth = mainGrid.Columns[0].Width;
+
+                resize(
+                    new Size(
+                        queueResources.border_left_tiled.Width + queueResources.border_right_tiled.Width +
+                        mainGrid.Width, this.Height), doForceRedraw);
+            }
+            else // dropped/big mode
+            {
+                mainGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                g.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                g.AutoResizeColumns();
+                manuallyAutoSizeGrid(g);
+
+                if (g.Width < mainGrid.Width) {
+                    g.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    g.AutoResizeColumns();
+                    g.Width = mainGrid.Width;
+                }
+                else if (g.Width > mainGrid.Width)
+                    mainGrid.Width = g.Width;
+
+                mainGrid.AutoResizeColumns();
+                manuallyAutoSizeGrid(mainGrid);
+                resize(
+                    new Size(
+                        queueResources.border_left_tiled.Width + queueResources.border_right_tiled.Width + g.Width,
+                        this.Height), doForceRedraw);
+            }
+        }
+
+        private void UpdateBarColors(Hashtable liveDatas) {
+            Dictionary<string, List<OrderedDictionary>> live_queue_data =
+                (Dictionary<string, List<OrderedDictionary>>) liveDatas["queue"];
+            Hashtable agent_call_data = (Hashtable) liveDatas["call"];
+
+            foreach (string key in m_subscribedQueues.Keys) {
+                // main grid
+                if (EnableTeamView) {
+                    int longestTalkSeconds = updateAgentMaxes(key, (string[]) agent_call_data[key]);
+                    SetBarColor(Int32.Parse((string) live_queue_data[key][0]["longest_waiting_seconds"]),
+                        longestTalkSeconds, key, true,
+                        Int32.Parse((string) live_queue_data[key][0]["longest_current_hold_seconds"]));
+                }
+                else
+                    SetBarColor(Int32.Parse((string) live_queue_data[key][0]["longest_waiting_seconds"]), 0, key, false,
+                        0);
+
+                // drop grids
+                {
+                    DataGridView g = (DataGridView) m_subscribedQueues[key]["AgentGrid"];
+                    foreach (DataGridViewRow r in g.Rows)
+                        ColorGridCell(r.Cells["waiting_time"], m_subscribedQueues, key);
+
+                    g.Refresh();
+                }
+
+                if (m_subscribedQueues[key]["TeamGrid"] != null) {
+                    DataGridView g = (DataGridView) m_subscribedQueues[key]["TeamGrid"];
+                    foreach (DataGridViewRow r in g.Rows) {
+                        ColorGridCell(r.Cells["talk_duration_time"], m_subscribedQueues, key);
+                        ColorGridCell(r.Cells["current_hold_duration_time"], m_subscribedQueues, key);
+
+                        if (this.m_statusCodesEnabled) {
+                            ColorGridCell(r.Cells["agent_status"], m_subscribedQueues, key);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ColorGridCell(DataGridViewCell coloredCell, SortedList<string, Hashtable> subscribedQueues,
+            string queueName) {
+            int yellowThreshold, orangeThreshold, redThreshold;
+
+            string col_name = coloredCell.OwningColumn.Name;
+            string grid_name = coloredCell.DataGridView.Name;
+            object value_cell_value = "0";
+
+            if (Debugger.IsAttached && !subscribedQueues[queueName].ContainsKey("Threshold_warning1-Manager")) {
+                // So that we don't endlessly throw exceptions on this... (our parent caller will catch this and the program will not die)
+                // We just want to warn the developer running the app that we're missing the toolbar config
+
+                if (m_ExceptionPerQueueConfigThrown) {
+                    return;
+                }
+
+                m_ExceptionPerQueueConfigThrown = true;
+                throw new IntellaQueueToolbarMissingPerQueueConfigData("Missing Per Queue Config Data For Queue: " +
+                                                                       queueName);
+            }
+
+            try {
+                switch (col_name) {
+                    case "talk_duration_time":
+                        yellowThreshold = (int) subscribedQueues[queueName]["Threshold_warning1-Manager"];
+                        orangeThreshold = (int) subscribedQueues[queueName]["Threshold_warning2-Manager"];
+                        redThreshold = (int) subscribedQueues[queueName]["Threshold_warning3-Manager"];
+                        value_cell_value = coloredCell.OwningRow.Cells["talk_duration_seconds"].Value;
+                        break;
+                    case "current_hold_duration_time":
+                        yellowThreshold = (int) subscribedQueues[queueName]["Hold_time_threshold_warning1-Manager"];
+                        orangeThreshold = (int) subscribedQueues[queueName]["Hold_time_threshold_warning2-Manager"];
+                        redThreshold = (int) subscribedQueues[queueName]["Hold_time_threshold_warning3-Manager"];
+                        value_cell_value = coloredCell.OwningRow.Cells["current_hold_duration_seconds"].Value;
+                        break;
+                    case "waiting_time":
+                        yellowThreshold = (int) subscribedQueues[queueName]["Threshold_warning1-Agent"];
+                        orangeThreshold = (int) subscribedQueues[queueName]["Threshold_warning2-Agent"];
+                        redThreshold = (int) subscribedQueues[queueName]["Threshold_warning3-Agent"];
+                        value_cell_value = coloredCell.OwningRow.Cells["waiting_seconds"].Value;
+                        break;
+                    case "agent_status":
+                        yellowThreshold = 5; // Unused
+                        orangeThreshold = 10;
+                        redThreshold = 20;
+                        value_cell_value = coloredCell.OwningRow.Cells["agent_status"].Value;
+                        break;
+                    default:
+                    case null:
+                    case "":
+                        return;
+                }
+
+                int cell_color_value = CellValueToInt(value_cell_value, col_name);
+                coloredCell.Style.BackColor = GetColorFromValueAndThresholds(cell_color_value, yellowThreshold,
+                    orangeThreshold, redThreshold);
+                coloredCell.Style.SelectionBackColor = (coloredCell.Style.BackColor == QueueColorEmpty)
+                    ? Helper.darkenColor(QueueColorEmpty)
+                    : coloredCell.Style.BackColor;
+            }
+            catch (Exception e) {
+                Debug.Print("Failed getting thresholds: " + e.ToString());
+            }
+        }
+
+        ////
+        // 
+        //
+        private int CellValueToInt(object value, string colName) {
+            int result = 0;
+
+            if (value == null) {
+                return result;
+            }
+
+            if (this.m_statusCodesEnabled) {
+                // Note: Only managers will see agent_status as a grid field
+
+                if (colName == "agent_status") {
+                    // Numeric value comes from whether this is a agent (10) status code or a manager-level (20) status code
+                    List<OrderedDictionary> a = m_toolbarConfig.m_managerStatusCodes;
+
+                    // value is the longname of the status code
+                    // TODO: SHould make this a Hashtable to get direct access to manger status codes...
+                    foreach (OrderedDictionary status_code_item in m_toolbarConfig.m_managerStatusCodes) {
+                        if (value.ToString().StartsWith("Available")) {
+                            return 1; // Green
+                        }
+
+                        var status_split = value.ToString().Split('\n');
+
+                        if (status_split[0] == (string) status_code_item["status_code_longname"]) {
+                            if ((string) status_code_item["manager_only"] == "True") {
+                                return 20; // Red
+                            }
+
+                            return 10; // Orange
+                        }
+                    }
+                }
+            }
+
+            if (value is string)
+                int.TryParse((string) value, out result);
+
+            return result;
+        }
+
+
+        private bool trimAndAdjustGrid(int current_row, DataGridView grid) {
+            int oldHeight = grid.Height;
+            int total_rows = grid.RowCount;
+
+            // delete out extra rows
+            if ((current_row < total_rows))
+                for (int i = total_rows - 1; i >= current_row; i--)
+                    grid.Rows.Remove(grid.Rows[i]);
+
+            total_rows = grid.RowCount;
+
+            int rowheight = grid.RowCount > 0 && grid.ColumnCount > 0 ? grid[0, 0].Size.Height : grid.RowTemplate.Height;
+
+            int minHeightRowCount = 1;
+            int maxRowCount = 10;
+            int bonusHeight = 0;
+
+            if (total_rows < minHeightRowCount)
+                grid.Height = (minHeightRowCount*rowheight) + grid.ColumnHeadersHeight + bonusHeight;
+            else if ((total_rows <= maxRowCount))
+                grid.Height = (total_rows*rowheight) + grid.ColumnHeadersHeight + bonusHeight;
+            else if ((total_rows > maxRowCount))
+                grid.Height = (maxRowCount*rowheight) + grid.ColumnHeadersHeight + bonusHeight;
+
+            bool did_height_change = false;
+            if (oldHeight != grid.Height) {
+                //Debug.Print("Trim! " + oldHeight + "->" + grid.Height);
+                did_height_change = grid.Visible;
+            }
+
+            return did_height_change;
+        }
+
+        private void UpdateQueueDisplayAndCatchExceptions() {
+            try {
+                UpdateQueueDisplay();
+            }
+            catch (DatabaseException ex) {
+                Debug.Print("UpdateDisplayTimer_Tick caught database exception: " + ex.ToString());
+                killDatabaseConnection_ReconnectAndResume();
+            }
+        }
+
+        private void killDatabaseConnection_ReconnectAndResume() {
+            Debug.Print("!!! Attempting to reconnect to database and resume operations");
+
+            // try to reconnect and start again
+            try {
+                ProgramError();
+                userDisconnect();
+
+                m_db = new DbHelper(handleError);
+                ToolBarHelper.SetDbHelper(m_db);
+                ToolBarHelper.SetProgramErrorCallback(ProgramError);
+
+                // this also connects to the db
+                ToolBarHelper.DatabaseSetup(ref m_db);
+                ConfigurationSuccess();
+            }
+            catch (Exception ex_inner) {
+                ProgramError();
+                MessageBox.Show("Failed to reconnect to server. Exception: " + ex_inner.ToString());
+                Application.Exit();
+            }
+        }
+
+        private void UpdateDisplayTimer_Tick(System.Object sender, System.EventArgs e) {
+            m_updateDisplayTimer.Stop();
+
+            if (m_doUpdateFormAndGrids && m_subscribedQueues.Count > 0 && m_subscribedQueues.Keys[0] != "") {
+                m_doUpdateFormAndGrids = false;
+            }
+
+            //Debug.Print("TICK!--");
+            log.Debug("TICK!--");
+
+            UpdateQueueDisplayAndCatchExceptions();
+        }
+
+        /// @todo make sure all db connections (should be just 1, not 2) are closed on exit
+
+        public bool IsRefreshTimerActive() {
+            return m_updateDisplayTimer.Enabled;
+        }
+
+        public void StopRefreshTimer() {
+            statusLight.BackgroundImage = queueResources.status_error;
+
+            m_updateDisplayTimer.Stop();
+            Debug.Print("Refresh Timer Stopped");
+        }
+
+        public void StartRefreshTimer() {
+            Debug.Print("Starting RefreshTimer!");
+            m_updateDisplayTimer.Start();
+        }
+
+        private static Color GetColorFromValueAndThresholds(int value, int yellowThreshold, int orangeThreshold,
+            int redThreshold) {
+            Color result = QueueColorEmpty;
+
+            if (value > redThreshold)
+                result = (redThreshold == 0) ? QueueColorEmpty : QueueColorWarning3;
+            else if (value > orangeThreshold)
+                result = (orangeThreshold == 0) ? QueueColorEmpty : QueueColorWarning2;
+            else if (value > yellowThreshold)
+                result = (yellowThreshold == 0) ? QueueColorEmpty : QueueColorWarning1;
+            else if (value > 0)
+                result = QueueColorOk;
+
+            return result;
+        }
+
+        private void SetBarColor(int longestWaitingSeconds, int longestTalkSeconds, string queueName, bool isManager,
+            int longestHoldTime) {
+            Color hold_new_bg_color = QueueColorEmpty;
+            Color waitingNewBgColor;
+            Color talk_new_bg_color = QueueColorEmpty;
+
+            if (!m_subscribedQueues[queueName].ContainsKey("Threshold_warning1-Agent"))
+                // not yet configured
+                return;
+
+            int longest_waiting_seconds_threshold_orange =
+                (int) m_subscribedQueues[queueName]["Threshold_warning2-Agent"];
+            int longest_waiting_seconds_threshold_red = (int) m_subscribedQueues[queueName]["Threshold_warning3-Agent"];
+
+            waitingNewBgColor = GetColorFromValueAndThresholds(
+                longestWaitingSeconds,
+                (int) m_subscribedQueues[queueName]["Threshold_warning1-Agent"],
+                (int) m_subscribedQueues[queueName]["Threshold_warning2-Agent"],
+                (int) m_subscribedQueues[queueName]["Threshold_warning3-Agent"]);
+
+            if (isManager) {
+                talk_new_bg_color = GetColorFromValueAndThresholds(
+                    longestTalkSeconds,
+                    (int) m_subscribedQueues[queueName]["Threshold_warning1-Manager"],
+                    (int) m_subscribedQueues[queueName]["Threshold_warning2-Manager"],
+                    (int) m_subscribedQueues[queueName]["Threshold_warning3-Manager"]);
+                hold_new_bg_color = GetColorFromValueAndThresholds(
+                    longestHoldTime,
+                    (int) m_subscribedQueues[queueName]["Hold_time_threshold_warning1-Manager"],
+                    (int) m_subscribedQueues[queueName]["Hold_time_threshold_warning2-Manager"],
+                    (int) m_subscribedQueues[queueName]["Hold_time_threshold_warning3-Manager"]);
+            }
+
+            int main_grid_row_index = m_subscribedQueues.IndexOfKey(queueName);
+
+            // special case for longest waiting: green color
+            if (waitingNewBgColor == QueueColorEmpty) {
+                string callers_waiting = (string) mainGrid["callers_waiting", main_grid_row_index].Value;
+                int callers_waiting_count = string.IsNullOrEmpty(callers_waiting) ? 0 : Int32.Parse(callers_waiting);
+
+                if (callers_waiting_count > 0)
+                    waitingNewBgColor = QueueColorOk;
+            }
+
+            //Debug.Print("setbarcolor!");
+
+            foreach (DataGridViewCell c in mainGrid.Rows[main_grid_row_index].Cells) {
+                if (c.OwningColumn.Name.StartsWith("button-")) {
+                    ((Hashtable) c.Tag)["Color"] = QueueColorEmpty;
+
+                    if (mainGrid.GetCellDisplayRectangle(c.ColumnIndex, c.RowIndex, true)
+                        .Contains(mainGrid.PointToClient(Cursor.Position))) {
+
+                        if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left &&
+                            m_mouseDownCellColumnIndex != -1 &&
+                            m_mouseDownCellRowIndex != -1) {
+
+                            if (m_mouseDownCellRowIndex == c.RowIndex && m_mouseDownCellColumnIndex == c.ColumnIndex)
+                                c.Style.BackColor = Helper.darkenColor(QueueColorEmpty);
+                            else
+                                c.Style.BackColor = Helper.lightenColor(QueueColorEmpty);
+                        }
+                    }
+                    else {
+                        c.Style.BackColor = QueueColorEmpty;
+                    }
+                }
+                else if (c.OwningColumn.Name == "longest_waiting_time")
+                    c.Style.BackColor = waitingNewBgColor;
+                else if (c.OwningColumn.Name == "max_agent_talk_duration_time")
+                    c.Style.BackColor = talk_new_bg_color;
+                else if (c.OwningColumn.Name == "longest_current_hold_time")
+                    c.Style.BackColor = hold_new_bg_color;
+            }
+        }
+
+        public bool AdminPasswordValidate(string password) {
+            if ((password == "intelladmin")) {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void ShowAdminSettings() {
+            StopRefreshTimer();
+            this.TopMost = false;
+
+            m_mainForm = new QueueAppConfigMainForm();
+            m_mainForm.SetSuccessCallback(ShowAdminSettingsSuccess);
+            m_mainForm.Show();
+
+            //m_mainHelper = new QueueAppConfigMainFormHelper(m_db);
+            //m_mainHelper.SetPopupLoginCallback(checkAgentLogin);
+            //m_mainHelper.SetSuccessCallback(ShowAdminSettingsSuccess);
+            //m_mainHelper.popupServerSettingsForm(m_cm);
+        }
+
+        public void checkAgentLogin() {
+            userDisconnect();
+
+            string agentNum = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentNumber");
+            string agentExtension = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentExtension");
+            AgentLoginDialogForm agentLoginForm = new AgentLoginDialogForm();
+            agentLoginForm.SetValidateCallback(agentLoginValidate);
+            agentLoginForm.SetSuccessCallback(AgentLoginSuccess);
+            agentLoginForm.setTextBoxValues(agentNum, agentExtension);
+            agentLoginForm.Show();
+        }
+
+        private bool agentExtensionValidate(string extension) {
+            Match m = Regex.Match(extension, @"^\d+$");
+            if (!m.Success) // ends in a number
+                return false;
+
+            string dbAgentExtension;
+            {
+                string result = null;
+                if (0 != m_db.getSingleFromDb(ref result, "extension", "asterisk.extensions", "extension", extension)) {
+                    ProgramError();
+                    Debug.Print("asterisk.extensions failed");
+                    MessageBox.Show("DB Error: could not validate extension " + extension, "Error");
+                    return false;
+                }
+
+                dbAgentExtension = result;
+            }
+            return dbAgentExtension == extension;
+        }
+
+        public int agentLoginValidate(string agentExtension, string agentNumber, string agentPin) {
+            bool extensionValidated = false;
+            lock (m_db) {
+                extensionValidated = agentExtensionValidate(agentExtension);
+            }
+
+            if (!extensionValidated) {
+                Interaction.SaveSetting("IntellaToolBar", "Config", "USER_agentExtension", "");
+                return (int) AgentLoginDialogForm.ValidationCode.BadExt;
+            }
+
+            if (agentNumber == "") {
+                Interaction.SaveSetting("IntellaToolBar", "Config", "USER_agentNumber", "");
+                return (int) AgentLoginDialogForm.ValidationCode.NeedNumber;
+            }
+
+            string dbAgentNumber, dbAgentPin, dbIsManager;
+            {
+                string[] result = new string[5];
+                lock (m_db) {
+                    m_db.getMultipleFromDb(result,
+                        new string[] {"agent_num", "agent_pin", "is_manager", "agent_firstname", "agent_lastname"},
+                        "queue.agents", "agent_num", agentNumber);
+                }
+
+                dbAgentNumber = result[0];
+                dbAgentPin = result[1];
+                dbIsManager = result[2];
+
+                m_agentNum = dbAgentNumber;
+                m_agentName = result[3] + " " + result[4];
+                m_agentDevice = "SIP/" + agentExtension;
+            }
+
+            if (dbAgentPin == null)
+                dbAgentPin = "";
+
+            int validationResult = (int) AgentLoginDialogForm.ValidationCode.Fail;
+            if (agentNumber == dbAgentNumber) {
+                if (dbAgentPin == "" || agentPin == dbAgentPin) {
+                    validationResult = (int) AgentLoginDialogForm.ValidationCode.Success;
+                    SetManager(dbIsManager == "yes");
+                    Interaction.SaveSetting("IntellaToolBar", "Config", "USER_agentNumber", agentNumber);
+                    Interaction.SaveSetting("IntellaToolBar", "Config", "USER_agentExtension", agentExtension);
+                }
+                else if (agentPin == "")
+                    validationResult = (int) AgentLoginDialogForm.ValidationCode.NeedPin;
+            }
+            else
+                Interaction.SaveSetting("IntellaToolBar", "Config", "USER_agentNumber", "");
+
+            return validationResult;
+        }
+
+        private void refresh() {
+            //Debug.Print("REFRESH!");
+            //drawForm();
+            SetupMainGrid();
+            setupGrids();
+            Debug.Print("REFRESH!--");
+            UpdateQueueDisplayAndCatchExceptions();
+            TrimAdjustAndPositionAllDropGrids();
+        }
+
+        public void SetManager(bool isManager) {
+            Debug.Print("setManager!");
+
+            m_isManager = isManager;
+
+            bool was_timer_enabled = IsRefreshTimerActive();
+
+            if (was_timer_enabled)
+                StopRefreshTimer();
+
+            if (m_subscribedQueues != null && m_subscribedQueues.Count > 0 && m_subscribedQueues.Keys[0] != "") {
+                refresh();
+            }
+            else {
+                m_doUpdateFormAndGrids = true;
+            }
+
+            if (was_timer_enabled) {
+                StartRefreshTimer();
+            }
+        }
+
+        public void AgentLoginSuccess() {
+            ConfigurationSuccess();
+
+            // So that the ExtraControl properly rebuilds
+            if (this.m_extraControl != null) {
+                this.m_extraControl.Dispose();
+                this.m_extraControl = null;
+
+                m_extraControlHeight = 0;
+            }
+
+            string agent_num = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentNumber");
+            string agent_extension = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentExtension");
+
+            titleViewNameLabel.Text = (m_isManager ? "Manager" : "Agent") + " Toolbar - (" + agent_num + ") " +
+                                      m_agentName;
+
+            // notify db agent is logged in
+            lock (m_db) {
+                m_db.callSqlFunction("queue.set_agent_extension", new List<string> {agent_num, agent_extension}, null);
+            }
+
+            if (EnableTeamView) {
+                m_statusCodesForm = new StatusCodesForm(m_subscribedQueues, m_isManager);
+
+                this.debugToolStripMenuItem.Enabled = true;
+
+                this.cmpCallQueueSnapshotToolStripItem = this.debugToolStripMenuItem.DropDownItems.Add("CallQueue Snapshot", null, (sender, args) => {
+                    // cmpCallQueueSnapshotToolStripItem OnClick Handler
+
+                    List<OrderedDictionary> result_data = new List<OrderedDictionary>();
+
+                    lock (m_db) {
+                        m_db.callSqlFunction("queue.save_queue_snapshot", null, result_data);
+                    }
+
+                    string message = "Failed.  Unknown Error";
+
+                    if (result_data.Count > 0) {
+                        message = (string) result_data[0]["save_queue_snapshot"];
+                        message += "\n\nUse Ctrl-C to copy this message\nYou will need this ID number for technical support";
+                    }
+
+                    MessageBox.Show(message);
+                });
+		    }
+		    else {
+                m_statusCodesForm = new StatusCodesForm(); // One status action for all queues (set all queues to the selected status)
+                this.debugToolStripMenuItem.Enabled = false;
+		    }
+
+            // Status Codes Control Creation
+            // TODO: This needs to be a dropdown for each queue... and then a set-all at the bottom of the toolbar
+            if (m_statusCodesEnabled) {
+                // Move widgets from StatusCodesForm
+                m_statusCodesPanel = m_statusCodesForm.GetPauseCodesPanel();
+
+                m_statusCodesCenteringPanel = new Panel {
+                    Location = new Point(0, 0),
+                    Size     = new Size(this.Width, m_statusCodesPanel.Height)
+                };
+
+                m_statusCodesForm.SetIntellaQueueForm(this);
+                m_statusCodesPanel.Location = new Point(0, 0);
+
+                CreateOrUpdateExtraControl(m_statusCodesPanel.Height);
+
+                this.m_extraControl.Controls.Add(m_statusCodesCenteringPanel);
+                this.m_statusCodesCenteringPanel.Controls.Add(m_statusCodesPanel);
+            }
+
+            ResizeMainGrid(); // will also resize form and layoutForm
+		}
+
+		private void ShowAdminSettingsSuccess()
+		{
+			Debug.Print("ShowAdminSettingsSuccess!--");
+
+
+            // Show agent login dialogue
+            // Verify agent login
+            // If login success, start db refresh timer
+            checkAgentLogin();
+		}
+
+        //----------------------------------------------------------------------
+        // Event Handlers
+        //----------------------------------------------------------------------
+
+        //----------------------------------------------------------------------
+        // Event Handlers: DropGridTemplate
+
+		private void DropGridTemplate_CellDoubleClick(System.Object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+		{
+			if ((e.RowIndex == -1))
+			{
+				return;
+			}
+
+			DataGridView grid = (DataGridView)sender;
+
+			// only Team Grid grid, and only if we're a manager
+			if (!(bool)grid.Tag || !m_isManager)
+				return;
+
+			string agentExtension = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentExtension");
+			string agentDevice   = grid["agent_device", e.RowIndex].Value.ToString();
+			string callerChannel = grid["caller_channel", e.RowIndex].Value.ToString();
+
+			// notify db of action
+            lock (m_db)
+            {
+                m_db.callSqlFunction("queue.agent_monitor", new List<string> { agentExtension, agentDevice, callerChannel }, null);
+            }
+		}
+
+        //----------------------------------------------------------------------
+        // Event Handlers: Agent Status Grid
+
+        private void AgentStatusGrid_CellMouseClick(Object sender, DataGridViewCellMouseEventArgs e) {
+            if (e.RowIndex < 0)
+                return;
+
+            if (e.Button != System.Windows.Forms.MouseButtons.Right)
+                return;
+                       
+            Debug.Print("AgentStatusGrid: RIGHTMOUSEDOWNCELL " + e.RowIndex + " " + e.ColumnIndex);
+
+            // The Clicked row
+            TweakedDataGridView t = (TweakedDataGridView) sender;
+            DataGridViewRow r = t.Rows[e.RowIndex];
+            OrderedDictionary row_agent_data = (OrderedDictionary) r.Tag;
+
+            // TODO: we should only build this once on startup, and any time the status code list changes
+            ContextMenuStrip ms = new ContextMenuStrip();
+            cmpSetAgentStatusToolStripMenuItem.DropDown = ms;
+    
+            foreach (OrderedDictionary status_code_item in m_toolbarConfig.m_managerStatusCodes) {
+                ToolStripItem ti = ms.Items.Add((string) status_code_item["status_code_longname"]);
+                ti.Tag = status_code_item;
+
+                if (m_isManager) {
+                    ti.Click += cmpAgentManagerRightClickContextMenu_Click;
+                }
+            }
+
+            if (m_isManager) {
+                cmpAgentManagerRightClickContextMenu_selectedAgentDevice = (string) row_agent_data["agent_device"];
+                cmpAgentManagerRightClickContextMenu.Show(Cursor.Position.X, Cursor.Position.Y);
+            }
+        }
+
+        //----------------------------------------------------------------------
+        // Event Handlers: Main Grid
+
+		private void mainGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+		{
+			if (e.RowIndex < 0 ||
+				e.ColumnIndex < 0 ||
+				e.RowIndex > mainGrid.RowCount - 1 ||
+				e.ColumnIndex > mainGrid.ColumnCount - 1)
+				return;
+
+			DataGridView grid = (DataGridView)sender;
+
+			if (!grid[e.ColumnIndex, e.RowIndex].OwningColumn.Name.StartsWith("button-"))
+				return;
+
+			if (grid[e.ColumnIndex, e.RowIndex].Tag is Hashtable)
+			{
+
+				e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+				DataGridViewTextBoxCell bc = mainGrid[e.ColumnIndex, e.RowIndex] as DataGridViewTextBoxCell;
+
+				Image img = (Image)getResourceByName((string)((Hashtable)bc.Tag)["Image"]);
+				e.Graphics.DrawImageUnscaledAndClipped(img, new Rectangle(e.CellBounds.X + e.CellBounds.Width / 2 - img.Width / 2, e.CellBounds.Y + e.CellBounds.Height / 2 - img.Height / 2, img.Width, img.Height));
+				e.Handled = true;
+			}
+		}
+
+		private void mainGrid_MouseDown(object sender, MouseEventArgs e)
+		{
+			deSelectVisibleControls();
+		}
+
+		private void mainGrid_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+		{
+			DataGridView grid = (DataGridView)sender;
+
+            if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
+            {
+                if (m_mouseDownCellColumnIndex >= 0 &&
+                    m_mouseDownCellRowIndex >= 0 &&
+                    m_mouseDownCellRowIndex == e.RowIndex &&
+                    m_mouseDownCellColumnIndex == e.ColumnIndex)
+                    modCellColor(grid, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Dark);
+                else
+                    modCellColor(grid, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Light);
+
+            }
+            else
+            {
+                modCellColor(grid, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Light);
+            }
+		}
+
+		private void mainGrid_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+		{
+			modCellColor((DataGridView)sender, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Base);
+		}
+
+		private void mainGrid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.Button != System.Windows.Forms.MouseButtons.Left)
+				return;
+
+			modCellColor((DataGridView)sender, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Dark);
+			m_mouseDownCellColumnIndex = e.ColumnIndex;
+			m_mouseDownCellRowIndex = e.RowIndex;
+			Debug.Print("MOUSEDOWNCELL " + m_mouseDownCellColumnIndex + " " + m_mouseDownCellRowIndex);
+		}
+
+		private void mainGrid_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.RowIndex < 0)
+				return;
+
+			deSelectVisibleControls();
+
+			modCellColor((DataGridView)sender, e.ColumnIndex, e.RowIndex, ButtonCellColorState.Light);
+
+			//Debug.Print("CLICK!");
+
+			DataGridView grid = (DataGridView)sender;
+            DataGridViewCell c = grid[e.ColumnIndex, e.RowIndex];
+            Hashtable tag; // First cell in each of the data rows is tagged with the queue details 
+            string queueName;
+            string gridName;
+
+            if (e.Button == System.Windows.Forms.MouseButtons.Left) {
+                // We only care about the leftmost column for left mouse clicks (the queue info dropdowns)
+
+                if (e.RowIndex < 0 ||
+                    e.ColumnIndex < 0 ||
+                    e.RowIndex > mainGrid.RowCount - 1 ||
+                    e.ColumnIndex > mainGrid.ColumnCount - 1) {
+
+                    return;
+                }
+
+                if (m_mouseDownCellRowIndex != e.RowIndex || m_mouseDownCellColumnIndex != e.ColumnIndex || m_mouseDownCellColumnIndex < 0 || m_mouseDownCellRowIndex < 0) {
+                    // mousedown happened elsewhere from mouseup!
+                    m_mouseDownCellRowIndex = -1;
+                    m_mouseDownCellColumnIndex = -1;
+                    return;
+                }
+
+                if (!c.OwningColumn.Name.StartsWith("button-") ||
+                    !(c.Tag is Hashtable)) {
+
+                    return;
+                }
+
+                tag       = (Hashtable) c.Tag;
+                queueName = (string) tag["QueueName"];
+                gridName  = (string) tag["GridName"];
+
+            }
+            else {
+                // Right mouse click
+                if ((e.RowIndex < 0) || (e.ColumnIndex != 3)) {
+                    return;
+                }
+
+                DataGridViewCell mastercell = grid[0, e.RowIndex];  // Tag is stored on the first cell of the row
+                tag = (Hashtable)mastercell.Tag;
+                queueName = (string)tag["QueueName"];
+                gridName = (string)tag["GridName"];
+
+                QueueRightClickContextMenu_SelectedQueue = queueName;
+                QueueRightClickContextMenu.Show(Cursor.Position.X, Cursor.Position.Y);
+                return;
+            }
+            
+			DataGridView newDropGrid = (DataGridView)m_subscribedQueues[queueName][gridName];
+
+			newDropGrid.Tag = (string)tag["GridName"] == "TeamGrid";
+
+			if (newDropGrid.Visible)
+			{
+				detailViewNameLabel.Text = "";
+				newDropGrid.Visible = false;
+			}
+			else
+			{
+				string dropGridType = (grid.Columns[e.ColumnIndex].HeaderText == "Callers") ? "Callers Waiting" : grid.Columns[e.ColumnIndex].HeaderText;
+				detailViewNameLabel.Text = grid["queue", e.RowIndex].Value.ToString() + " " + dropGridType;
+				hideAnyVisibleGridsExcept(newDropGrid);
+				newDropGrid.Visible = true;
+			}
+
+            foreach (DataGridViewColumn col in grid.Columns) {
+                if (col.Name.StartsWith("button-")) {
+                    foreach (DataGridViewRow r in grid.Rows) {
+                      ((Hashtable)grid[col.Index, r.Index].Tag)["Image"] = "down_triangle";
+                    }
+                }
+            }
+			
+			((Hashtable)c.Tag)["Image"] = ((DataGridView)newDropGrid).Visible ? "up_triangle" : "down_triangle";
+
+			ResizeMainGrid(true);
+		}
+
+        //----------------------------------------------------------------------
+        // Event Handlers: IntellaQueue Main Form
+
+		/// Below 3 methods handle user dragging of windows without border decorations
+		private void intellaQueue_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (sender is DataGridView)
+			{
+				DataGridViewCell c = Helper.getGridCellAtPoint((DataGridView)sender, Cursor.Position);
+				if (c != null && c.OwningColumn.Name.StartsWith("button-"))
+					return;
+			}
+			isFormDragging = true;
+			dragCursorPoint = Cursor.Position;
+			dragFormPoint = this.Location;
+		}
+
+		private void intellaQueue_MouseUp(object sender, MouseEventArgs e)
+		{
+			isFormDragging = false;
+		}
+
+		private void intellaQueue_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (isFormDragging)
+			{
+				Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+				Location = Point.Add(dragFormPoint, new Size(dif));
+			}
+		}
+
+        //----------------------------------------------------------------------
+        // Event Handlers: Toolbar Menu Clicks
+
+        private void AdminToolStripMenuItem_Click(System.Object sender, System.EventArgs e) {
+            PasswordDialogForm pwForm = new PasswordDialogForm();
+
+            pwForm.SetValidateCallback(AdminPasswordValidate);
+            pwForm.SetSuccessCallback(ShowAdminSettings);
+            pwForm.Show();
+            //pwForm.SetDesktopLocation(MousePosition.X, MousePosition.Y);
+        }
+
+        private void AboutToolStripMenuItem_Click(System.Object sender, System.EventArgs e) {
+            m_aboutForm = new QueueToolbarAboutForm();
+            m_aboutForm.Show();
+        }
+
+        private void smallToolStripMenuItem_Click(object sender, EventArgs e) {
+            SetInterFaceSize("small", false);
+        }
+
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) {
+            SetInterFaceSize("medium", false);
+        }
+
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e) {
+            SetInterFaceSize("large", false);
+        }
+
+        //----------------------------------------------------------------------
+
+		private void sizeAdjustorPb_MouseUp(object sender, MouseEventArgs e)
+		{
+			m_isFormResizing = false;
+		}
+
+		private void sizeAdjustorPb_MouseDown(object sender, MouseEventArgs e)
+		{
+			m_isFormResizing = true;
+			m_resizeCursorPoint = Cursor.Position;
+			m_resizeFormSize = this.Size;
+		}
+
+		private void sizeAdjustorPb_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (UserResizeEnabled && m_isFormResizing)
+			{
+				Point dif = Point.Subtract(Cursor.Position, new Size(m_resizeCursorPoint));
+				Size newSize = new Size(Point.Add(new Point(m_resizeFormSize), new Size(dif)));
+
+				int minWidth = 1;
+				if (newSize.Width >= minWidth)
+					resize(newSize);
+				else if (this.Width > minWidth)
+					resize(new Size(minWidth, newSize.Height));
+			}
+		}
+
+		public void resize(Size newSize)
+		{
+			resize(newSize, false);
+		}
+
+		private void resize(Size newSize, bool doAlwaysResize)
+		{
+			if (this.WindowState != FormWindowState.Minimized && (doAlwaysResize || newSize.Width != Size.Width || newSize.Height != Size.Height))
+			{
+				Debug.Print("RESIZE " + Size.ToString() + "->" + newSize.ToString());
+
+				this.Size = newSize;
+				LayoutForm();
+				this.Refresh();
+			}
+		}
+
+		private void button_MouseEnter(object sender, EventArgs e)
+		{
+			adjustPictureBoxButtonImage((PictureBox)sender, (int)PictureBoxButtonEvents.Enter);
+		}
+
+		private void button_MouseLeave(object sender, EventArgs e)
+		{
+			adjustPictureBoxButtonImage((PictureBox)sender, (int)PictureBoxButtonEvents.Leave);
+		}
+
+		private void button_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button != System.Windows.Forms.MouseButtons.Left)
+				return;
+			adjustPictureBoxButtonImage((PictureBox)sender, (int)PictureBoxButtonEvents.Down);
+		}
+
+		private void button_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button != System.Windows.Forms.MouseButtons.Left)
+			{
+				m_doNotShowSettingsDropdownOnNextClick = false;
+				return;
+			}
+
+			PictureBox p = (PictureBox)sender;
+			int buttonEventCode = (int)PictureBoxButtonEvents.UpInside;
+
+			if (e.X < 0 || e.Y < 0 || e.X >= p.Width || e.Y >= p.Height)
+				buttonEventCode = (int)PictureBoxButtonEvents.UpOutside;
+
+			int index = adjustPictureBoxButtonImage(p, buttonEventCode);
+			string name = (string)p.Tag;
+			if (buttonEventCode != (int)PictureBoxButtonEvents.UpInside)
+			{
+				m_doNotShowSettingsDropdownOnNextClick = false;
+				return;
+			}
+
+			string queueName = null;
+			bool isManagerSection = false;
+			getQueueNameAndType(ref queueName, ref isManagerSection, index);
+
+			// handle button press
+			switch (name)
+			{
+				case "close":
+					Environment.Exit(0);
+					break;
+				case "minimize":
+					this.WindowState = FormWindowState.Minimized;
+					m_isMinimized = true;
+					break;
+				case "settings":
+					if (m_doNotShowSettingsDropdownOnNextClick)
+						m_doNotShowSettingsDropdownOnNextClick = false;
+					else
+					{
+						settingsPb.ContextMenuStrip = MainContextMenu;
+						p.ContextMenuStrip.Show(p, new System.Drawing.Point(0, p.Height));
+						settingsPb.ContextMenuStrip = null;
+					}
+					break;
+				default:
+					break;
+			}
+			m_doNotShowSettingsDropdownOnNextClick = false;
+		}
+
+		private void MainContextMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		{
+			if (settingsPb.ClientRectangle.Contains(settingsPb.PointToClient(Control.MousePosition)))
+				m_doNotShowSettingsDropdownOnNextClick = true;
+		}
+
+		private void MainContextMenu_Opening(object sender, CancelEventArgs e)
+		{
+			//e.Cancel = true;
+		}
+
+        //----------------------------------------------------------------------
+        // Event Handlers: Manager - Agent Status Grid - Click on a Right-Click-Context-Menuitem
+
+        private void cmpAgentManagerRightClickContextMenu_Click(object sender, EventArgs e) {
+            ToolStripDropDownItem clicked_item = (ToolStripDropDownItem) sender;
+            OrderedDictionary agent_status_item = (OrderedDictionary) clicked_item.Tag; // (from queue.v_queue_agent_status)
+
+            setNewAgentStatus((string)agent_status_item["status_code_name"], cmpAgentManagerRightClickContextMenu_selectedAgentDevice);
+        }
+
+        //----------------------------------------------------------------------
+
+		private void getQueueNameAndType(ref string queueName, ref bool isManagerSection, string index)
+		{
+			try
+			{
+				getQueueNameAndType(ref queueName, ref isManagerSection, Int32.Parse(index));
+			}
+			catch (FormatException ex)
+			{
+				// parse for int failed
+				Debug.Print(ex.Message);
+			}
+		}
+
+		private void getQueueNameAndType(ref string queueName, ref bool isManagerSection, int index)
+		{
+			string[] queueNames;
+
+			if (index >= 0)
+			{
+				queueNames = new string[m_subscribedQueues.Count];
+				m_subscribedQueues.Keys.CopyTo(queueNames, 0);
+                if (EnableTeamView)
+				{
+					queueName = queueNames[index / 2];
+					isManagerSection = index % 2 == 0;
+				}
+				else
+				{
+					queueName = queueNames[index];
+					isManagerSection = false;
+				}
+			}
+		}
+
+		private void hideAnyVisibleGridsExcept(DataGridView grid)
+		{
+            foreach (Control c in m_dynamicControls) { 
+				if (grid == null || (c.Tag is bool && !((bool)c.Tag == (bool)grid.Tag && c.Name == grid.Name))) {
+                    if (m_subscribedQueues.ContainsKey(c.Name)) {
+					  ((DataGridView)m_subscribedQueues[c.Name][(bool)c.Tag ? "TeamGrid" : "AgentGrid"]).Visible = false;
+                    }
+               }
+            }
+		}
+
+		private int adjustPictureBoxButtonImage(PictureBox p, int buttonEvent)
+		{
+			string newImageName;
+			string name;
+
+			if (p.Tag != null)
+				name = p.Tag.ToString();
+			else
+			{
+				name = p.Name;
+				if (name.EndsWith("Pb"))
+					name = name.Substring(0, name.Length - 2);
+			}
+			newImageName = name;
+
+			int index = -1;
+
+			try
+			{
+				if (!Int32.TryParse(p.Name, out index))
+					index = -1;
+			}
+			catch (FormatException ex)
+			{
+				Debug.Print(ex.Message);
+			}
+
+			switch (buttonEvent)
+			{
+				case (int)PictureBoxButtonEvents.UpInside:
+					goto case (int)PictureBoxButtonEvents.Enter;
+				case (int)PictureBoxButtonEvents.Enter:
+					newImageName += "_hover";
+					break;
+				case (int)PictureBoxButtonEvents.Down:
+					newImageName += "_pressed";
+					break;
+				case (int)PictureBoxButtonEvents.UpOutside:
+					break;
+				case (int)PictureBoxButtonEvents.Leave:
+					break;
+				default:
+					break;
+			}
+
+			p.BackgroundImage = (Image)getResourceByName(newImageName);
+
+			p.Tag = name;
+
+			return index;
+		}
+
+		private object getResourceByName(string name)
+		{
+			ResourceManager rm = new ResourceManager("QueueLib.queueResources", Assembly.GetExecutingAssembly());
+			object result = rm.GetObject(name);
+			rm.ReleaseAllResources();
+			return result;
+		}
+
+		private void alwaysOnTopToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+			this.TopMost = menuItem.Checked = !menuItem.Checked;
+		}
+
+		private void mainGrid_SelectionChanged(object sender, EventArgs e)
+		{
+			deSelectVisibleControls();
+		}
+
+		private void dropGrid_SelectionChanged(object sender, EventArgs e)
+		{
+			deSelectVisibleControls();
+
+			DataGridView g = (DataGridView)sender;
+
+			foreach (DataGridViewRow r in g.Rows)
+				foreach (DataGridViewCell c in r.Cells)
+					c.Style.SelectionBackColor = g.DefaultCellStyle.SelectionBackColor;
+
+			foreach (DataGridViewCell c in g.SelectedCells)
+				ColorGridCell(c, m_subscribedQueues, g.Name);
+		}
+
+		private void dropGrid_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			deSelectVisibleControls();
+		}
+
+		private void dropGrid_MouseDown(object sender, MouseEventArgs e)
+		{
+			deSelectVisibleControls();
+		}
+
+		private void deSelectVisibleControls()
+		{
+			// need to do this to allow colow change of cell on mouse hover
+			mainGrid.ClearSelection();
+			
+			// prevent selection cursor on any visible controls
+			hiddenGrid.Focus();
+			hiddenGrid.Select();
+		}
+
+		private void modCellColor(DataGridView grid, int columnIndex, int rowIndex, ButtonCellColorState colorState)
+		{
+			if (rowIndex < 0 || columnIndex < 0)
+				return;
+
+			DataGridViewCell c = grid[columnIndex, rowIndex];
+			if (!c.OwningColumn.Name.StartsWith("button-") || !(c.Tag is Hashtable))
+				return;
+
+			Hashtable cellInfo = (Hashtable)c.Tag;
+			if (!cellInfo.ContainsKey("Color") || cellInfo["Color"] == null)
+				return;
+
+			Color baseColor = (Color)((Hashtable)c.Tag)["Color"];
+
+			switch (colorState)
+			{
+				case ButtonCellColorState.Light:
+					c.Style.BackColor = Helper.lightenColor(baseColor);
+					break;
+				case ButtonCellColorState.Dark:
+					c.Style.BackColor = Helper.darkenColor(baseColor);
+					break;
+				default:
+				case ButtonCellColorState.Base:
+					c.Style.BackColor = baseColor;
+					break;
+			}
+		}
+
+		private void intellaQueue_Resize(object sender, EventArgs e)
+		{
+			// This code prevents drop grid from being in an incorrectly sized state after an un-minimize.
+			// @todo Maintain the currently selected row.
+			if (m_isMinimized && WindowState != FormWindowState.Minimized)
+			{
+				m_isMinimized = false;
+
+				DataGridView visibleDropGrid = DroppedDownGrid;
+				if (visibleDropGrid != null)
+				{
+					// removes all rows
+					trimAndAdjustGrid(0, visibleDropGrid);
+					// repopulates dropgrid with latest data
+					UpdateUiDataComponents();
+				}
+
+				// make sure window decorations are layed out correctly
+			    LayoutForm();
+			}
+		}
+
+        private void takeNextWaitingCallerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string agent_extension = Interaction.GetSetting("IntellaToolBar", "Config", "USER_agentExtension");
+
+            m_db.callSqlFunction("queue.grab_queue_member_next", new List<string> { QueueRightClickContextMenu_SelectedQueue, agent_extension }, null);
+        }
+
+        private void debugSettings_ScreenPopURLSave(string newUrl) {
+            m_screenPopURL = newUrl;
+            Interaction.SaveSetting("IntellaToolBar", "Config", "ScreenPopURL", newUrl);
+        }
+
+        private void screenPopURLToolStripMenuItem_Click(object sender, EventArgs e) {
+            EditDebugSettings eds = new EditDebugSettings();
+            eds.SetEditCallback(debugSettings_ScreenPopURLSave);
+            eds.PopulateScreenPopURL(m_screenPopURL);
+            eds.Show();
+        }
+	}
+
+    internal class IntellaQueueToolbarMissingPerQueueConfigData : Exception {
+        public IntellaQueueToolbarMissingPerQueueConfigData(string message) : base(message) {
+
+        }
+    }
+}

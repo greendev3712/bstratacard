@@ -1,0 +1,477 @@
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid}{
+\section{IasPbxConfig.NameValueGrid Class Reference}
+\label{class_ias_pbx_config_1_1_name_value_grid}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+}
+
+
+Handles Name Value Grid functionality through helper functions.  
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{DataIndexes} \{ \par
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{Label}, 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{ControlType}, 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{ColumnName}, 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{PopulateTableName}, 
+\par
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{PopulateIdColumnName}, 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{PopulateNameColumnName}, 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{ControlOptionString}
+ \}
+\begin{DoxyCompactList}\small\item\em descriptive index names to m\_\-data\mbox{[}\mbox{]}\mbox{[}\mbox{]} \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_af47450cb245bcef5cfb1744191c3e371}{NameValueGrid} (DataGridView grid, Hashtable options, string\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} data, string uidKeyName, string tableName)
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+delegate void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_acb2383247682f790d011f8840068a252}{refreshCallbackType} (string selectedExtensionSuggestion)
+\begin{DoxyCompactList}\small\item\em delegate description for callback used if unique key was changed. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a5f999a6912fe2342c2edef12bd6d1e2f}{addUpdateEvents} (Object uniqueKeyValueHolderControl, refreshCallbackType uniqueKeyValueHolderControlCallback)
+\begin{DoxyCompactList}\small\item\em add Controls (if needed) and events (which launch database actions) to the grid, which handle each row's Control. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a99e4cae8063bc38014c310a90e59b779}{refresh} (string uidKeyValue)
+\begin{DoxyCompactList}\small\item\em refresh the values set in each control/row of the name value grid, based on a UID. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_afa2c2d0522757b0450a5cbbe6a19d526}{convertComboItemNameToId} (int rowIndex, string name)
+\begin{DoxyCompactList}\small\item\em gets a combobox items id value from a name value. \item\end{DoxyCompactList}\item 
+delegate string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a3d9ca74d6c6ede38ee0e947b2a78d2c1}{getControlsCurrentValueCallbackType} (string name)
+\begin{DoxyCompactList}\small\item\em delegate description for callback. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_ade71f1670c36b0b421cd4b0812f6aa5f}{getControlsCurrentValue} (string name)
+\begin{DoxyCompactList}\small\item\em gets the value for a name. \item\end{DoxyCompactList}\item 
+DataGridViewCell \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a9aa3b69e7ca463cb1cb900e25c904712}{getControl} (string name)
+\begin{DoxyCompactList}\small\item\em gets the DataGridViewCell of the Value Control for a name. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a9074cc4353c1d1d39d78d67f2db36c70}{getUidColumnName} ()
+\begin{DoxyCompactList}\small\item\em UID key/column name getter. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a1ec8a16694d06cb32dfd0874c762e41c}{getMode} ()
+\begin{DoxyCompactList}\small\item\em gets the mode/init method for this NVGrid (eg \char`\"{}auto\char`\"{}). \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_name_value_grid_ac00f102d1ab5b370a866b09b4855594c}{getExcludes} ()
+\begin{DoxyCompactList}\small\item\em gets List of excluded column names for this NVGrid. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_af0f5a477e7dc8c4903278ca045fdc56f}{changeGridBgColor} (DataGridView grid, System.Drawing.Color color)
+\begin{DoxyCompactList}\small\item\em change a grid's cells' background colors. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a6754dd22f44f6aad8ef8b104e92d2538}{deactivate} ()
+\begin{DoxyCompactList}\small\item\em deactivate the grid. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a26d39bc7c64da504edfe7243f311ff22}{activate} ()
+\begin{DoxyCompactList}\small\item\em activate the grid. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+DataGridView \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a588270d544b904d41de5081329739d3d}{m\_\-grid}
+\begin{DoxyCompactList}\small\item\em the DataGridView we are working with. \item\end{DoxyCompactList}\item 
+Hashtable \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a536cacb74f82c03d40dee9f8cf4b0da5}{m\_\-options}
+\begin{DoxyCompactList}\small\item\em options for this nvgrid (optional) \item\end{DoxyCompactList}\item 
+Hashtable \hyperlink{class_ias_pbx_config_1_1_name_value_grid_aba9a53f0a732686cb3ba46dce7171a75}{m\_\-hiddenRows}
+\begin{DoxyCompactList}\small\item\em keep track of hidden name/value pairs. \item\end{DoxyCompactList}\item 
+string\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a816a0c9ece3edb83afb39863e1f843b4}{m\_\-data}
+\begin{DoxyCompactList}\small\item\em array of length equal to number of rows in m\_\-grid. \item\end{DoxyCompactList}\item 
+List$<$ string $>$\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a57457b107cbaf9464e578effb30a7b5c}{m\_\-controlAttributes}
+\begin{DoxyCompactList}\small\item\em holds comboboxes' ids, other information for each control can be stored here \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_af6e6d9e0a9f40dd4e3e8d332e1f3018f}{m\_\-tableName}
+\begin{DoxyCompactList}\small\item\em databse table name associated with this grid \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_ace4c5d89cfdadc8de017dcbc9898a7fe}{m\_\-uidKeyName}
+\begin{DoxyCompactList}\small\item\em database unique key column name to use when working with this grid \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a7da8312b72dfd2438197fbb2e32a1daa}{m\_\-previousValue}
+\begin{DoxyCompactList}\small\item\em spot to hold previous value of the active Control while it is edited by user, in case their edit is canceled. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a0177cb7f2195d16203835db6e41c2823}{m\_\-active}
+\begin{DoxyCompactList}\small\item\em used internally to handle active/inactive state of grid. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_name_value_grid_acdf8c458a67f3fd92adbbe8878b9067d}{log}
+\item 
+static string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_add49a07f2a41723711cae88d6a6f7360}{NameHeading} = \char`\"{}Name\char`\"{}
+\begin{DoxyCompactList}\small\item\em Grid's 'name column' name. \item\end{DoxyCompactList}\item 
+static string \hyperlink{class_ias_pbx_config_1_1_name_value_grid_a9ce813f75fb383103a34150e0e7643e5}{ControlHeading} = \char`\"{}Control\char`\"{}
+\begin{DoxyCompactList}\small\item\em Grid's 'value column' name. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Handles Name Value Grid functionality through helper functions. Each instance handles 1 grid, passed in through the constructor. A data object (\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_a816a0c9ece3edb83afb39863e1f843b4}{m\_\-data}\mbox{[}\mbox{]}\mbox{[}\mbox{]}) is also passed in to initialize and setup the grid. A \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} handles an unlimited length list of Names and Value Controls (TextBox or ComboBox) and handles events for changing values. 
+\end{DoxySeeAlso}
+
+
+Definition at line 25 of file NameValueGrid.cs.
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!DataIndexes@{DataIndexes}}
+\index{DataIndexes@{DataIndexes}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{DataIndexes}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf IasPbxConfig::NameValueGrid::DataIndexes}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+
+
+descriptive index names to m\_\-data\mbox{[}\mbox{]}\mbox{[}\mbox{]} \begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{Label@{Label}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!Label@{Label}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+Label}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]\index{ControlType@{ControlType}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!ControlType@{ControlType}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+ControlType}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}](Name) Label to show next to control \index{ColumnName@{ColumnName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!ColumnName@{ColumnName}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+ColumnName}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]type of control to make (TextBox, ComboBox) \index{PopulateTableName@{PopulateTableName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!PopulateTableName@{PopulateTableName}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+PopulateTableName}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]database column name for modifying control \index{PopulateIdColumnName@{PopulateIdColumnName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!PopulateIdColumnName@{PopulateIdColumnName}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+PopulateIdColumnName}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]for ComboBox, table to use to populate options \index{PopulateNameColumnName@{PopulateNameColumnName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!PopulateNameColumnName@{PopulateNameColumnName}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+PopulateNameColumnName}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]for ComboBox, column name for corresponding ids \index{ControlOptionString@{ControlOptionString}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!ControlOptionString@{ControlOptionString}}\item[{\em 
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{
+ControlOptionString}
+\label{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}
+}]for ComboBox, column name to use to populate options \end{description}
+\end{Desc}
+
+
+
+Definition at line 31 of file NameValueGrid.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_af47450cb245bcef5cfb1744191c3e371}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!NameValueGrid@{NameValueGrid}}
+\index{NameValueGrid@{NameValueGrid}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{NameValueGrid}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.NameValueGrid.NameValueGrid (DataGridView {\em grid}, \/  Hashtable {\em options}, \/  string {\em data}\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, \/  string {\em uidKeyName}, \/  string {\em tableName})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_af47450cb245bcef5cfb1744191c3e371}
+
+
+Constructor. Copy passed in object references into member variables.. 
+\begin{DoxyParams}{Parameters}
+\item[{\em grid}]DataGridView object every instance of this class will work with. \item[{\em options}]Hash of NVGrid options such as HiddenRows, excludeColumns, and initMethod \item[{\em data}]Data used to initialize the grid and the controls within it. \end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_a816a0c9ece3edb83afb39863e1f843b4}{m\_\-data} for description. 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em uidKeyName}]Database Unique Id column name associated w/ grid changes \item[{\em tableName}]Database table name associated w/ grid changes \end{DoxyParams}
+
+
+Definition at line 84 of file NameValueGrid.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a26d39bc7c64da504edfe7243f311ff22}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!activate@{activate}}
+\index{activate@{activate}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{activate}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.NameValueGrid.activate ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a26d39bc7c64da504edfe7243f311ff22}
+
+
+activate the grid. set an internal flag to allow validating events, set grid to not readonly, change cells' bg color to white 
+
+Definition at line 538 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a5f999a6912fe2342c2edef12bd6d1e2f}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!addUpdateEvents@{addUpdateEvents}}
+\index{addUpdateEvents@{addUpdateEvents}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{addUpdateEvents}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.NameValueGrid.addUpdateEvents (Object {\em uniqueKeyValueHolderControl}, \/  refreshCallbackType {\em uniqueKeyValueHolderControlCallback})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a5f999a6912fe2342c2edef12bd6d1e2f}
+
+
+add Controls (if needed) and events (which launch database actions) to the grid, which handle each row's Control. TextBox and ComboBox Controls are supported. Enter Focus, Validating, and Validated events are supported. An anonymous delegate is created and added to the Grid for each Event. These delegates handle TextBox and ComboBox Controls in each row of the grid.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em uniqueKeyValueHolderControl}]another control. check it for the currently selected unique key value. \item[{\em uniqueKeyValueHolderControlCallback}]function to callback to pass back the new selected item in case this is a unique key selection control \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000040}{Todo}]move anonymous delegates out into separate functions? 
+
+functionalize! this method is too big. \end{Desc}
+
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000041}{Todo}]cache these so we don't refetch from db if multiple comboboxes use same options. \end{Desc}
+
+
+Enter focus inline delegate function: handle EditingControlShowing event on a DataGridViewCell's Control.
+
+Save the Control's current value so we can cancel a chnage if needed. This method is an anonymous delegate.
+
+Param: c the DataGridView Param: e EventArgs of the Enter focus event, including a ref to the Control.
+
+CellValidating inline delegate function: handle CellValidating a new value set in a Control within a grid's DataGridViewCell
+
+Insert the newly entered value into the database. If the insert fails, cancel the CellValidating event and give user an error message. This method is an anonymous delegate.
+
+Param: g the DataGridView that is Validating Param: e DataGridViewCellValidatingEventArgs of the Validating event
+
+CellValidated inline delegate function: handle CellValidated event on a Control within a Grid cell.
+
+if we made a change, update the previous value to the new value. Also, if the field we updated is a unique key field, make a callback to let the Grid's Super form reload what it needs to. This method is an anonymous delegate.
+
+Param: g the the Grid that is Validated Param: e EventArgs of the Validated event, which includes a ref to the cell 
+
+Definition at line 154 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_af0f5a477e7dc8c4903278ca045fdc56f}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!changeGridBgColor@{changeGridBgColor}}
+\index{changeGridBgColor@{changeGridBgColor}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{changeGridBgColor}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.NameValueGrid.changeGridBgColor (DataGridView {\em grid}, \/  System.Drawing.Color {\em color})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_af0f5a477e7dc8c4903278ca045fdc56f}
+
+
+change a grid's cells' background colors. 
+\begin{DoxyParams}{Parameters}
+\item[{\em grid}]the DataGridView to change \item[{\em color}]the new color to set \end{DoxyParams}
+
+
+Definition at line 507 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_afa2c2d0522757b0450a5cbbe6a19d526}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!convertComboItemNameToId@{convertComboItemNameToId}}
+\index{convertComboItemNameToId@{convertComboItemNameToId}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{convertComboItemNameToId}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.NameValueGrid.convertComboItemNameToId (int {\em rowIndex}, \/  string {\em name})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_afa2c2d0522757b0450a5cbbe6a19d526}
+
+
+gets a combobox items id value from a name value. through the internal m\_\-controlAttributes\mbox{[}\mbox{]}\mbox{[}\mbox{]} Lists. 
+\begin{DoxyParams}{Parameters}
+\item[{\em rowIndex}]the 0 based index of the row/control to look at \item[{\em name}]the name value to convert \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the corresponding id value 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000043}{Todo}]handle error \end{Desc}
+
+
+Definition at line 490 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a6754dd22f44f6aad8ef8b104e92d2538}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!deactivate@{deactivate}}
+\index{deactivate@{deactivate}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{deactivate}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.NameValueGrid.deactivate ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a6754dd22f44f6aad8ef8b104e92d2538}
+
+
+deactivate the grid. set an internal flag to disallow validating events, set grid to readonly, change cells' bg color to gray 
+
+Definition at line 525 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a9aa3b69e7ca463cb1cb900e25c904712}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getControl@{getControl}}
+\index{getControl@{getControl}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getControl}]{\setlength{\rightskip}{0pt plus 5cm}DataGridViewCell IasPbxConfig.NameValueGrid.getControl (string {\em name})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a9aa3b69e7ca463cb1cb900e25c904712}
+
+
+gets the DataGridViewCell of the Value Control for a name. won't search through hidden rows. 
+\begin{DoxyParams}{Parameters}
+\item[{\em name}]the name to return a Cell for \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the corresponding Cell, or null if name was not found 
+\end{DoxyReturn}
+
+
+Definition at line 585 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ade71f1670c36b0b421cd4b0812f6aa5f}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getControlsCurrentValue@{getControlsCurrentValue}}
+\index{getControlsCurrentValue@{getControlsCurrentValue}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getControlsCurrentValue}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.NameValueGrid.getControlsCurrentValue (string {\em name})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_ade71f1670c36b0b421cd4b0812f6aa5f}
+
+
+gets the value for a name. 
+\begin{DoxyParams}{Parameters}
+\item[{\em name}]the name to return a value for \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the corresponding value, or null if name was not found 
+\end{DoxyReturn}
+
+
+Definition at line 559 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a3d9ca74d6c6ede38ee0e947b2a78d2c1}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getControlsCurrentValueCallbackType@{getControlsCurrentValueCallbackType}}
+\index{getControlsCurrentValueCallbackType@{getControlsCurrentValueCallbackType}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getControlsCurrentValueCallbackType}]{\setlength{\rightskip}{0pt plus 5cm}delegate string IasPbxConfig.NameValueGrid.getControlsCurrentValueCallbackType (string {\em name})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a3d9ca74d6c6ede38ee0e947b2a78d2c1}
+
+
+delegate description for callback. 
+\begin{DoxyParams}{Parameters}
+\item[{\em name}]name of name-\/value pair to return value for \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+corresponding value 
+\end{DoxyReturn}
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ac00f102d1ab5b370a866b09b4855594c}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getExcludes@{getExcludes}}
+\index{getExcludes@{getExcludes}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getExcludes}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ IasPbxConfig.NameValueGrid.getExcludes ()}}
+\label{class_ias_pbx_config_1_1_name_value_grid_ac00f102d1ab5b370a866b09b4855594c}
+
+
+gets List of excluded column names for this NVGrid. These columns are ignored when the grid is populated in auto mode. \begin{DoxyReturn}{Returns}
+List of excluded column names for this NVGrid. 
+\end{DoxyReturn}
+
+
+Definition at line 627 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a1ec8a16694d06cb32dfd0874c762e41c}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getMode@{getMode}}
+\index{getMode@{getMode}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getMode}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.NameValueGrid.getMode ()}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a1ec8a16694d06cb32dfd0874c762e41c}
+
+
+gets the mode/init method for this NVGrid (eg \char`\"{}auto\char`\"{}). \begin{DoxyReturn}{Returns}
+the mode/init method for this NVGrid (eg \char`\"{}auto\char`\"{}). 
+\end{DoxyReturn}
+
+
+Definition at line 612 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a9074cc4353c1d1d39d78d67f2db36c70}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!getUidColumnName@{getUidColumnName}}
+\index{getUidColumnName@{getUidColumnName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{getUidColumnName}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.NameValueGrid.getUidColumnName ()}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a9074cc4353c1d1d39d78d67f2db36c70}
+
+
+UID key/column name getter. \begin{DoxyReturn}{Returns}
+the uid column name for this NVGrid 
+\end{DoxyReturn}
+
+
+Definition at line 603 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a99e4cae8063bc38014c310a90e59b779}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!refresh@{refresh}}
+\index{refresh@{refresh}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{refresh}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.NameValueGrid.refresh (string {\em uidKeyValue})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a99e4cae8063bc38014c310a90e59b779}
+
+
+refresh the values set in each control/row of the name value grid, based on a UID. 
+\begin{DoxyParams}{Parameters}
+\item[{\em uidKeyValue}]value for unique key for setting all values on each row/control \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000042}{Todo}]handle db errors 
+
+combine single db get loops into one statement (Add getmultiple to DBHelper?) \end{Desc}
+
+
+Definition at line 399 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_acb2383247682f790d011f8840068a252}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!refreshCallbackType@{refreshCallbackType}}
+\index{refreshCallbackType@{refreshCallbackType}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{refreshCallbackType}]{\setlength{\rightskip}{0pt plus 5cm}delegate void IasPbxConfig.NameValueGrid.refreshCallbackType (string {\em selectedExtensionSuggestion})}}
+\label{class_ias_pbx_config_1_1_name_value_grid_acb2383247682f790d011f8840068a252}
+
+
+delegate description for callback used if unique key was changed. 
+\begin{DoxyParams}{Parameters}
+\item[{\em selectedExtensionSuggestion}]the new selected value for the unique key selection control \end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a9ce813f75fb383103a34150e0e7643e5}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!ControlHeading@{ControlHeading}}
+\index{ControlHeading@{ControlHeading}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{ControlHeading}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.NameValueGrid.ControlHeading} = \char`\"{}Control\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a9ce813f75fb383103a34150e0e7643e5}
+
+
+Grid's 'value column' name. 
+
+Definition at line 48 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_acdf8c458a67f3fd92adbbe8878b9067d}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!log@{log}}
+\index{log@{log}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.NameValueGrid.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_acdf8c458a67f3fd92adbbe8878b9067d}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 27 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a0177cb7f2195d16203835db6e41c2823}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-active@{m\_\-active}}
+\index{m\_\-active@{m\_\-active}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-active}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf IasPbxConfig.NameValueGrid.m\_\-active}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a0177cb7f2195d16203835db6e41c2823}
+
+
+used internally to handle active/inactive state of grid. cell validating events are not handled when false. 
+
+Definition at line 71 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a57457b107cbaf9464e578effb30a7b5c}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-controlAttributes@{m\_\-controlAttributes}}
+\index{m\_\-controlAttributes@{m\_\-controlAttributes}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-controlAttributes}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.NameValueGrid.m\_\-controlAttributes}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a57457b107cbaf9464e578effb30a7b5c}
+
+
+holds comboboxes' ids, other information for each control can be stored here 
+
+Definition at line 61 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a816a0c9ece3edb83afb39863e1f843b4}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-data@{m\_\-data}}
+\index{m\_\-data@{m\_\-data}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}string \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.NameValueGrid.m\_\-data}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a816a0c9ece3edb83afb39863e1f843b4}
+
+
+array of length equal to number of rows in m\_\-grid. each item is another array of data for that row's control; \begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid_ad252779c8bb45743ebf71025b284957e}{DataIndexes}. 
+\end{DoxySeeAlso}
+
+
+Definition at line 59 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a588270d544b904d41de5081329739d3d}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-grid@{m\_\-grid}}
+\index{m\_\-grid@{m\_\-grid}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-grid}]{\setlength{\rightskip}{0pt plus 5cm}DataGridView {\bf IasPbxConfig.NameValueGrid.m\_\-grid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a588270d544b904d41de5081329739d3d}
+
+
+the DataGridView we are working with. passed in through constructor. one per instance. 
+
+Definition at line 39 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_aba9a53f0a732686cb3ba46dce7171a75}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-hiddenRows@{m\_\-hiddenRows}}
+\index{m\_\-hiddenRows@{m\_\-hiddenRows}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-hiddenRows}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable {\bf IasPbxConfig.NameValueGrid.m\_\-hiddenRows}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_aba9a53f0a732686cb3ba46dce7171a75}
+
+
+keep track of hidden name/value pairs. which ones are hidden are passed in through options. Even though they are hidden, they are still accessible. 
+
+Definition at line 55 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a536cacb74f82c03d40dee9f8cf4b0da5}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-options@{m\_\-options}}
+\index{m\_\-options@{m\_\-options}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-options}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable {\bf IasPbxConfig.NameValueGrid.m\_\-options}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a536cacb74f82c03d40dee9f8cf4b0da5}
+
+
+options for this nvgrid (optional) 
+
+Definition at line 51 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_a7da8312b72dfd2438197fbb2e32a1daa}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-previousValue@{m\_\-previousValue}}
+\index{m\_\-previousValue@{m\_\-previousValue}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-previousValue}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.NameValueGrid.m\_\-previousValue}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_a7da8312b72dfd2438197fbb2e32a1daa}
+
+
+spot to hold previous value of the active Control while it is edited by user, in case their edit is canceled. 
+
+Definition at line 68 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_af6e6d9e0a9f40dd4e3e8d332e1f3018f}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-tableName@{m\_\-tableName}}
+\index{m\_\-tableName@{m\_\-tableName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-tableName}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.NameValueGrid.m\_\-tableName}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_af6e6d9e0a9f40dd4e3e8d332e1f3018f}
+
+
+databse table name associated with this grid 
+
+Definition at line 63 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_ace4c5d89cfdadc8de017dcbc9898a7fe}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!m\_\-uidKeyName@{m\_\-uidKeyName}}
+\index{m\_\-uidKeyName@{m\_\-uidKeyName}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{m\_\-uidKeyName}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.NameValueGrid.m\_\-uidKeyName}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_ace4c5d89cfdadc8de017dcbc9898a7fe}
+
+
+database unique key column name to use when working with this grid 
+
+Definition at line 65 of file NameValueGrid.cs.\hypertarget{class_ias_pbx_config_1_1_name_value_grid_add49a07f2a41723711cae88d6a6f7360}{
+\index{IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}!NameHeading@{NameHeading}}
+\index{NameHeading@{NameHeading}!IasPbxConfig::NameValueGrid@{IasPbxConfig::NameValueGrid}}
+\subsubsection[{NameHeading}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.NameValueGrid.NameHeading} = \char`\"{}Name\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_name_value_grid_add49a07f2a41723711cae88d6a6f7360}
+
+
+Grid's 'name column' name. 
+
+Definition at line 46 of file NameValueGrid.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_name_value_grid_8cs}{NameValueGrid.cs}\end{DoxyCompactItemize}

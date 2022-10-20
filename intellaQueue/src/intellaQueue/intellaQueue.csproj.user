@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PublishUrlHistory>C:\intellaQueue\|C:\intellaqueue\|ftp://ftp.intellasoft.net/public_html/acs/|ftp://ftp.intellasoft.net/customers/acs/clickonce/intellaqueue/|ftp://ftp.intellasoft.net/intellasoft/clickonce/intellaqueue/acs/</PublishUrlHistory>
+    <InstallUrlHistory>https://ssl.intellasoft.net/software/intellaQueue/|https://www.intellasoft.net/software/intellaQueue/|https://tzg.cpbx.intellasoft.net/software/intellaQueue/Office/|https://tzg.cpbx.intellasoft.net/software/intellaQueue/|http://192.168.1.191/software/intellaQueue/</InstallUrlHistory>
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <ProjectView>ProjectFiles</ProjectView>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <RevDeBugCompilerPath>c:\users\user\appdata\local\microsoft\visualstudio\16.0_ef0d3336\extensions\1qbs0laj.gwc\tmcc\</RevDeBugCompilerPath>
+    <CustomAfterMicrosoftCommonTargets>c:\users\user\appdata\local\microsoft\visualstudio\16.0_ef0d3336\extensions\1qbs0laj.gwc\tmcc\RevDeBug.ImportAfter.targets</CustomAfterMicrosoftCommonTargets>
+    <RevDeBugActive>True</RevDeBugActive>
+    <SaveMetadataAsync>true</SaveMetadataAsync>
+    <RevDeBugDisableNuget>true</RevDeBugDisableNuget>
+    <RevDeBugMetadataPath>C:\Users\User\Documents\RevDeBug\intellaQueueWithIntellaCast\Metadata\\</RevDeBugMetadataPath>
+    <RevDeBugStateStorageType>Continuous</RevDeBugStateStorageType>
+    <PublishWithRevDeBug>false</PublishWithRevDeBug>
+    <RecorderAddress>127.0.0.1</RecorderAddress>
+    <RecorderTCPPort>42742</RecorderTCPPort>
+    <UseRevDeBugOnThisProject>true</UseRevDeBugOnThisProject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>
+    </ReferencePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableSecurityDebugging>false</EnableSecurityDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartArguments>FooBar</StartArguments>
+  </PropertyGroup>
+</Project>

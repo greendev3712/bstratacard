@@ -1,0 +1,808 @@
+Introduction
+------------
+
+Database tables/views are within []
+Database columns are within ()
+
+--------
+Contexts
+--------
+
+Contexts are the heart of the system.  A context is a generic
+container for dialplan logic.  Classes Of Service, Routes, Phone
+Groups, IVR's, and other pieces of dialplan code are in contexts.
+
+The database view [asterisk.v_contexts] will give a list of all
+contexts in use.  Each context has a name (context_label). When the
+view is used, the (context_label) from [asterisk.v_contexts] is joined
+with (context_type_name) from [asterisk.context_types] to form
+(asterisk_context), which is the final context name used by the system
+when asterisk reads the database.  The reasoning behind this is two
+fold:
+  One: to allow for a class of service to have the same name as a phonegroup/route/etc.
+    The resulting (asterisk_context)s would be: cos_internal and phonegroup_internal
+  Two: to make it obvious when a route/cos/phonegroup/etc is being
+    executed in asterisk.
+
+Views:
+-------------------------------------------------------------------------------
+v_context_types
+  context_type_id        Contexts are generally either cos/route/phonegroup, but can be others.
+  context_type           String: Unique identifier of the context type
+  context_type_longnmae  String: Non-functional description of the context type
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  No row can be updated.
+Deletes:
+  No row can be deleted.
+
+-------------------------------------------------------------------------------
+v_contexts -- Joins with [context_types] on (context_type_id) 
+  context_id             This is a unique id for contexts throughout the system
+  context_label          The label of the context.  Labels are unique across (context_type_id)'s.
+  context_type_id        See [v_context_types]
+  context_type           See [v_context_types]
+  context_type_longname  See [v_context_types]
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  No row can be updated.
+Deletes:
+  No row can be deleted.
+
+
+Example v_context_types:
+  context_type_id   context_type   context_longname
+  1                 route          Route
+  2                 cos            Class Of Service
+  3                 phonegroup     Phone Group
+  4                 literal        Literal
+
+Example v_contexts:
+  context_id   context_label   asterisk_context   context_type_id   context_type_longname  context_type  
+  1            basic           cos_basic          2                 Class Of Service       cos           
+  2            ld11            route_ld11         1                 Route                  route         
+  3            myfunctions     myfunctions        4                 Literal                literal       
+
+Example asterisk generated context
+cos_basic, route_ld11, myfunctions
+
+Note: To define a specific context that is not prepended with the
+(context_type), define a context in [asterisk.literal_contexts].
+
+------------------
+Classes Of Service
+------------------
+
+Classes Of Service define who has access to what.  A Class of Service
+can include another class of service, or route, a phonegroup, an ivr,
+or any other context.  An extension is assigned exactly one class of service.
+
+-------------------------------------------------------------------------------
+Views:
+-------------------------------------------------------------------------------
+v_cos -- This is all the classes of service that are defined
+  cos_id            The unique id of the class of service (unique across all context types)
+  cos_name          The label of the class of service (unique across classes of service)
+  cos_longname      Non-functional description of the context type
+
+Inserts:
+  cos_id, cos_name, cos_longname must all be specified
+Updates:
+  Any column on any row may be updated.
+Deletes:
+  Rows cannot be deleted if the class of service is used by an extension [v_extensions] or phonegroup [v_phonegroups]
+  Rows cannot be deleted if the class of service has includes associated [v_cos_includes] 
+  Any row that passes the critera above can be deleted.
+
+-------------------------------------------------------------------------------
+v_cos_includes -- This is all the classes of service, and what they include
+  cosi_id                Unique id for the specific include.
+  cos_id                 See [asterisk.v_cos].  This is the class of service we will include from.
+  cos_include_type_id    See [asterisk.v_context_types]. This is the type of context we are including.
+  cos_include_id         See [asterisk.v_cos_includes_available].  This is the context id we are including.
+  cosi_pos               This is the position in which the context will be included (order matters!).
+  cos_name               See [asterisk.v_cos]. This is the label of the class of service we will include from.
+  include_type           See [asterisk.v_context_types]. This is the type of context we are including.
+  include_name           See [asterisk.v_contexts] (context_label). This is the label of the context we are including (immutable).
+
+Inserts:
+  cos_id, cos_include_id must be specified
+  cosi_pos is optional.  If it is not specified, it will default to the last cosi_pos+1 of the class of service (cos_id)
+  no other columns can be used in an insert
+Updates:
+  cosi_pos, cos_include_id may be updated.
+  No other column can be updated.
+Deletes:
+  Any row can be deleted.
+
+-------------------------------------------------------------------------------
+v_cos_includes_available -- This is all the contexts that can be included into each class of service
+  cos_id                 The class of service that can be included from
+  include_id             The context that can be included
+  context_label          The label of the context that can be included
+  asterisk_context       The asterisk_context that asterisk will use, of the context that can be included
+  context_type_id        See [asterisk.v_context_types] The type id of the context that can be included
+  context_type_longname  See [asterisk.v_context_types] The non-functional description of the context that can be included
+  context_type           See [asterisk.v_context_types] The name of the type of the context that can be included
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  No row can be updated.
+Deletes:
+  No row can be deleted.
+
+------------------------------------------------------------------------------
+v_autoanswer_groups -- This is for defineing groups of extensions/phonegroups that will autoanswer
+  autoanswergroup_id         Unique name for this auto answer group
+  autoanswergroup_longname   Non-functional description of the auto answer group
+
+Inserts:
+  autoanswergroup_id, autoanswergroup_longname must all be specified
+Updates:
+  Any row can be updated.
+Deletes:
+  A row cannot be deleted if there are associated includes [v_autoanswer_group_includes]
+  Any row that passes the critera above can be deleted.
+
+------------------------------------------------------------------------------
+v_autoanswer_group_includes -- This is for defineing what extensions/phonegroups will autoanswer
+  autoanswergroup_include_id   Unique id for the specific include
+  autoanswergroup_id           The group id of the autoanswer group.  See [v_autoanswer_groups]
+  include_type                 The include type can either be 'phonegroup' or 'exten' (Currently only 'phonegroup' is supported)
+  include_name                 The name of the item being included (unique across include type)
+  include_id                   The id of the item being included (unique across include type)
+
+Inserts:
+  No new rows can be inserted. (Not yet supported)
+Updates:
+  No row can be updated. (Not yet supported)
+Deletes:
+  No row can be deleted. (Not yet supported)
+
+------------------------------------------------------------------------------
+v_core_settings -- Global settings that affect the entire system
+  pbx_ip     The IP address that external devices will use to connect back to the system. This is used in config file generation of polycom/aastra/grandstream phones
+  sip_port   SIP port to listen on for incomming/outgoing calls
+  iax_port   IAX port to listen on for incomming/outgoing calls
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  There is only one row allowed in this table.
+  Any column in the row can be updated.
+Deletes:
+  No row can be deleted.
+
+------------------------------------------------------------------------------
+v_core_sip_settings -- Global default settings specific to sip.  These settings can be overridden on a per-device basic in [v_devices_sip_attributes]
+  qualify    If enabled, qos measurements will be done, and if the measurements are above the thresholds, the device will be considered out of service.
+  dtmfmode   Controls the default dtmf signalling to use.  Either auto/rfc2833/info/inband.
+                auto = use rfc2833 if available inband audio otherwise
+                info = send dtmf in SIP INFO messages
+                inband = use inband audio for dtmf (requires alaw or ulaw codec)
+                rfc2833 = send dtmf in rtp data stream (voip standard)
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  There is only one row allowed in this table.
+  Any column in the row can be updated.
+Deletes:
+  No row can be deleted.
+
+------------------------------------------------------------------------------
+v_devices -- Informational view of devices in the system (trunks and extensions)
+  device_id                   Unique device id. See [v_trunks] [v_extensions]
+  device_usage_type_id        Usage type is either 1 (exten) or 2 (trunk) (Note: this will be removed in favor of only using device_usage_type)
+  device_type_id              Device type is either 1 (sip) or 2 (iax) (Note: this will be removed in favor of only using device_type)
+  device_type                 Type of the device.  Either SIP or IAX2 or ZAP (Note: ZAP is currently not yet implemented)
+  device_usage_type           Usage type, either exten or trunk
+  device_usage_type_longname  Non-functional description of the device usage type (Note: this will be removed from this view in a future rev)
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  No row can be updated.
+Deletes:
+  No row can be deleted.
+
+------------------------------------------------------------------------------
+v_devices_iax_attributes -- Specifc settings for IAX devices (both extensions and trunks)
+  device_id         The unique device id of the device.  See [v_devices] [v_trunks] [v_extensions]
+  type              Type is either friend/peer/user.  Friend means the device is both a peer and user.  Calls are sent to peers and recieved from users
+  username          Username that the device will authenticate with (as well as the username we will authenticate with the device)
+  secret            Secret must be the same on here as well as the device
+  host              Host of the device.  Use 'dynamic' if the device will register with us
+  port              Port that the remote device is accepting calls on
+  callerid          
+  call-limit        Limit inbound and outbound calls to this amount
+  pickupgroup       
+  callgroup         
+  transfer          If Allow Transfer is "yes", the system will tell the remote system to transfer the call on our behalf.  Once a transfer is done, the system will no longer have any channels of the call
+                    For calls coming to us, allow the remote party to transfer the call off of their system
+  trunk             Allow 'trunking', which is combining multiple voice packets into one to save bandwidth
+  jitterbuffer      Enable or disable the jitter buffer
+  auth              Authentication Type.  Either md5, rsa, or plaintext
+  language          System prompt language
+  accountcode       This account code will be added to cdr records associated to this device (handy for billing)
+  qualify           If enabled, qos measurements will be done, and if the measurements are above the thresholds, the device will be considered out of service.
+  qualifysmoothing  If enabled, use an average of the last two qos measurements to see if a device is lagged
+  allow             Codecs to allow (this is processed after disallow)
+  disallow          Codecs to disallow (this is processed before allow.  Example: disallow=all, allow=ulaw... to only allow ulaw)
+
+Inserts:
+  No new rows can be inserted directly.  Use [v_trunks] or [v_extensions]
+Updates:
+  Any column can be updated.
+Deletes:
+  No rows can be deleted directly.  Use [v_trunks] or [v_extensions]
+
+------------------------------------------------------------------------------
+v_devices_sip_attributes -- Specifc settings for SIP devices (both extensions and trunks)
+  device_id           The unique device id of the device.  See [v_devices], [v_trunks], [v_extensions]
+  type                Type is either friend/peer/user.  Friend means the device is both a peer and user.  Calls are sent to peers and recieved from users
+  username            Username that the device will authenticate with (as well as the username we will authenticate with the device)
+  secret              Secret must be the same on here as well as the device
+  host                Host of the device.  Use 'dynamic' if the device will register with us
+  callerid            
+  call-limit          Limit inbound and outbound calls to this amount
+  canreinvite         Allow endpoints to remove us from the communication path and talk directly
+  pickupgroup         
+  callgroup           
+  nat                 For support for endpoints behind a nat gateway.  Values can be yes/no/never/route
+  trustrpid           If Remote-Party-ID should be trusted for incomming calls
+  sendrpid            If Remote-Party-ID should be sent to the remote device
+  dtmfmode           Controls the default dtmf signalling to use.  Either auto/rfc2833/info/inband.
+                       auto = use rfc2833 if available inband audio otherwise
+                       info = send dtmf in SIP INFO messages
+                       inband = use inband audio for dtmf (requires alaw or ulaw codec)
+                       rfc2833 = send dtmf in rtp data stream (voip standard)
+  insecure           Can be either port/invite/port,invite.
+                        port = Allow matching of peer by IP address without matching port number
+                        invite = Do not require authentication of incoming INVITEs
+  rfc2833compensate  Compensate for pre-1.4 DTMF transmission from another Asterisk machine.
+
+(To Be Added)
+  port              Port that the remote device is accepting calls on
+  allowtransfer     If Allow Transfer is "yes", the system will tell the remote system to transfer the call on our behalf.  Once a transfer is done, the system will no longer have any channels of the call
+                    For calls coming to us, allow the remote party to transfer the call off of their system
+  accountcode       This account code will be added to cdr records associated to this device (handy for billing)
+  qualify           If enabled, qos measurements will be done, and if the measurements are above the thresholds, the device will be considered out of service.
+  allow             Codecs to allow (this is processed after disallow)
+  disallow          Codecs to disallow (this is processed before allow.  Example: disallow=all, allow=ulaw... to only allow ulaw)
+
+Inserts:
+  No new rows can be inserted directly.  Use [v_trunks] or [v_extensions]
+Updates:
+  Any column can be updated.
+Deletes:
+  No rows can be deleted directly.  Use [v_trunks] or [v_extensions]
+
+------------------------------------------------------------------------------
+v_devices_sip_polycom_lines -- This is used by the polycom config file generator to configure individual polycom phone lines
+  device_id                 The unique device id.  See [v_extensions], [v_devices_sip_attributes]
+  line                      The line number, anywhere from 1 to the number of lines the phone supports.  Can be up to 30 with polycom sidecars)
+  displayName               The text that will display next to the line number on the polycom screen
+  label                     
+  username                  The username to authenciate with (generally the same as the extension)
+  password                  The secret to authenticate with (the secret has to match the secret defined in the sip user)
+  ringType                  Ring tone for this line (see sip.cfg in /var/tftpboot)
+  lineKeys                  The number of keys that will use this account
+  callsPerLineKey           The number of calls that can be on a single line key
+  missedCallTracking        Enable/Disable showing of missed calls for this line
+  serverMissedCallTracking  Enable/Disable storing of the phone's missed calls on the server for this line
+
+Inserts:
+  New rows can be added if they use a device_id that is present in [v_devices_sip_attributes]
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.  Take care to make sure line numbers are correct afterwards.
+
+------------------------------------------------------------------------------
+v_extensions -- General extensions management.  Inserting into this table will also populate the appropriate [v_devices_sip_attributes] or [v_devices_iax_attributes] rows
+  device_id             The unique device id.  See [v_devices_sip_attributes], [v_devices_iax_attributes]
+  extension             Extension that will be available in the dialplan for this device, within the specified phone group
+  class_of_service_id   Class of serivce that this extension will use.  See [v_cos], [v_cos_includes]
+  phonegroup_id         Phonegroup that this extension will be a part of.
+  all_call_forward      If non-null, if this extension is dialed, forward all calls to the number listed here
+  busy_call_forward     If non-null, if this extension is dialed and is busy, forward to the number listed here
+  select_call_forward   If non-null, forward callers based on callerid (see [v_extensions_select_call_forward]) to the number listed here (Not yet implemented)
+  last_caller           This contains the callerid of the last caller to this extension
+  autoanswergroup_id    If the extension or phonegroup of the caller to this extension is in the specified autoanswer group, force the device to auto answer (only available on certain sip devices)
+                        For example: if this extension's phonegroup is 'internal' and the autoanswer group includes 'internal', all calls from extensions in the 'internal' phonegroup to this
+                        extension, will cause the device to auto answer
+  phonemake_id          Specific phone make of this extension (for handling of auto answer and etc). See [v_phone_makes]
+  phonemodel_id         Specific phone model of this extension (for handling of auto answer and etc). See [v_phone_models]
+  autoanswer            Enable/Disable perminant auto answer for this extension
+  record                Enable/Disable recording of all calls for this extension
+
+Inserts:
+  extension, class_of_service_id, phonegroup_id are required
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.  The related rows in [v_devices], [v_devices_sip_attributes], [v_devices_sip_polycom_lines], [v_devices_iax_attributes] will also be deleted.
+
+------------------------------------------------------------------------------
+v_feature_codes -- Control the codes for features in the system
+  checkOwnVoicemail             The feature code that will send the caller to their own voicemail login
+  checkOtherVoicemail           The feature code that will send the caller to be able to log into another voicemail
+  enableSelectCallForwarding    The feature code to enable call forwarding for the caller's extension
+  disableSelectCallForwarding   The feature code to disable call forwarding for the caller's extension
+  enableBusyCallForwarding      The feature code to enable call forwarding on busy line, for the caller's extension
+  disableBusyCallForwarding     The feature code to disable call forwarding on busy line, for the caller's extension
+  enableAllCallForwarding       The feature code to enable call forwarding of all calls, for the caller's extension
+  disableAllCallForwarding      The feature code to disable call forwarding of all calls, for the caller's extension
+  callReturn                    The feature code that will prompt the caller to call back the number of the last incomming call
+  busyRetry                     The feature code that will prompt the caller to call back the last number dialed (not yet implemented)
+  calleridBlock                 The feature code that will block callerid for only the next call
+
+Inserts:
+  No new rows can be inserted.
+Updates:
+  There is only one row allowed in this table.
+  Any column in the row can be updated.
+Deletes:
+  No row can be deleted.
+
+------------------------------------------------------------------------------
+v_literal_contexts -- define contexts 
+  literal_context_id           Unique context_id (unique across all contexts (cos/routes/phonegroups/trunkhandlers/literals)
+  literal_context_name         Unique context name (will be used as-is anywhere (asterisk_context) is used)
+  literal_context_longname     Non-functional description of the context
+
+Inserts:
+  literal_context_name, literal_context_longname must be specified
+Updates:
+  Any column in any row can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_phone_makes -- Phone manufacturers.  Each phone manufacturer has completely different handling for various items (such as auto answer)
+  phonemake_id           Unique id of the phone maker
+  phonemake_longname     Non-functional description of the phone maker
+
+Inserts:
+  phonemake_id, phonemake_longname must be specified
+Updates:
+  Any column in any row can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_phone_models -- Phone models.  Each phone model may have different handling for various items (such as auto answer)
+  phonemake_id            Id of the phone maker of this phone model
+  phonemodel_id           Specific phone model
+  phonemodel_longname     Non-functional description of the phone model
+  lines                   Number of lines this phone can support
+
+Inserts:
+  phonemake_id, phonemodel_id, phonemodel_longname must be specified
+Updates:
+  Any column in any row can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_phonegroups -- Define phonegroups and their associated extension ranges and options
+  phonegroup_id         Unique context_id (unique across all contexts (cos/routes/phonegroups/trunkhandlers/literals)
+  phonegroup_name       The unique name of the phonegroup
+  phonegroup_longname   Non-functional descrption of the phonegroup
+  callerid_name         The name part of the callerid to use for outgoing calls (when applicable). To configure usage of this, see [v_trunk_groups]
+  callerid_number       The number part of the callerid to use for outgoing calls (when applicable).
+  extensions_start      Extensions in this phone group start with this extension
+  extensions_end        Extensions in this phone group end with this extension
+
+Inserts:
+  phonegroup_name, phonegroup_longname, extensions_start, extensions_end must be specified
+Updates:
+  Any column in any row can be updated.
+Deletes:
+  Rows cannot be deleted if there are extensions that are in the phonegroup
+  Rows cannot be deleted if there are classes of service that include the phonegroup
+  Any row that passes the critera above can be deleted.
+
+------------------------------------------------------------------------------
+v_pickupaccess_members - Contol ringing phone pickup access
+  extension                This is the extension that can be picked up by the below extension
+  allow_pickup_extension   Allow this extension to pick up the above extension
+  device                   The device of the extension that can be picked up
+
+Inserts:
+  extension, allow_pickup_extension must be specified
+Updates:
+  extension, allow_pickup_extension can be updated
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_registrations_iax -- Control iax registrations
+  iax_reg_id         Unique id for this registration
+  username           Username to register with on the remote system
+  host               Target system to register with
+  port               Port to attempt registration on
+  secret             Secret must be valid on the remote system
+  secret_is_rsa_key  If this is yes, the secret will be used as an rsa key for authentication
+
+Inserts:
+  username,host must be specified
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_registrations_sip -- Control sip registrations
+  sip_reg_id   Unique id for this registration
+  username     Username to register with on the remote system
+  host         Target system to register with
+  port         Port to attempt registration on
+  secret       Secret must be valid on the remote system
+  authuser     Authenticate with this username
+  extension    When the remote system calls us, the extension to use
+
+Inserts:
+  username,host must be specified
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_trunks -- Manage trunks and general trunk options
+  trunk_name               Unique name for this trunk
+  trunk_longname           Non-functional description of the trunk
+  device_type              Type of the device.  Either SIP or IAX2 or ZAP (Note: ZAP is currently not yet implemented)
+  callerid                 If non-null, incomming calls from this trunk will be forced to have this callerid
+  incoming_context_label   The label of the context that will be used to handle incomming calls
+  incomming_context_type   The type of context that will be used to handle incomming calls
+  asterisk_context         The asterisk_context that asterisk will use to handle incomming calls on this trunk
+  device_id                Unique device id. See [v_devices_iax_attributes], [v_devices_sip_attributes]
+  incoming_context_id      The context id of the context to use to handle incomming calls. See [v_contexts]
+  capacity                 The total number concurrent calls (inbound+outbound) that this trunk can handle
+
+Inserts:
+   trunk_name,trunk_longname,device_type,capacity must be specified
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_trunk_groups -- Manage trunk groups
+  trunk_group_id        Unique trunk group id
+  trunk_group_name      Unique trunk group name
+  trunk_group_longname  Non-functional description of this trunk group
+  capacity              Total allowed concurrent outgoing calls to the trunks included in this trunk group
+  callerid              Callerid type, either phonegroup/exten/passthrough
+
+Inserts:
+  trunk_group_name,trunk_group_longname,capacity must all be specified
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_trunk_group_includes -- Manage which trunks a trunk group includes
+  trunk_group_include_id  Unique id of this include
+  trunk_group_name        The name of the trunk group being included from
+  trunk_name              The name of the trunk being included
+  device_type             The device type of the trunk
+  device                  The specific device of the trunk
+  trunk_pos               The position in which this trunk will be used
+  trunk_group_id          The trunk group we will include from
+  trunk_id                The trunk id that's being included
+  replace                 Replace the number dialed with this number
+  remove                  Remove digits from the dialed number (+digits to remove from the beginning, -digits to remove from the end... ex: +2 or -1)
+  prepend                 Prepend the number dialed with this number
+  postpend                Append to the number dialed with this number
+
+Note: The trunk_group_name and trunk_group_id cannot be set/changed in the same query
+Note: the trunk_name and the trunk_id cannot be set/changed in the same query
+Note: number mangling order of operations: replace,remove,prepend,postpend
+
+Inserts:
+   trunk_group_id,trunk_id must be specified,  if trunk_pos is not specified, the default is to use the last trunk_pos + 1
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+------------------------------------------------------------------------------
+v_trunks_list -- Informational view of trunk group includes
+  trunk_group_name   The name of the trunk group being included from
+  trunk_name         The name of the trunk being included
+  device_type        The device type of the trunk
+  device             The specific device of the trunk
+  capacity           The capacity of this specific trunk
+  trunk_pos          The position in which this trunk will be used
+  replace            Replace the number dialed with this number
+  remove             Remove digits from the dialed number (+digits to remove from the beginning, -digits to remove from the end... ex: +2 or -1)
+  prepend            Prepend the number dialed with this number
+  postpend           Append to the number dialed with this number
+
+Note: number mangling order of operations: replace,remove,prepend,postpend
+
+Inserts:
+   No rows can be inserted
+Updates:
+  No row can be updated
+Deletes:
+  No row can be deleted
+
+------------------------------------------------------------------------------
+v_routes -- Configure routing for the dial plan
+  route_id        Unique context_id (unique across all contexts (cos/routes/phonegroups/trunkhandlers/literals)
+  route_name      Unique route name
+  route_longname  Non-functional description of the route
+  trunk_group_id  Dial out using this trunk group
+  pattern         Pattern that will make this route be used (valid characters are X N 0-9 ! .)
+  replace         Replace the number dialed with this number
+  remove          Remove digits from the dialed number (+digits to remove from the beginning, -digits to remove from the end... ex: +2 or -1)
+  prepend         Prepend the number dialed with this number
+  postpend        Append to the number dialed with this number
+
+Note: number mangling order of operations: replace,remove,prepend,postpend
+
+Inserts:
+   must be specified
+Updates:
+  Any column can be updated.
+Deletes:
+  Any row can be deleted.
+
+
+Views:
+x v_autoanswer_group_includes
+x v_autoanswer_groups
+x asterisk.v_context_types
+x asterisk.v_contexts
+x v_core_settings
+x v_core_sip_settings
+x asterisk.v_cos
+x asterisk.v_cos_includes
+x asterisk.v_cos_includes_available
+x v_devices
+x v_devices_iax_attributes
+x v_devices_sip_attributes
+x v_devices_sip_polycom_lines
+x v_extensions
+x v_feature_codes 
+x v_literal_contexts
+x v_phone_makes
+x v_phone_models
+x v_phonegroups
+x v_registrations_iax
+x v_registrations_sip
+x v_routes
+x v_trunk_group_includes
+x v_trunk_groups
+x v_trunks
+x v_trunks_list
+
+
+-------------------------------------------------------------------------------
+Examples:
+-------------------------------------------------------------------------------
+
+-------------
+Core Settings
+-------------
+
+Updates
+  UPDATE asterisk.v_core_settings SET pbx_ip = '192.168.50.1'; -- No WHERE clause is needed because there is only one row
+
+-----------------
+Core SIP Settings
+-----------------
+
+Updates
+  UPDATE asterisk.v_core_sip_settings SET qualify = 'yes'; -- No WHERE clause is needed because there is only one row
+
+------------------
+Classes Of Service
+------------------
+Note: classes of service cannot be deleted if they are being used one or more extensions
+
+Inserts
+  INSERT INTO asterisk.v_cos (cos_name,cos_longname) VALUES ('basic', 'The Basic Class Of Service')
+Updates
+  UPDATE asterisk.v_cos SET cos_name = 'not_basic' WHERE cos_name = 'basic'
+  UPDATE asterisk.v_cos SET cos_name = 'something' WHERE cos_id = 1
+Deletes
+  DELETE FROM asterisk.v_cos WHERE cos_name = 'basic'
+  DELETE FROM asterisk.v_cos WHERE cos_id = 1
+
+---------------------------
+Classes Of Service Includes
+---------------------------
+Note: classes of service can include: other classes of service, routes, phonegroups, literals
+
+Inserts
+  INSERT INTO asterisk.v_cos (cos_id,cos_name,cos_longname) VALUES (1,'basic','The Basic COS')
+  INSERT INTO asterisk.v_cos (cos_id,cos_name,cos_longname) VALUES (2,'extra','An Extra COS')
+  INSERT INTO asterisk.v_cos (cos_id,cos_name,cos_longname) VALUES (3,'extraextra','An Extra Extra COS')
+  INSERT INTO asterisk.v_cos_includes (cos_id,include_id) VALUES (1,2); -- this will add to the COS 'basic' to include the COS 'extra'
+  INSERT INTO asterisk.v_cos_includes (cos_id,include_id) VALUES (1,3); -- this will add to the COS 'basic' to include the COS 'extraextra', the cosi_pos will be '2'
+
+  INSERT INTO asterisk.v_cos_includes (cos_id,include_id,cosi_pos) (1,2,1); -- add the COS 'extra' into the COS 'basic' in position 1, the COS at position 1 will become 2
+Updates
+  UPDATE asterisk.v_cos_includes SET cosi_pos = cosi_pos + 1 WHERE cosi_id = 1; -- move an include down one in priority
+  UPDATE asterisk.v_cos_includes SET include_id = 5 WHERE cosi_id = 1; -- change what's being included
+Deletes
+  DELETE FROM asterisk.v_cos_includes WHERE cosi_id = 1; -- delete a single include
+  DELETE FROM asterisk.v_cos_includes WHERE cos_id = 5;  -- delete all includes of a specific cos_id (useful for prepareing to delete an entire class of service)
+
+----------
+Extensions
+----------
+Note: New IAX extensions will be populated with a default secret of 'blob'
+Note: New SIP extensions will be populated with a default secret of 'blob'
+Note: To edit specific IAX settings for an extension, use asterisk.v_devices_iax_attributes referencing device_id
+Note: To edit specific SIP settings for an extension, use asterisk.v_devices_sip_attributes referencing device_id
+Note: Extensions must be in a class of service, the class of service must already exist
+Note: Extensions must be in a phonegroup, the phonegroup must already exist
+
+Inserts
+  INSERT INTO asterisk.v_cos (cos_id,cos_name,cos_longname) VALUES (1,'basic','The Basic COS'); -- assuming class of service id 1
+  INSERT INTO asterisk.v_phonegroups (phonegroup_name,phonegroup_longname,extensions_start,extensions_end) VALUES ('phones','Office Phones','2600','2699'); -- assuming phone group id 20
+  INSERT INTO asterisk.v_extensions (extension,device_type,class_of_service_id,phonegroup_id) VALUES ('2601','SIP',1,20)
+  INSERT INTO asterisk.v_extensions (extension,device_type,callerid,class_of_service_id,phonegroup_id) VALUES ('2601','SIP','Bob Smith <2601>',1,20)
+Updates
+  UPDATE asterisk.v_extensions SET callerid = 'Foo <1234>' WHERE device_id = 5
+  UPDATE asterisk.v_extensions SET callerid = 'Foo <1234>' WHERE extension = '2601'
+Deletes
+  DELETE FROM asterisk.v_extensions WHERE device_id = 5
+
+------
+Trunks
+------
+Note: each trunk type IAX2/SIP/ZAP also has it's own table that contains device specific settings
+Note: see devices_iax_attributes, devices_sip_attributes, registrations_iax, registrations_sip
+Note: also see devices_sip_polycom_attributes, devices_sip_polycom_lines
+  
+Inserts
+  INSERT INTO asterisk.v_trunks (trunk_name,trunk_longname,device_type,capacity) VALUES ('voicepulse', 'Voicepulse JFK', 'SIP', 2);
+Updates
+  UPDATE asterisk.v_trunks SET trunk_name = 'foo' where device_id = 1;
+Deletes
+  DELETE FROM asterisk.v_trunks WHERE device_id = 1;
+
+
+------------
+Trunk Groups
+------------
+
+Inserts
+  INSERT INTO asterisk.v_trunk_groups (trunk_group_name,trunk_group_longname,capacity) VALUES ('outgoing', 'To handle all outgoing calls', 4)
+Updates
+  UPDATE asterisk.v_trunk_groups SET trunk_group_name = 'foo' where trunk_group_id = 5;
+Deletes
+  DELETE FROM asterisk.v_trunk_groups WHERE trunk_group_id = 5;
+
+--------------------
+Trunk Group Includes
+--------------------
+Note: A trunk group include requres that at least one trunk group already exists
+Note: a trunk group include will reference a trunk, at least one trunk must already exist
+
+Inserts
+  INSERT INTO asterisk.v_trunk_groups (trunk_group_name,trunk_group_longname,capacity) VALUES ('outgoing', 'To handle all outgoing calls', 4); -- assuming trunk_group_id = 1  
+  INSERT INTO asterisk.v_trunks (trunk_name,trunk_longname,device_type) VALUES ('analog1', 'Internal analog port 1', 'ZAP'); -- assuming trunk_id = 1
+  INSERT INTO asterisk.v_trunk_group_includes (trunk_group_id,trunk_id) VALUES (1,1); -- by default if no trunk_pos is specified, the pos will be the last trunk_pos+1
+Updates
+  UPDATE asterisk.v_trunk_group_includes SET trunk_pos = trunk_pos + 1 WHERE trunk_group_include_id = 1;
+  UPDATE asterisk.v_trunk_group_includes SET trunk_pos = trunk_pos - 1 WHERE trunk_group_include_id = 1;
+Deletes
+  DELETE FROM asterisk.v_trunk_group_includes WHERE trunk_group_include_id = 1;
+
+------
+Routes
+------
+Note: a route must point to a trunk group, the trunk group needs to be created first
+Note: number mangling order of operations: replace,remove,prepend,postpend
+Note: a route cannot be deleted if it is being included in a class of service (v_cos_includes)
+
+Inserts
+  INSERT INTO asterisk.v_trunk_groups (trunk_group_name,trunk_group_longname,capacity) VALUES ('voicepulse','Voicepulse JFK',4); -- assuming the trunk group id is '1'
+  INSERT INTO asterisk.v_routes (route_name,route_longname,trunk_group_id,pattern) VALUES ('ld10','Long Distance 10 Digit',1,'9NXXXXXXXXX'); -- use trunk group 1 for this pattern
+Updates
+  UPDATE asterisk.v_routes SET remove = '+1', prepend = '1' WHERE route_id = 10; -- remove 1 digit from the beginning, then prepend a 1 to the number before sending it to the trunk group
+Deletes
+  DELETE FROM asterisk.v_routes WHERE route_id = 10
+  DELETE FROM asterisk.v_routes WHERE route_name = 'ld10'
+
+-----------
+PhoneGroups
+-----------
+
+Inserts
+  INSERT INTO asterisk.v_phonegroups (phonegroup_name,phonegroup_longname,extensions_start,extensions_end) VALUES ('phones','Office Phones','2600','2699'); -- assuming phone group id 20
+Updates
+  UPDATE asterisk.v_phonegroups SET phonegroup_name = 'not_phones' WHERE phonegroup_name = 'phones'
+  UPDATE asterisk.v_phonegroups SET phonegroup_name = 'not_phones' WHERE phonegroup_id = 20
+  UPDATE asterisk.v_phonegroups set callerid_name = 'My Company' WHERE phonegroup_id = 20
+  UPDATE asterisk.v_phonegroups set callerid_number = '8005558355' WHERE phonegroup_id = 20
+Deletes
+  DELETE from asterisk.v_phonegroups WHERE phonegroup_id = 20;
+
+-------------
+Feature Codes
+-------------
+
+Updates
+  Update asterisk.v_feature_codes SET callReturn = '*69'; -- No WHERE clause is needed because there is only one row
+
+-----------------
+SIP Registrations
+-----------------
+
+Inserts
+  INSERT INTO asterisk.v_registrations_sip (username,host) VALUES ('myaccount', 'pbx.foo.com');
+Updates
+  UPDATE asterisk.v_registrations_sip SET username = 'foo' WHERE sip_reg_id = 1
+Deletes
+  DELETE FROM asterisk.v_registrations_sip WHERE sip_reg_id = 1;
+
+-----------------
+IAX Registrations
+-----------------
+
+Inserts
+  INSERT INTO asterisk.v_registrations_iax (username,host) VALUES ('myaccount', 'pbx.foo.com');
+Updates
+  UPDATE asterisk.v_registrations_iax SET username = 'foo' WHERE iax_reg_id = 1
+Deletes
+  DELETE FROM asterisk.v_registrations_iax WHERE iax_iax_id = 1;
+
+--------------
+SIP Attributes
+--------------
+
+Updates
+  UPDATE asterisk.v_devices_sip_attributes SET secret 'mysecret' WHERE device_id = 1;
+
+--------------
+IAX Attributes
+--------------
+
+Updates
+  UPDATE asterisk.v_devices_iax_attributes SET secret 'mysecret' WHERE device_id = 1;
+
+----------------
+Literal Contexts
+----------------
+
+Inserts
+  INSERT INTO asterisk.v_literal_contexts (literal_context_name, literal_context_longname)
+    VALUES ('custom_context', 'My Custom Context');
+Updates
+  UPDATE asterisk.v_literal_contexts SET literal_context_name = 'other_custom_context';
+Deletes
+  DELETE FROM asterisk.v_literal_contexts WHERE literal_context_id = 1;
+
+-----------------
+Autoanswer Groups
+-----------------
+
+Inserts
+  INSERT INTO asterisk.v_autoanswer_groups (autoanswergroup_id, autoanswergroup_longname)
+    VALUES ('myautoanswergroup', 'Autoanswer group containing the phonegroup internal');
+Updates
+  UPDATE asterisk.v_autoanswer_groups SET autoanswergroup_id = 'foo' WHERE autoanswergroup_id = 'bar';
+Deletes
+  DELETE FROM asterisk.v_autoanswer_groups WHERE autoanswergroup_id = 'foo';
+
+-------------------------
+Autoanswer Group Includes
+-------------------------
+
+Not yet supported

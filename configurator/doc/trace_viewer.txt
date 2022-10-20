@@ -1,0 +1,26 @@
+Trace viewer
+--
+- a new tree item in the configurator
+- dual pane like an email viewer, the top pane is a scrollable listbox with the columns: 
+	timestamp, channel, and message
+	
+- bottom pane would load information about that timestamped item.. 
+	so it would pull from a hash object, and output all the data from the hash as text
+	
+- the top listbox would have filtering options, so you could filter on a channel substring, 
+	or something within the message
+	
+- see trace_viewer.png
+
+- data comes from json stream not dataset or log
+	(maintaining a connection with ami server and will be notified of events)
+
+- Realtime stuff comes from events, historic stuff comes from log file on server
+	- both in json
+
+- figuring out the overlap should be easy, all the calls have a uniqueid
+	if you connect to the ami first, and start getting events, 
+	and then get the log, you shouldnt have any gaps either
+	
+How does user specify connection details for ami and url for log? (from DB)
+

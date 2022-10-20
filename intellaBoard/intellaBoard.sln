@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "intellaBoard", "intellaBoard\intellaBoard.vbproj", "{5724F8E7-510A-4E2E-A0BF-DA1102449723}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E3AC300-62B8-4812-A5F2-273281EAE4C7} = {2E3AC300-62B8-4812-A5F2-273281EAE4C7}
+		{05D53D7D-A134-4F87-8DF1-2A84D062AB4D} = {05D53D7D-A134-4F87-8DF1-2A84D062AB4D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "..\intellaLib\Lib.csproj", "{2E3AC300-62B8-4812-A5F2-273281EAE4C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueLib", "..\QueueLib\QueueLib.csproj", "{05D53D7D-A134-4F87-8DF1-2A84D062AB4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "intellaBoard2", "intellaBoard2\intellaBoard2.csproj", "{A28CFEBB-C58B-44AC-AA00-0DF87ABF91D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5724F8E7-510A-4E2E-A0BF-DA1102449723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5724F8E7-510A-4E2E-A0BF-DA1102449723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5724F8E7-510A-4E2E-A0BF-DA1102449723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5724F8E7-510A-4E2E-A0BF-DA1102449723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E3AC300-62B8-4812-A5F2-273281EAE4C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E3AC300-62B8-4812-A5F2-273281EAE4C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E3AC300-62B8-4812-A5F2-273281EAE4C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E3AC300-62B8-4812-A5F2-273281EAE4C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05D53D7D-A134-4F87-8DF1-2A84D062AB4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05D53D7D-A134-4F87-8DF1-2A84D062AB4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05D53D7D-A134-4F87-8DF1-2A84D062AB4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05D53D7D-A134-4F87-8DF1-2A84D062AB4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A28CFEBB-C58B-44AC-AA00-0DF87ABF91D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A28CFEBB-C58B-44AC-AA00-0DF87ABF91D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A28CFEBB-C58B-44AC-AA00-0DF87ABF91D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A28CFEBB-C58B-44AC-AA00-0DF87ABF91D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD4B4CCE-59D9-42DD-91D3-419B5FAF3107}
+	EndGlobalSection
+EndGlobal

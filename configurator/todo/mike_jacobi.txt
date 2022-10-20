@@ -1,0 +1,147 @@
+todo
+-----
+
+(X == done, Q = Ask Mark, W = waiting for Mark, J = Mike, M = Mark, L = Later, ? = undecipherable)
+57	Trace Viewer Screen
+	UI sub-todos:
+		Minor resize issues:
+			column sizing does not get triggered?
+			detail lbox update does not get triggered
+			remember selected row?
+		Scroll to bottom if at bottom before an update
+		Drop down column type
+	Next todos:
+		Change input data to JSON format and parse it.
+
+X	1-9, 11-12, 14-17, 20-22, 25, 27, 29-32
+X	10 grid ordering (all grids except ordered ones (includes screens' included grids))
+X	13 SQL queries on draw finish
+X	34 apply changes made in LOT #9, #11 to all relevant screens
+X	37 change delete multiple to use 1 sql statement; this will allow one error message 
+		when 1 or more rows cannot be deleted (DELETE FROM Asterisk.v_routes WHERE route_name='ld10' error)
+X	38 fix bug where a TableForm's grid cannot be added to when it is empty
+X	14 remove cos_id from extensions (once Mark gives ok)
+X	24 Details -> reload voicemail grid on voicemail change
+X	43 cos dropdown on extensions screen		
+X	26 switch main detail grids to use custom db types
+		(revamp NVGrid to support mixed init from both Program Data and DB in a single Grid)
+X	45 immediate cell edit (both textbox and combo)
+X	46 tableform's grid autosizing (just autosize, don't expand to full width if not needed)
+X	47 optimize getNextAvailableUniqueId() /// @todo find a better way to do this (1 sql transaction)
+X	49 logViewer: refresh on resize
+X	40 fix bug where Delete Selected button sometimes does nothing (delete keyboard key still works fine)
+X	41 Uprade Timing class to keep a stack of Timers
+X	52 Confirmation yes/no popup on delete row(s)
+X	51 DB Protocol Version check
+X	33 fix error in code found by Nick (parameter order reversed?)
+X	35 add about pop up
+X	36 Have *includes screens support adding/removing multiple entries
+X	54 revert device type drop down on ext form to use device_types table temporarily 
+		(not yet an enum type)
+XJ	48 maintain grid ordering on refresh
+XJ	55 pull current git revision number into about box on compile
+		new perl script that uses git so should work on other projects/platforms 
+XM	50 INFO  2010-09-06 12:53:12,734 2275484ms DbHelper               updateDbField      - SQL: UPDATE Asterisk.v_extensions SET "device_type" = 'IAX2' WHERE extension='211'
+		DEBUG 2010-09-06 12:53:13,203 2275953ms NameValueGrid          lControlValidating - Npgsql.NpgsqlException:
+		error from Perl function "v_extensions_crud": error from Perl function "devices_update": Undefined subroutine &main::p_spi_exec_query called at line 77. at line 243.
+		Severity: ERROR
+		Code: XX000
+XM	53 SQL: UPDATE Asterisk.v_devices_sip_attributes SET "qualify" = 'no' WHERE device_id='202'
+		doesn't work. (and other fields in devices_*_attributes views)
+WL	18 New copy (server func) (source id 
+	                           take starting uid value and # of copies)
+WL	39 User Error messages on edit, create new, and delete of TableForms' grid
+		- also make sure to sync grid's state on error ( probably just refresh )
+WL	23 device type dropdowns 
+		Ask mark if device_type will become an enum db type for possible attributes in the db.
+		example sql for getting valid values: 
+			SELECT a.attname, e.enumlabel 
+			FROM pg_type t 
+			LEFT OUTER JOIN pg_attribute a ON a.atttypid = t.oid
+			LEFT OUTER JOIN pg_class c ON c.oid = a.attrelid
+			LEFT OUTER JOIN pg_enum e ON e.enumtypid=t.oid::oid
+			WHERE                         c.relname = 'v_extensions'
+			ORDER by a.attname,e.oid
+W	42 Finish & test Trunk group includes: waiting for _available table for final tweaks and testing
+M	44 default sort
+W	56 simple views for simple forms
+?	28 Reg Iax only should have user and host (add required data)
+?	19 (no move 
+	    copy from multiple sources)
+
+other
+---
+
+move MainForm into Lib assembly?
+
+
+ext details: 
+	1. make sure yes/no on voice mail option reloads vmail grid (using changeTable)
+		-talk to mark about how to change this value using DB
+		- fixed on db end now?
+	2. don't change table if same as previous table?
+	3. make 1 and 2 work together. special reload keyword?
+
+TableForm:
+	ask Mark: when inserting into some views, like v_phonegroups, do i really have to specify an id?
+	- fixed on db now?
+
+- more exception handling especially connection issues and db errors
+- also: stacktraces in log? add formating to sql queries so they look nicer in log?
+- unit testing!
+- implement DBHelper.getColumns? -- get multiple rows and columns? -- probably not needed
+
+done
+-----
+new TabSetManager class
+new TabManager class
+multiple simultaneous connections
+
+Connection manager:
+	move static helper methods into new StaticHelper class
+	move connection manager code into new class
+
+-Connection Manager! (with new PopupQuery class)
+
+-make tabs very smart tabs
+
+-multiColumnCobmboBox: http://www.codeproject.com/KB/combobox/multicolumncombo.aspx: use for uid selectors to give longname etc.
+	-working multicolumcombo added to trunkdetails subform and using our data.
+			done: in trunk details, pass in visibleColumns so mcc items are ordered
+			done: fix bug where mcc list is reloaded and mcc is droped down (renaim unique key)
+			done: add it to others subforms: extd
+			done: add it to others subforms: tgi, ext, cosi
+
+-add db custom type comboboxes to TableForms' grids
+
+Sheet from Mark; new Forms:
+	- Routes
+		- Phone Groups
+	- Registrations: SIP
+	- Registrations: IAX
+	- Trunk Groups
+	- Feature Codes
+	- Trunk Group Includes
+	
+-investigate switching from odbc.net to
+	npgsql.projects.postgresql.org (added npgsql support to DBHelper, and made it the default.
+-DBHelper.getMultiple
+-convert nvgrid.refresh to use getMultiple instead of getSingle
+
+convert ext details to nvgrids
+add vmail nvgrid to ext details
+
+use iax option grid data when appropriate (trunkdetails)
+sip scrolling nvgrid; autopopulated
+implement types for combobox dropdowns
+db getvalidvaluesforcolumn function
+namevalue grid objectgot it down to one 
+Trunkdetails moved to nvgrid
+doxygen, document - done, continue to document new code as it is written
+log4net - done, continue to add more logging calls
+
+for mark
+--------
+- (last tested 1-11-2009) when creating a new v_trunk, callerid_name not saved, unless an update on callerid_name is made afterwards.
+eg, below sql does not save "mikej abc"
+INSERT INTO Asterisk.v_trunks (trunk_name, trunk_longname, capacity, device_type, callerid_name ) VALUES ( 'new', 'Branch 2', '2', 'SIP', 'mikej abc' )

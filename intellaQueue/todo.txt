@@ -1,0 +1,56 @@
+db host info
+----
+demo1: 2606 111, 222:222
+
+acs-passaic.client.intellasoft.local:
+ext		agentnum	isManager
+6206	1890		agent (0 queues)
+6206	10178		manager (2 queues)
+
+acs-londonderry.client.intellasoft.local:
+ext		agentnum	isManager
+2601 	1044 		agent
+2601 	130  		manager
+
+acs local: 192.168.15.24: 
+ext		agentnum	isManager
+6206	6204 		agent
+6205	8000 		agent   (1 queue)
+6205	6208 		manager
+
+newer items: asap
+----
+X minimize creates visual artifacts until dropdown is toggled
+X txt logs get too big too fast (confirmed limited to 10x 10MB files = 100MB log limit)
+
+X remove any unneeded calls to drawForm() (X and rename to layoutForm())
+continue finding and fixing any random threading related crashes
+
+ui for multiple connections:
+	more maingrid rows with new column
+	mc server settings
+multiple db connections
+
+new items
+----
+test latest sql optimization on live data (getAgentCallDataFromDb)
+
+todo: test and fix configurator to make sure getTable() changes don't break it
+todo: test DBHelper.getDbData() and use it everywhere instead of getTable() where a gridview is not needed
+todo: change all dbhelper methods to use hash for whereConditions and use DBHelper.tackOnWhereConditionV2() 
+		and remove DBHelper.tackOnWhereCondition()
+- resize window when visible drop grid's rowcount changes
+- support multiple db connections (add server column)
+- test and consider switching to WPF more
+
+short-medium term todo
+----
+research more mainGrid tweaks to resemble mockup even more closely:
+	- faded and incomplete borders
+	- antialiased text
+animation?
+	
+older todo items
+----
+- Add support for watching voicemail status
+- Add support for full server side config of toolbar

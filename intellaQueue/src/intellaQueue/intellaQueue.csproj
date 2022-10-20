@@ -1,0 +1,446 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E67A0A4D-AF1E-48A1-8C60-694BE2767AF0}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QueueLib</RootNamespace>
+    <AssemblyName>intellaQueue</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>C:\intellaQueue\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>https://ssl.intellasoft.net/software/intellaQueue/</InstallUrl>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>261</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>772413CD998451019BC97D5474FD340EB26B26C7</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>intellaQueue_3_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DispositionCodesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DispositionCodesForm.Designer.cs">
+      <DependentUpon>DispositionCodesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditDebugSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditDebugSettings.Designer.cs">
+      <DependentUpon>EditDebugSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="DispositionCodesHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DispositionCodesHistoryForm.Designer.cs">
+      <DependentUpon>DispositionCodesHistoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="intellaQueue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="intellaQueue.Designer.cs">
+      <DependentUpon>intellaQueue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CurrentCallForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CurrentCallForm.Designer.cs">
+      <DependentUpon>CurrentCallForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IntellaQueueData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntellaQueueGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StatusCodesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StatusCodesForm.Designer.cs">
+      <DependentUpon>StatusCodesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="queueResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>queueResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="ToolbarSettings.cs" />
+    <EmbeddedResource Include="DispositionCodesForm.resx">
+      <DependentUpon>DispositionCodesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DispositionCodesHistoryForm.resx">
+      <DependentUpon>DispositionCodesHistoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditDebugSettings.resx">
+      <DependentUpon>EditDebugSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="intellaQueue.resx">
+      <DependentUpon>intellaQueue.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CurrentCallForm.resx">
+      <DependentUpon>CurrentCallForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StatusCodesForm.resx">
+      <DependentUpon>StatusCodesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="queueResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>queueResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\close-hover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\close-pressed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\minimize.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\minimize-hover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\minimize-pressed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\settings-hover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\settings-pressed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\status_error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\status_off.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\status_ok.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\title-empty-center-tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\title-empty-left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\title-empty-right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\border-left-tiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\footer-center-tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\footer-left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\footer-right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\up_triangle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\down_triangle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-right-top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-center-bottom-htiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-center-center-hvtiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-center-top-htiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-left-bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-left-center-vtiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-left-top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-right-bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\midbar-right-center-vtiled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\footer-bar-center.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\intellaQueue.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishFile Include="intellaQueue.pdb">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Lib.pdb">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="log4net.pdb">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="queueLib.pdb">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutomaticUpdater">
+      <Version>2.6.18.4</Version>
+    </PackageReference>
+    <PackageReference Include="CompareNETObjects">
+      <Version>4.62.0</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="Npgsql">
+      <Version>4.0.10</Version>
+    </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors">
+      <Version>4.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Extensions">
+      <Version>4.5.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\intellaLib\Lib.csproj">
+      <Project>{2e3ac300-62b8-4812-a5f2-273281eae4c7}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\intellaScreenRecord\intellaScreenRecord.csproj">
+      <Project>{448d9f14-4279-47d4-a373-37fac270a18e}</Project>
+      <Name>intellaScreenRecord</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\LibICP\LibICP.csproj">
+      <Project>{317fdcba-6ea3-41af-ad3e-bf93499790a8}</Project>
+      <Name>LibICP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\QueueLib\QueueLib.csproj">
+      <Project>{05d53d7d-a134-4f87-8df1-2a84d062ab4d}</Project>
+      <Name>QueueLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

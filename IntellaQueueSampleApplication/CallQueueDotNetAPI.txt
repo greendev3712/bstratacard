@@ -1,0 +1,379 @@
+///////////////////////////
+// Programming Interface //
+///////////////////////////
+
+Namespace QueueLib
+  Class IntellaQueueControl
+ 
+    //////////////////
+    // Data Structures
+
+    public class JsonQueueLoginLogoutResult
+    {
+        public Boolean result;     // True upon success or success with warning, false upon error (string error will be populated with error/warning reason)
+        public string result_code; // Token for the result of the operation
+                                   //  Possible Login Codes
+                                   //    SUCCESS
+                                   //    ALREADY_LOGGED_IN
+                                   //    ALREADY_LOGGED_IN_ELSEWHERE
+                                   //    FAILURE_LICENSE
+                                   //    FAILURE_OTHER
+                                   //  Possible Logout Codes
+                                   //    SUCCESS
+                                   //    ALREADY_LOGGED_OUT
+                                   //    FAILURE_OTHER
+
+        public string error;       // Reason for failure/warning, null if no failure/warning
+        public string login_when;  // If already logged in, the time of the login
+    }
+
+    // Generic catch/all result object for called functions
+    public class QueueControlResult
+    {
+        public Boolean Success;    // True upon success or success with warning, false upon error (string Msg will be populated with error/warning reason)
+        public string  Code;       // Token for the result of the operation
+                                   //  Possible Result Codes
+                                   //    SUCCESS
+                                   //    FAILURE
+                                   //  
+                                   //  Other codes are possible depending on the called function
+
+        public string Msg;         // Reason for failure/warning, null or empty if no failure/warning
+        public JsonHash CmdData;   // Additional data provided from the command.  May be available upon success and/or failure depending on the called funnction
+
+        public List<OrderedDictionary> ResultSet;  // Additional resultset data provided from the command.  May be available upon success and/or failure depending on the called funnction
+    }
+
+    // General-Purpose JSON Result Interface
+    public class JsonHash
+    {
+       // Return the raw Hashtable of the JSON structure
+       public Hashtable GetHashTable() ;
+
+       // Return a chainable JsonHash Hashtable element for a given item
+       public JsonHash GetHash(string item);
+
+       // Return true/false whether the item at this location exists in the JSON structure
+       public bool Exists();
+
+       // Get a chainable generic JsonHash element for a given item     
+       public JsonHash GetItem(string item);
+
+       // Get a string value of a JSON item
+       public string GetString(string item);
+
+       // Get the string value of the current item
+       public string GetStringValue();
+
+       // Get an integer value of a JSON item
+       public long GetInt64(string item);
+
+       // Get the 64bit integer value of the current item
+       public long GetInt64Value();
+
+       // Get a string value of a JSON item.  If the item does not exist, or is undefined, return an empty string
+       public string GetStringOrEmpty(string item);
+
+       // Get a boolean value of a JSON item.  If the item does not exist, or is undefined, return false
+       public bool GetBool(string item);
+
+       // Pretty Print the current JSON structure
+       public string ToString(); 
+    }
+
+    // JsonHash Examples
+    //  Given the structure
+    //   {
+    //     code: "SUCCESS"
+    //     result: 1
+    //     data: {
+    //       field1: value1
+    //       field2: value2
+    //     }
+    //   }
+    //
+    //   JsonHash jh         = new JsonHash(json_string);
+    //   string code         = jh.GetString("code");                   // code         = "SUCCESS"
+    //   string field2_value = jh.GetHash("data").GetString("field2"); // field2_value = "value2"
+    //   bool result         = jh.GetBool("result");                   // result       = true
+    //   bool something      = jh.GetBool("notfound");                 // something    = false
+    //
+    //   JsonHash field3 = jh.GetHash("data").GetItem("field3");
+    //   if (field3.Exists()) {
+    //     string field3_value = field3.GetStringValue(); // using the given data above, this body will not execute
+    //   }
+    //
+    //   string somefield      = jh.GetHash("data").GetHash("moredata").GetString("abc");        // this does not throw an error,  somefield = null
+    //   bool somefield_exists = jh.GetHash("data").GetHash("moredata").GetItem("abc").Exists(); // somefield_exists = false
+
+
+    ///////////////////
+    // Public Functions
+
+    // All functions may at any point throw IntellaQueueNotConnectedException
+    //  This will be the case when either the connection was never setup/initalized, or the connection has become broken
+
+    // Connect to the IntellQueue public API and authorize the call center agent login
+    // Params:
+    //   host           - IntellaQueue System hostname to connect to
+    //   user           - IntellaQueue System username
+    //   pass           - IntellaQueue System password
+    //   agentNumber    - Agent number of the agent from the IntellaQueue agent assignments
+    //   agentExtension - Phone extension the agent is sitting at
+    //   
+    //   
+    public JsonQueueLoginLogoutResult CreateSystemConnection(string host, string user, string pass, string agentNumber, string agentExtension)
+
+    // Return true/false whether we are currently connected and authorized with the system
+    public Boolean SystemConnected()
+
+    // Log out the agent and disconnect from the system
+    public JsonQueueLoginLogoutResult AgentLogout()
+
+    // Get the logged in queues for the authorized agent
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   session_id        Numeric                     - Each agent login has a unique session id
+    //   agent_device      String                      - Device (extension) where the agent is logged in from
+    //   agent_id          Numeric                     - Unique identifier for the agent
+    //   agent_number      Numeric                     - Agent Number (Agent Login)
+    //   agent_firstname   String                      - Agent Name
+    //   agent_lastname    String                      - Agent Name
+    //   agent_login_when  String Timestamp            - Time that this agent was logged into this specific queue
+    //   last_dial_time    String Timestamp            - When did the queue system last dial this agent
+    //   queue_id          Numeric                     - Unique identifier for the queue
+    //   queue_name        String                      - Queue name token
+    //   queue_longname    String                      - Queue description
+    //   campaign_id       Numeric                     - Unique id of the campaign (if this is a campaign)
+    //   campaign_name     String                      - Campaign name token (if this is a campaign)
+    //   campaign_longname String                      - Campaign description (if this is a campaign)
+    //   agent_status      String                      - Current agent pause/status
+    //   overflow_level    Numeric                     - Overflow level of this agent for this queue
+    //   priority          Numeric                     - Priority of this queue for this agent
+    //   queue_type        String (INBOUND/OUTBOUND)   - Outbound queues are also known as dialer campaigns
+    //
+    public List<OrderedDictionary> GetLoggedInQueues();
+
+    // Get a the agent status and connected call information for each queue for the authorized agent
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   agent_id                      Numeric              - Unique identifier for the agent
+    //   agent_device                  String               - Device (extension) where the agent is logged in from
+    //   queue_name                    String               - Queue name token
+    //   caller_channel                String               - Internal channel identifier of this caller
+    //   call_type                     String               - (Queue Call/Dialer Call/Outgoing Direct/Incoming Direct)
+    //   agent_callerid_num            Numeric              - Callerid of the phone that this agent logged in from
+    //   agent_fullname                String               - Agent Name
+    //   talk_duration_time            String Time Interval - Talk time with caller/callee
+    //   talk_duration_seconds         Numeric              - Talk time with caller/callee
+    //   caller_callerid_name          String               - Callerid name of caller, or local directory name of callee
+    //   caller_callerid_num           String               - Callerid name of caller, or local directory name of callee
+    //   caller_call_log_id            Numeric              - Internal unique call log id of the connected call
+    //   caller_case_number            String               - Case number associated with this call
+    //   current_hold_duration_time    String Interval      - Hold with caller/callee
+    //   current_hold_duration_seconds Numeric              - Hold with caller/callee
+    //   agent_failed_to_respond_today Numeric              - How many times has the queue tried to ring this agent and the agent did not respond
+    //   agent_status                  String               - Current agent pause/status
+    //   agent_status_last_change      String Timestamp     - Time of last status change
+    //   agent_status_current_duration String Interval      - How long has this agent been in the current status
+    //
+    public List<OrderedDictionary> GetAgentStatusPerQueue();
+
+    // Get the available pause/status codes that this agent may use for each queue
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   status_code_name     String   Token name of the status
+    //   status_code_longname String   Status description
+    //   user_defined         Boolean  True/False if this field is user defined or a built-in system status
+    //   manager_only         Boolean  True/False whether only a manager can set this status
+    //   is_current_status    Boolean  True/False if this is the current status for the agent that's authorized
+    //
+    public List<OrderedDictionary> GetAvailableStatusCodes()
+
+    // Get a list of ALL logged in agents and their metadata
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   agent_device               String           - Device (extension) where the agent is logged in from
+    //   agent_number               Numeric          - Agent Number (Agent Login)
+    //   agent_id                   Numeric          - Unique identifier for the agent
+    //   session_id                 Numeric          - Each agent login has a unique session id
+    //   agent_session_login_when   String Timestamp - Time that this agent logged into their current session
+    //   agent_firstname            String           - Agent Name
+    //   agent_lastname             String           - Agent Name
+    //   callerid_name              String           - Callerid of the phone that this agent logged in from
+    //   callerid_num               String           - Callerid of the phone that this agent logged in from
+    //   last_dial_time             String Timestamp - Time that the queue last called this agent
+    //   last_agent_hangup_time     String Timestamp - Time that this agent last hung up with a caller
+    //
+    public List<OrderedDictionary> GetAllAgentStatus();
+ 
+    // Get a list of ALL logged in agents and their metadata
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   agent_id                      Numeric              - Unique identifier for the agent
+    //   agent_device                  String               - Device (extension) where the agent is logged in from
+    //   queue_name                    String               - Queue name token
+    //   caller_channel                String               - Internal channel identifier of this caller
+    //   call_type                     String               - (Queue Call/Dialer Call/Outgoing Direct/Incoming Direct)
+    //   agent_callerid_num            Numeric              - Callerid of the phone that this agent logged in from
+    //   agent_fullname                String               - Agent Name
+    //   talk_duration_time            String Time Interval - Talk time with caller/callee
+    //   talk_duration_seconds         Numeric              - Talk time with caller/callee
+    //   caller_callerid_name          String               - Callerid name of caller, or local directory name of callee
+    //   caller_callerid_num           String               - Callerid name of caller, or local directory name of callee
+    //   caller_call_log_id            Numeric              - Internal unique call log id of the connected call
+    //   caller_case_number            String               - Case number associated with this call
+    //   current_hold_duration_time    String Interval      - Hold with caller/callee
+    //   current_hold_duration_seconds Numeric              - Hold with caller/callee
+    //   agent_failed_to_respond_today Numeric              - How many times has the queue tried to ring this agent and the agent did not respond
+    //   agent_status                  String               - Current agent pause/status
+    //   agent_status_last_change      String Timestamp     - Time of last status change
+    //   agent_status_current_duration String Interval      - How long has this agent been in the current status
+    //
+    public List<OrderedDictionary> GetAllAgentStatusPerQueue();
+
+    // Get a list of ALL queues and current live data
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   queue_name                   String           - Queue name token
+    //   callers                      Numeric          - Number of callers in this queue
+    //   callers_waiting              Numeric          - Number of unanswered callers in this queue
+    //   oldest_caller_joined         String Timestamp - Time that the oldest caller entered the queue
+    //   newest_caller_joined         String Timestamp - Time that the newest caller entered the queue
+    //   agents_paused                Numeric          - Count: How many agents are paused in this queue
+    //   agents_logged_in             Numeric          - Count: How many agents are logged into this queue
+    //   agents_idle                  Numeric          - Count: How many agents are in this queue and are not on any calls
+    //   agents_on_calls              Numeric          - Count: How many agents are in this queue and are on calls
+    //   longest_waiting_seconds      Numeric          - Longest waiting time of any caller in this queue
+    //   longest_waiting_time         String Interval  - Longest waiting time of any caller in this queue
+    //   longest_agentcaller_seconds  Numeric          - Longest time an agent in this queue has been on the phone with a caller
+    //   longest_agentcaller_time     String Interval  - Longest time an agent in this queue has been on the phone with a caller
+    //   longest_talk_seconds         Numeric          - Longest time an agent in this queue has been talking with a caller (not holding)
+    //   longest_talk_time            String Interval  - Longest time an agent in this queue has been talking with a caller (not holding)
+    //   longest_current_hold_seconds Numeric          - Longest time an agent in this queue has had a caller/callee on hold
+    //   longest_current_hold_time    String Interval  - Longest time an agent in this queue has had a caller/callee on hold
+    //
+    public List<OrderedDictionary> GetAllQueues();
+ 
+    // Get a list of ALL calls in ALL queues
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   queue_name       String          - Queue name token
+    //   callerid_name    String          - Callerid of caller 
+    //   callerid_num     String          - Callerid of caller 
+    //   waiting_time     String Interval - How long is this caller waiting
+    //   waiting_seconds  Numeric         - How long is this caller waiting
+    //
+    public List<OrderedDictionary> GetAllQueueCallers();
+ 
+    // Set the status of the currently authorized agent for the given queue, to the given status code
+    // (Use GetAvailableStatusCodes() to check for allowed/usable status codes)
+    //
+    public string SetAgentStatus(string statusCode, string queueName)
+
+    // Set the status of the currently authorized agent for all queues, to the given status code
+    // (Use GetAvailableStatusCodes() to check for allowed/usable status codes)
+    //
+    public string SetAgentStatus(string statusCode)
+
+    // Simulate a finished call result from the dialer
+    //
+    // Params:
+    //  callLogID      - Record the result of the call for this CallLogID
+    //  callResultCode - This string will be stored in a user defined field: CallResultCode, as part of the call record for permenant storage
+    //
+    //  Return Values:
+    //    string
+    //      "SUCCESS"
+    //      "FAILURE: <reason>"
+    //
+    public string RecordCallResult(string callLogId, string callResultCode)
+
+    // Start Call Recording
+    //
+    // Params:
+    //  channelName - String of channel name to start recording on
+    //
+    //  Return Values:
+    //    Success:true
+    //    Success:false
+    //    code:SUCCESS
+    //    code:FAILURE
+    //    code:CHANNEL_NOT_FOUND
+    //    Msg
+    //
+    public QueueControlResult RecordStart(string channelName)
+
+    // Stop Call Recording
+    //
+    // Params:
+    //  channelName - String of channel name to start recording on
+    //
+    //  Return Values:
+    //    Success:true
+    //    Success:false
+    //    code:SUCCESS
+    //    code:FAILURE
+    //    code:CHANNEL_NOT_FOUND
+    //    Msg
+    //
+    public QueueControlResult RecordStart(string channelName)
+
+    // Get the current event backlog for the currently authorized agent
+    // 
+    // Params:
+    //   eventsSinceUnixTime - time in seconds since the "epoch" (standard UnixTime) from which to get events
+    //     Note: Events will only be available from the time they are created until the system-defined expiration,
+    //           the default of which is 1 hour
+    //     High precision UnixTime is valid, example: 946735200.123456
+    //
+    // Example Usage:
+    //   string last_request = "0";  // Global or other persistant storage
+    //                               // 0 = Start by getting all events available
+    //   
+    //   // poll for events loop
+    //   events = GetAgentEventBackLog(last_request);  // get events > last_request (*NOTE* This is the SERVER time, do not use any local time functions)
+    //   // process events
+    //   last_request = events last item["event_when_unixtime"];
+    //   // repeat loop
+    //
+    // Return a List of OrderedDictionary in the following structure
+    // (Despite the structure being an OrderedDictionary, do not rely on the order of fields)
+    //   event_when                   String -  High precision timestamp of event as an ISO date string (with time zone offset from UTC), Example: 2000-01-01 10:00:00.123456-04
+    //   event_when_unixtime          String -  High precision unixtime of event, Example: 946738800.123456
+    //   event_what                   String -  Type of event.  Current possible events include CALL_START/CALL_END
+    //   agent_device                 String -  Device (extension) where the agent is logged in from for the agent related to the event
+    //   agent_number                 Numeric - Agent Number (Agent Login) for the agent related to the event
+    //   agent_id                     Numeric - Unique identifier for the agent related to the event
+    //   session_id                   Numeric - Unique session id of the agent's session for the agent related to the event
+    //   event_call_log_id            Numeric - Internal Unique call log id of the connected call that the event is related to (if any)
+    //   event_case_number            String  - Case id of the related call (if any)
+    //   event_callerid_name          String  - Name of the caller related to the event (if any)
+    //   event_callerid_num           String  - Callerid number of the caller related to the event (if any)
+    //   event_additional_data_json   String  - JSON encoded data related to the event (reserved for future expansion)
+    // 
+    public List<OrderedDictionary> GetAgentEventBackLog(string eventsSinceUnixTime)
+
+    // Simulate a finished call result from the dialer
+    //
+    // Params:
+    //  callLogID   - Simulate this Call Log Id
+    //  phoneNumber - Simulate this Phone number
+    //  caseNumber  - Simulate this case number
+    //  resultCode  - Simulate this result code
+    //
+    //  Return Values:
+    //    string
+    //      "SUCCESS"
+    //      "FAILURE: <reason>"
+    //
+    public string Debug_SimulateDialerPostback(string callLogId, string phoneNumber, string caseNumber, string resultCode)
+
+

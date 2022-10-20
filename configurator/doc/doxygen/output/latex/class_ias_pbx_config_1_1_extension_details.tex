@@ -1,0 +1,349 @@
+\hypertarget{class_ias_pbx_config_1_1_extension_details}{
+\section{IasPbxConfig.ExtensionDetails Class Reference}
+\label{class_ias_pbx_config_1_1_extension_details}\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+}
+
+
+The Extension Details Form; gives view and ability to modify all of an extension's details.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_extension_details_a88f7f56f7241f0453d991ae96d7e392e}{ExtensionDetails} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hyperlink{class_ias_pbx_config_1_1_extension_details_ac452ac01cadc7dff15b9eed23b94ba6e}{ExtensionDetails} (ref string\mbox{[}$\,$\mbox{]} parameterNames, ref string\mbox{[}$\,$\mbox{]} parameterValues)
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{load} ()
+\begin{DoxyCompactList}\small\item\em called from end of constructor; loads our data from db into the form. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a7a72ecc10cc4cf7cbb3c4f9c9b2098d7}{refreshList} ()
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a64785a524e6fc2f62c0cd79e76a86709}{refreshList} (string selectedUniqueIdSuggestion)
+\begin{DoxyCompactList}\small\item\em (re)load just the uid-\/jump-\/to ComboBox, based on currently selected phonegroup in phonegroup-\/jump-\/to comboBox. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a43785b4be5bf7a2b2cb5cfe80e7aba06}{refreshDetails} ()
+\begin{DoxyCompactList}\small\item\em makes a selection on each implemented detail control based on currently selected item in uid-\/jump-\/to ComboBox. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_ac7daf3d7399d8e980091c5f962f32b0c}{checkNewValues} (ref string\mbox{[}$\,$\mbox{]} insertNames, ref string\mbox{[}$\,$\mbox{]} insertValues, bool setAllDefaults)
+\begin{DoxyCompactList}\small\item\em sanity check user entered new values for a new entry in the database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a3f677edf1360b568321649b161dd8738}{extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for comboBox's SelectedIndexChanged event; refreshes the uid-\/jump-\/to comboBox. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_a5acaa568c7925fcb22e39c766849b66e}{extDetailExtJumpToCombo\_\-SelectedIndexChanged} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for comboBox's SelectedIndexChanged event; (re)selects the appropriate items in all implemented detail Controls. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_afe0fc5f796c8ffc1e2efc74b0843ffa4}{extDetailNewExtensionButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Create New Button Click event; creates a new extension entry in the database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_extension_details_abdafabf4ec7651b421f5db258fba8d85}{ExtensionDetails\_\-Load} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Load event; empty method. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const string \hyperlink{class_ias_pbx_config_1_1_extension_details_ab856c6ba9e3e93e697ea9228b3f39bf7}{TableName} = \char`\"{}Asterisk.v\_\-extensions\char`\"{}
+\begin{DoxyCompactList}\small\item\em database table name associated with extensions \item\end{DoxyCompactList}\item 
+const string \hyperlink{class_ias_pbx_config_1_1_extension_details_ab5577b60085bb47be22b3c90c3e0fe04}{KeyName} = \char`\"{}extension\char`\"{}
+\begin{DoxyCompactList}\small\item\em unique key column name in TableName table \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_a1f41108381e37e3226b3327478bdc5d5}{m\_\-phonegroupIds}
+\begin{DoxyCompactList}\small\item\em list of database phonegroup Ids corresponding to extDetailPhonegroupJumpToCombo \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_a6434f33b3ac74f89fd3b13b228bd38d4}{m\_\-phonegroupNames}
+\begin{DoxyCompactList}\small\item\em list of phonegroup names shown in extDetailPhonegroupJumpToCombo \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_af25b0209f111193cbabc39fdbb01bbb5}{m\_\-cosIds}
+\begin{DoxyCompactList}\small\item\em list of database Ids corresponding to names in ComboBox \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_ab5b6312c7e2360dc541b257899c9f155}{m\_\-cosNames}
+\begin{DoxyCompactList}\small\item\em list of names in ComboBox \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_a827f90a12300cda5f44afcd08fc2a854}{m\_\-uidIds}
+\begin{DoxyCompactList}\small\item\em list of database Ids corresponding to names in uid-\/jump-\/to ComboBox (in this case the extension) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_afe69a712727a96911d8c24927b15b779}{m\_\-uidNames}
+\begin{DoxyCompactList}\small\item\em list of names in ComboBox (the extension, same as m\_\-uidIds in this case) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_acce0ec857d3ed51a1137fdb07ab6ce57}{m\_\-typeIds}
+\begin{DoxyCompactList}\small\item\em list of database Ids corresponding to names in ComboBox (device type ids) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_a5bbad0dfeb7beed8ee4ca6da920a60e9}{m\_\-typeNames}
+\begin{DoxyCompactList}\small\item\em list of names in ComboBox (device type names) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_a0a375b1d694804212890f8b6fb739b21}{m\_\-parameterNames}
+\begin{DoxyCompactList}\small\item\em list of parameter names passed to this form on creation \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_extension_details_af61633a6131c4dfa44232218ab2026c8}{m\_\-parameterValues}
+\begin{DoxyCompactList}\small\item\em corresponding list of parameter values \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_extension_details_ab238f35aaa674eb6fb48a48e5df856ed}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The Extension Details Form; gives view and ability to modify all of an extension's details. Allows picking an extension from a full list or a filtered list based on a selected phonegroup. Editable details: extension, phonegroup, class of service, device type, caller id name. Also allows adding a new extension, optionally copying details from the currently selected extension. 
+
+Definition at line 27 of file ExtensionDetails.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_extension_details_a88f7f56f7241f0453d991ae96d7e392e}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!ExtensionDetails@{ExtensionDetails}}
+\index{ExtensionDetails@{ExtensionDetails}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{ExtensionDetails}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.ExtensionDetails.ExtensionDetails ()}}
+\label{class_ias_pbx_config_1_1_extension_details_a88f7f56f7241f0453d991ae96d7e392e}
+
+
+Constructor. allocates members. calls \hyperlink{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{load()}, which, in turns, populates all implemented Controls 
+
+Definition at line 66 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_ac452ac01cadc7dff15b9eed23b94ba6e}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!ExtensionDetails@{ExtensionDetails}}
+\index{ExtensionDetails@{ExtensionDetails}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{ExtensionDetails}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.ExtensionDetails.ExtensionDetails (ref string\mbox{[}$\,$\mbox{]} {\em parameterNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em parameterValues})}}
+\label{class_ias_pbx_config_1_1_extension_details_ac452ac01cadc7dff15b9eed23b94ba6e}
+
+
+Constructor. allocates members and copies passed parameters in. calls \hyperlink{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{load()}, which, in turns, populates all implemented Controls 
+\begin{DoxyParams}{Parameters}
+\item[{\em parameterNames}]ref to names of parameters supplied by caller \item[{\em parameterValues}]ref to corresponding values of parameters. \end{DoxyParams}
+
+
+Definition at line 83 of file ExtensionDetails.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_extension_details_ac7daf3d7399d8e980091c5f962f32b0c}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!checkNewValues@{checkNewValues}}
+\index{checkNewValues@{checkNewValues}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{checkNewValues}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.checkNewValues (ref string\mbox{[}$\,$\mbox{]} {\em insertNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em insertValues}, \/  bool {\em setAllDefaults})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_ac7daf3d7399d8e980091c5f962f32b0c}
+
+
+sanity check user entered new values for a new entry in the database. makes sure none of the values are empty and provides defaults for each detail, with calls to database if needed. 
+\begin{DoxyParams}{Parameters}
+\item[{\em insertNames}]ref to names of details to check. \item[{\em insertValues}]ref to corresponding values of details to check. \item[{\em setAllDefaults}]if true will ignore current values passed in and set them all to defaults. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+adjusts insertValues to sane values. 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000030}{Todo}]add error checking to db calls \end{Desc}
+
+
+Definition at line 287 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a5acaa568c7925fcb22e39c766849b66e}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!extDetailExtJumpToCombo\_\-SelectedIndexChanged@{extDetailExtJumpToCombo\_\-SelectedIndexChanged}}
+\index{extDetailExtJumpToCombo\_\-SelectedIndexChanged@{extDetailExtJumpToCombo\_\-SelectedIndexChanged}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{extDetailExtJumpToCombo\_\-SelectedIndexChanged}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.extDetailExtJumpToCombo\_\-SelectedIndexChanged (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a5acaa568c7925fcb22e39c766849b66e}
+
+
+Callback for comboBox's SelectedIndexChanged event; (re)selects the appropriate items in all implemented detail Controls. ... through call to \hyperlink{class_ias_pbx_config_1_1_extension_details_a43785b4be5bf7a2b2cb5cfe80e7aba06}{refreshDetails()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the comboBox \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 336 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_afe0fc5f796c8ffc1e2efc74b0843ffa4}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!extDetailNewExtensionButton\_\-Click@{extDetailNewExtensionButton\_\-Click}}
+\index{extDetailNewExtensionButton\_\-Click@{extDetailNewExtensionButton\_\-Click}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{extDetailNewExtensionButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.extDetailNewExtensionButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_afe0fc5f796c8ffc1e2efc74b0843ffa4}
+
+
+Callback for Create New Button Click event; creates a new extension entry in the database. ... through call to DBHelper's insertIntoDb(). Makes copy of currently selected details or provides new defaults based on Make Copy Of Current checkBox.
+
+Sanity checks new data through \hyperlink{class_ias_pbx_config_1_1_extension_details_ac7daf3d7399d8e980091c5f962f32b0c}{checkNewValues()}. Handles errors on DB Insert. Refreshes the uids-\/jump-\/to comboBox on success.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the button \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 353 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a3f677edf1360b568321649b161dd8738}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged@{extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged}}
+\index{extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged@{extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.extDetailPhonegroupJumpToCombo\_\-SelectedIndexChanged (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a3f677edf1360b568321649b161dd8738}
+
+
+Callback for comboBox's SelectedIndexChanged event; refreshes the uid-\/jump-\/to comboBox. ... through call to refreshExtensionList(). 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the comboBox \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 324 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_abdafabf4ec7651b421f5db258fba8d85}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!ExtensionDetails\_\-Load@{ExtensionDetails\_\-Load}}
+\index{ExtensionDetails\_\-Load@{ExtensionDetails\_\-Load}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{ExtensionDetails\_\-Load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.ExtensionDetails\_\-Load (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_abdafabf4ec7651b421f5db258fba8d85}
+
+
+Callback for Load event; empty method. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]self? \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000031}{Todo}]investigate why control never enters this function. \end{Desc}
+
+
+Definition at line 408 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!load@{load}}
+\index{load@{load}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.load ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}
+
+
+called from end of constructor; loads our data from db into the form. Populates phonegroup-\/jump-\/to comboBox, and all other implemented Controls through call to DBHelper's getColumn().
+
+Selects an entry in the phonegroup-\/jump-\/to comboBox, which launches event which in turn populates uid comboBox (extensions).
+
+registers anonymous callbacks to events on implemented controls with calls to DBHelper's addUpdateEventsToControl(). This makes user changes on the controls make immediate database changes.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000027}{Todo}]handle errors on getColumn calls like Extension.cs's \hyperlink{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{load()} \end{Desc}
+
+
+Definition at line 114 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a43785b4be5bf7a2b2cb5cfe80e7aba06}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!refreshDetails@{refreshDetails}}
+\index{refreshDetails@{refreshDetails}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{refreshDetails}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.refreshDetails ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a43785b4be5bf7a2b2cb5cfe80e7aba06}
+
+
+makes a selection on each implemented detail control based on currently selected item in uid-\/jump-\/to ComboBox. ...through calls to DbHelper's getSingleFromDb() \begin{Desc}
+\item[\hyperlink{todo__todo000029}{Todo}]handle db calls' returned error codes. \end{Desc}
+
+
+Definition at line 246 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a64785a524e6fc2f62c0cd79e76a86709}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!refreshList@{refreshList}}
+\index{refreshList@{refreshList}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{refreshList}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.refreshList (string {\em selectedUniqueIdSuggestion})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a64785a524e6fc2f62c0cd79e76a86709}
+
+
+(re)load just the uid-\/jump-\/to ComboBox, based on currently selected phonegroup in phonegroup-\/jump-\/to comboBox. ...through calls do DBHelper's getColumn(). Also selects an item on the uid-\/jump-\/to ComboBox; this creates an event which in turn makes a selection on each implemented detail control.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em selectedUniqueIdSuggestion}]optional name of item in loaded comboBox to select. \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000028}{Todo}]handle errors on getColumn calls like Extension.cs's \hyperlink{class_ias_pbx_config_1_1_extension_details_a9945d9c89ebedaed6d13fadc5bb5ad40}{load()} \end{Desc}
+
+
+Definition at line 192 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a7a72ecc10cc4cf7cbb3c4f9c9b2098d7}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!refreshList@{refreshList}}
+\index{refreshList@{refreshList}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{refreshList}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.ExtensionDetails.refreshList ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a7a72ecc10cc4cf7cbb3c4f9c9b2098d7}
+
+
+Definition at line 176 of file ExtensionDetails.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_extension_details_ab5577b60085bb47be22b3c90c3e0fe04}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!KeyName@{KeyName}}
+\index{KeyName@{KeyName}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{KeyName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.ExtensionDetails.KeyName} = \char`\"{}extension\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_ab5577b60085bb47be22b3c90c3e0fe04}
+
+
+unique key column name in TableName table 
+
+Definition at line 35 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_ab238f35aaa674eb6fb48a48e5df856ed}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!log@{log}}
+\index{log@{log}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.ExtensionDetails.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_ab238f35aaa674eb6fb48a48e5df856ed}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 29 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_af25b0209f111193cbabc39fdbb01bbb5}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-cosIds@{m\_\-cosIds}}
+\index{m\_\-cosIds@{m\_\-cosIds}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-cosIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-cosIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_af25b0209f111193cbabc39fdbb01bbb5}
+
+
+list of database Ids corresponding to names in ComboBox 
+
+Definition at line 43 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_ab5b6312c7e2360dc541b257899c9f155}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-cosNames@{m\_\-cosNames}}
+\index{m\_\-cosNames@{m\_\-cosNames}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-cosNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-cosNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_ab5b6312c7e2360dc541b257899c9f155}
+
+
+list of names in ComboBox 
+
+Definition at line 45 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a0a375b1d694804212890f8b6fb739b21}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-parameterNames@{m\_\-parameterNames}}
+\index{m\_\-parameterNames@{m\_\-parameterNames}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-parameterNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-parameterNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a0a375b1d694804212890f8b6fb739b21}
+
+
+list of parameter names passed to this form on creation 
+
+Definition at line 57 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_af61633a6131c4dfa44232218ab2026c8}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-parameterValues@{m\_\-parameterValues}}
+\index{m\_\-parameterValues@{m\_\-parameterValues}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-parameterValues}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-parameterValues}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_af61633a6131c4dfa44232218ab2026c8}
+
+
+corresponding list of parameter values 
+
+Definition at line 59 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a1f41108381e37e3226b3327478bdc5d5}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-phonegroupIds@{m\_\-phonegroupIds}}
+\index{m\_\-phonegroupIds@{m\_\-phonegroupIds}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-phonegroupIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-phonegroupIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a1f41108381e37e3226b3327478bdc5d5}
+
+
+list of database phonegroup Ids corresponding to extDetailPhonegroupJumpToCombo 
+
+Definition at line 38 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a6434f33b3ac74f89fd3b13b228bd38d4}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-phonegroupNames@{m\_\-phonegroupNames}}
+\index{m\_\-phonegroupNames@{m\_\-phonegroupNames}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-phonegroupNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-phonegroupNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a6434f33b3ac74f89fd3b13b228bd38d4}
+
+
+list of phonegroup names shown in extDetailPhonegroupJumpToCombo 
+
+Definition at line 40 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_acce0ec857d3ed51a1137fdb07ab6ce57}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-typeIds@{m\_\-typeIds}}
+\index{m\_\-typeIds@{m\_\-typeIds}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-typeIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-typeIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_acce0ec857d3ed51a1137fdb07ab6ce57}
+
+
+list of database Ids corresponding to names in ComboBox (device type ids) 
+
+Definition at line 52 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a5bbad0dfeb7beed8ee4ca6da920a60e9}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-typeNames@{m\_\-typeNames}}
+\index{m\_\-typeNames@{m\_\-typeNames}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-typeNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-typeNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a5bbad0dfeb7beed8ee4ca6da920a60e9}
+
+
+list of names in ComboBox (device type names) 
+
+Definition at line 54 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_a827f90a12300cda5f44afcd08fc2a854}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-uidIds@{m\_\-uidIds}}
+\index{m\_\-uidIds@{m\_\-uidIds}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-uidIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-uidIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_a827f90a12300cda5f44afcd08fc2a854}
+
+
+list of database Ids corresponding to names in uid-\/jump-\/to ComboBox (in this case the extension) 
+
+Definition at line 48 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_afe69a712727a96911d8c24927b15b779}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!m\_\-uidNames@{m\_\-uidNames}}
+\index{m\_\-uidNames@{m\_\-uidNames}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{m\_\-uidNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.ExtensionDetails.m\_\-uidNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_afe69a712727a96911d8c24927b15b779}
+
+
+list of names in ComboBox (the extension, same as m\_\-uidIds in this case) 
+
+Definition at line 50 of file ExtensionDetails.cs.\hypertarget{class_ias_pbx_config_1_1_extension_details_ab856c6ba9e3e93e697ea9228b3f39bf7}{
+\index{IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}!TableName@{TableName}}
+\index{TableName@{TableName}!IasPbxConfig::ExtensionDetails@{IasPbxConfig::ExtensionDetails}}
+\subsubsection[{TableName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.ExtensionDetails.TableName} = \char`\"{}Asterisk.v\_\-extensions\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_extension_details_ab856c6ba9e3e93e697ea9228b3f39bf7}
+
+
+database table name associated with extensions 
+
+Definition at line 33 of file ExtensionDetails.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_extension_details_8cs}{ExtensionDetails.cs}\end{DoxyCompactItemize}

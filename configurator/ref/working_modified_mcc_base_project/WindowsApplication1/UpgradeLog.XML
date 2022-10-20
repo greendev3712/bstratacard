@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="WindowsApplication1">
+</Property><Property Name="Solution File" Value="C:\Documents and Settings\Mike\My Documents\Downloads\WindowsApplication1\WindowsApplication1.sln">
+</Property><Property Name="Date" Value="Wednesday, February 24, 2010">
+</Property><Property Name="Time" Value="16:28 PM">
+</Property></Properties><Event ErrorLevel="0" Project="WindowsApplication1" Source="WindowsApplication1.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="WindowsApplication1" Source="WindowsApplication1.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="MyCustomControls" Source="..\MultiColumnCombo\MyCustomControls.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="MyCustomControls" Source="..\MultiColumnCombo\MyCustomControls.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="WindowsApplication1.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="WindowsApplication1.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="WindowsApplication1" Source="WindowsApplication1.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="MyCustomControls" Source="..\MultiColumnCombo\MyCustomControls.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

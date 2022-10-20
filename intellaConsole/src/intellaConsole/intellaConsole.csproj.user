@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PublishUrlHistory>C:\intellaConsole\|C:\Users\mark\Desktop\intellaConsole\|C:\intellaqueue\|ftp://ftp.intellasoft.net/public_html/acs/|ftp://ftp.intellasoft.net/customers/acs/clickonce/intellaqueue/</PublishUrlHistory>
+    <InstallUrlHistory>http://10.30.50.80/software/intellaConsole/|http://192.168.13.63/software/intellaConsole/|http://10.0.90.1/software/intellaConsole/|http://https://www.bhphotovideo.com/c/product/1016870-REG/startech_st1000spex2_startech_1_port_pci.html/software/intellaConsole/|http://10.10.0.105/software/intellaConsole/</InstallUrlHistory>
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <RevDeBugCompilerPath>c:\users\user\appdata\local\microsoft\visualstudio\16.0_ef0d3336\extensions\1qbs0laj.gwc\tmcc\</RevDeBugCompilerPath>
+    <CustomAfterMicrosoftCommonTargets>c:\users\user\appdata\local\microsoft\visualstudio\16.0_ef0d3336\extensions\1qbs0laj.gwc\tmcc\RevDeBug.ImportAfter.targets</CustomAfterMicrosoftCommonTargets>
+    <RevDeBugActive>True</RevDeBugActive>
+    <SaveMetadataAsync>true</SaveMetadataAsync>
+    <RevDeBugDisableNuget>true</RevDeBugDisableNuget>
+    <RevDeBugMetadataPath>C:\Users\User\Documents\RevDeBug\intellaConsole\Metadata\\</RevDeBugMetadataPath>
+    <RevDeBugStateStorageType>Continuous</RevDeBugStateStorageType>
+    <PublishWithRevDeBug>false</PublishWithRevDeBug>
+    <RecorderAddress>127.0.0.1</RecorderAddress>
+    <RecorderTCPPort>42742</RecorderTCPPort>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>
+    </ReferencePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableSecurityDebugging>false</EnableSecurityDebugging>
+  </PropertyGroup>
+</Project>

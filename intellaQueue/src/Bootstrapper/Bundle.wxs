@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+	<Bundle Name="IntellaQueue" Version="1.0.0.0" Manufacturer="Intellasoft" UpgradeCode="e128a9d7-9902-4909-be8b-96d7bc6e9799">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
+      <bal:WixStandardBootstrapperApplication
+        LicenseUrl=""
+        SuppressOptionsUI="yes"
+            />
+    </BootstrapperApplicationRef> 
+      <Chain>
+        <PackageGroupRef Id="NetFx472Redist"/> <!-- Check if .NET 4.7.2 is installed, if not, install it -->
+        
+        <!-- 
+            Execute main app installer, more installers can be added sequentially after, or before, this MSI package. 
+            The NetFx472Redist (or newer version if needed) should most likely ALWAYS be first, to ensure compatibility 
+            with any packages following.
+        -->
+        <MsiPackage Id="MyApplication" SourceFile="$(var.SetupProject.TargetPath)" DisplayInternalUI="yes"/>
+      </Chain>
+	</Bundle>
+</Wix>

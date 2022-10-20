@@ -1,0 +1,410 @@
+\hypertarget{class_ias_pbx_config_1_1_trunk_details}{
+\section{IasPbxConfig.TrunkDetails Class Reference}
+\label{class_ias_pbx_config_1_1_trunk_details}\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+}
+
+
+The Trunk Details Form; gives view and ability to modify all of a trunk's details.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_trunk_details_a4b5a6988b18e4369e011304054412810}{TrunkDetails} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hyperlink{class_ias_pbx_config_1_1_trunk_details_a06f0aec8ae91761316148980e1f8de53}{TrunkDetails} (ref string\mbox{[}$\,$\mbox{]} parameterNames, ref string\mbox{[}$\,$\mbox{]} parameterValues)
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{load} ()
+\begin{DoxyCompactList}\small\item\em called from end of constructor; loads our data from db into the form. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}{\bf UID Column name; not used.}\par
+{\em \label{_amgrpa96719e2db7e8ae9bacb77b8181e3f53}
+gets the current UID value from the uid control object.
+
+Useful as a callback (why it takes an unused arg). Returns null if nothing is selected.
+
+\begin{DoxyReturn}{Returns}
+value of currently selected UID Control 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000045}{Todo}]make new delegate with no args? \end{Desc}
+}\begin{DoxyCompactItemize}
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_trunk_details_adbb8e5a6091b5a602227d4571fab3a06}{getCurrentUid} (string name)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_a043ccba78a5c1bde053f3f7e23502b33}{refreshList} ()
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_ab5c0db30702c3714191a3161c15bbbe5}{refreshList} (string selectedUniqueIdSuggestion)
+\begin{DoxyCompactList}\small\item\em (re)load just the uid ComboBox \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_aacce011c33fa9fed315eb27c9d9643ea}{refreshDetails} ()
+\begin{DoxyCompactList}\small\item\em makes a selection on each implemented detail control based on currently selected item in uid-\/jump-\/to ComboBox. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_acdc7d06a5f58918faabd4057300585d3}{checkNewValues} (ref string\mbox{[}$\,$\mbox{]} insertNames, ref string\mbox{[}$\,$\mbox{]} insertValues, bool setAllDefaults)
+\begin{DoxyCompactList}\small\item\em sanity check user entered new values for a new entry in the database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_a05b0359576cfc66eda821a9e8e8f7e25}{uidJumpToCombo\_\-SelectedIndexChanged} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for comboBox's SelectedIndexChanged event; (re)selects the appropriate items in all implemented detail Controls. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_a63675d1136bcddb728c7907a1a065ead}{newInstanceButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Create New Button Click event; creates a new trunk entry in the database. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_trunk_details_ab9b3bd0939b49cb616b15a7de3cb1d77}{TrunkDetails\_\-Load} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for Load event; empty method. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const string \hyperlink{class_ias_pbx_config_1_1_trunk_details_aa073b291eda0041622361db624283b0b}{TableName} = \char`\"{}Asterisk.v\_\-trunks\char`\"{}
+\begin{DoxyCompactList}\small\item\em database table name associated with trunks \item\end{DoxyCompactList}\item 
+const string \hyperlink{class_ias_pbx_config_1_1_trunk_details_a33a6ccc4c818a4c5c3dfffd05ea0fbf4}{KeyName} = \char`\"{}trunk\_\-name\char`\"{}
+\begin{DoxyCompactList}\small\item\em unique key column name in TableName table \item\end{DoxyCompactList}\item 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} \hyperlink{class_ias_pbx_config_1_1_trunk_details_a6cf2a5bbc63dabcbd0e688dff152ae49}{m\_\-generalOptionsGrid}
+\begin{DoxyCompactList}\small\item\em Name-\/Value Grid Helper object for trunk general options. \item\end{DoxyCompactList}\item 
+\hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} \hyperlink{class_ias_pbx_config_1_1_trunk_details_a23327d72e0f1d36e063e9e6250956314}{m\_\-deviceOptionsGrid}
+\begin{DoxyCompactList}\small\item\em Name-\/Value Grid Helper object for currently selected trunk's. \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_trunk_details_a6d2b111c9d9cbbbe435830d0ec4d2f32}{m\_\-uidIds}
+\begin{DoxyCompactList}\small\item\em list of database Ids corresponding to names in uid-\/jump-\/to ComboBox (in this case the trunk) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_trunk_details_a5de586a82e2347a9900caf7e478c96e3}{m\_\-uidNames}
+\begin{DoxyCompactList}\small\item\em list of names in ComboBox (the trunk name, same as m\_\-uidIds in this case) \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_trunk_details_ab128217bd9aa7cdc63636166ed26e961}{m\_\-parameterNames}
+\begin{DoxyCompactList}\small\item\em list of parameter names passed to this form on creation \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_trunk_details_aed1fa61920a4ef53d137af334d569e40}{m\_\-parameterValues}
+\begin{DoxyCompactList}\small\item\em corresponding list of parameter values \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_trunk_details_ae08deb88359e29b30255750ee33072a3}{log}
+\item 
+static Hashtable \hyperlink{class_ias_pbx_config_1_1_trunk_details_a0647e696eac396ee74192f30deee4709}{SipDeviceOptionOptions}
+\begin{DoxyCompactList}\small\item\em some NVGrid options for the device option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} \item\end{DoxyCompactList}\item 
+static string\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_trunk_details_a63923565253ba942384b5e2bb38a3df7}{SipDeviceOptionControlData}
+\begin{DoxyCompactList}\small\item\em data for populating device option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid}; empty because we are using auto initMethod above \item\end{DoxyCompactList}\item 
+static Hashtable \hyperlink{class_ias_pbx_config_1_1_trunk_details_a626346e22ccfb014143c37c2dde77fd3}{GeneralOptionOptions}
+\begin{DoxyCompactList}\small\item\em some NVGrid options for the general option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} \item\end{DoxyCompactList}\item 
+static string\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_trunk_details_a866767d2389bed7020f9f50ffcab120b}{GeneralOptionControlData}
+\begin{DoxyCompactList}\small\item\em data for populating general option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The Trunk Details Form; gives view and ability to modify all of a trunk's details. Editable details: trunk, description, capacity, device type, caller id name. Also allows adding a new trunk, optionally copying details from the currently selected details items. 
+
+Definition at line 27 of file TrunkDetails.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunk_details_a4b5a6988b18e4369e011304054412810}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!TrunkDetails@{TrunkDetails}}
+\index{TrunkDetails@{TrunkDetails}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{TrunkDetails}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.TrunkDetails.TrunkDetails ()}}
+\label{class_ias_pbx_config_1_1_trunk_details_a4b5a6988b18e4369e011304054412810}
+
+
+Constructor. allocates members. calls \hyperlink{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{load()}, which, in turns, populates all implemented Controls 
+
+Definition at line 104 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a06f0aec8ae91761316148980e1f8de53}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!TrunkDetails@{TrunkDetails}}
+\index{TrunkDetails@{TrunkDetails}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{TrunkDetails}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.TrunkDetails.TrunkDetails (ref string\mbox{[}$\,$\mbox{]} {\em parameterNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em parameterValues})}}
+\label{class_ias_pbx_config_1_1_trunk_details_a06f0aec8ae91761316148980e1f8de53}
+
+
+Constructor. allocates members and copies passed parameters in. calls \hyperlink{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{load()}, which, in turns, populates all implemented Controls 
+\begin{DoxyParams}{Parameters}
+\item[{\em parameterNames}]ref to names of parameters supplied by caller \item[{\em parameterValues}]ref to corresponding values of parameters. \end{DoxyParams}
+
+
+Definition at line 121 of file TrunkDetails.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunk_details_acdc7d06a5f58918faabd4057300585d3}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!checkNewValues@{checkNewValues}}
+\index{checkNewValues@{checkNewValues}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{checkNewValues}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.checkNewValues (ref string\mbox{[}$\,$\mbox{]} {\em insertNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em insertValues}, \/  bool {\em setAllDefaults})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_acdc7d06a5f58918faabd4057300585d3}
+
+
+sanity check user entered new values for a new entry in the database. makes sure none of the values are empty and provides defaults for each detail, with calls to database if needed. 
+\begin{DoxyParams}{Parameters}
+\item[{\em insertNames}]ref to names of details to check. \item[{\em insertValues}]ref to corresponding values of details to check. \item[{\em setAllDefaults}]if true will ignore current values passed in and set them all to defaults. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+adjusts insertValues to sane values. 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000048}{Todo}]add error checking to db calls \end{Desc}
+
+
+Definition at line 256 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_adbb8e5a6091b5a602227d4571fab3a06}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!getCurrentUid@{getCurrentUid}}
+\index{getCurrentUid@{getCurrentUid}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{getCurrentUid}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.TrunkDetails.getCurrentUid (string {\em name})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_adbb8e5a6091b5a602227d4571fab3a06}
+
+
+Definition at line 171 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!load@{load}}
+\index{load@{load}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.load ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}
+
+
+called from end of constructor; loads our data from db into the form. Populates all implemented Controls (except for uid comboBox) through call to DBHelper's getColumn().
+
+registers anonymous callbacks to events on implemented controls with calls to DBHelper's addUpdateEventsToControl(). This makes user changes on the controls make immediate database changes.
+
+Populates uid-\/jump-\/to comboBox (trunks) through call to \hyperlink{class_ias_pbx_config_1_1_trunk_details_a043ccba78a5c1bde053f3f7e23502b33}{refreshList()}.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000044}{Todo}]handle errors on getColumn calls like Extension.cs's \hyperlink{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{load()} \end{Desc}
+
+
+Definition at line 151 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a63675d1136bcddb728c7907a1a065ead}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!newInstanceButton\_\-Click@{newInstanceButton\_\-Click}}
+\index{newInstanceButton\_\-Click@{newInstanceButton\_\-Click}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{newInstanceButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.newInstanceButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a63675d1136bcddb728c7907a1a065ead}
+
+
+Callback for Create New Button Click event; creates a new trunk entry in the database. ... through call to DBHelper's insertIntoDb(). Makes copy of currently selected details or provides new defaults based on Make Copy Of Current checkBox.
+
+Sanity checks new data through \hyperlink{class_ias_pbx_config_1_1_trunk_details_acdc7d06a5f58918faabd4057300585d3}{checkNewValues()}. Handles errors on DB Insert. Refreshes the uids-\/jump-\/to comboBox on success.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the button \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 313 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_aacce011c33fa9fed315eb27c9d9643ea}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!refreshDetails@{refreshDetails}}
+\index{refreshDetails@{refreshDetails}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{refreshDetails}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.refreshDetails ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_aacce011c33fa9fed315eb27c9d9643ea}
+
+
+makes a selection on each implemented detail control based on currently selected item in uid-\/jump-\/to ComboBox. ...through calls to DbHelper's getSingleFromDb() \begin{Desc}
+\item[\hyperlink{todo__todo000047}{Todo}]handle db calls' returned error codes. \end{Desc}
+
+
+Definition at line 239 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_ab5c0db30702c3714191a3161c15bbbe5}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!refreshList@{refreshList}}
+\index{refreshList@{refreshList}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{refreshList}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.refreshList (string {\em selectedUniqueIdSuggestion})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_ab5c0db30702c3714191a3161c15bbbe5}
+
+
+(re)load just the uid ComboBox ...through calls do DBHelper's getColumn(). Also selects an item on the uid-\/jump-\/to ComboBox; this creates an event which in turn makes a selection on each implemented detail control.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em selectedUniqueIdSuggestion}]optional name of item in loaded comboBox to select. \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000046}{Todo}]handle errors on getColumn calls like Extension.cs's \hyperlink{class_ias_pbx_config_1_1_trunk_details_a2dd1283dc843a19b6d5cc13e957c322b}{load()} \end{Desc}
+
+
+Definition at line 196 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a043ccba78a5c1bde053f3f7e23502b33}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!refreshList@{refreshList}}
+\index{refreshList@{refreshList}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{refreshList}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.refreshList ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a043ccba78a5c1bde053f3f7e23502b33}
+
+
+Definition at line 181 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_ab9b3bd0939b49cb616b15a7de3cb1d77}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!TrunkDetails\_\-Load@{TrunkDetails\_\-Load}}
+\index{TrunkDetails\_\-Load@{TrunkDetails\_\-Load}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{TrunkDetails\_\-Load}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.TrunkDetails\_\-Load (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_ab9b3bd0939b49cb616b15a7de3cb1d77}
+
+
+Callback for Load event; empty method. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]self? \item[{\em e}]EventArgs \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000049}{Todo}]investigate why control never enters this function. \end{Desc}
+
+
+Definition at line 377 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a05b0359576cfc66eda821a9e8e8f7e25}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!uidJumpToCombo\_\-SelectedIndexChanged@{uidJumpToCombo\_\-SelectedIndexChanged}}
+\index{uidJumpToCombo\_\-SelectedIndexChanged@{uidJumpToCombo\_\-SelectedIndexChanged}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{uidJumpToCombo\_\-SelectedIndexChanged}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.TrunkDetails.uidJumpToCombo\_\-SelectedIndexChanged (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a05b0359576cfc66eda821a9e8e8f7e25}
+
+
+Callback for comboBox's SelectedIndexChanged event; (re)selects the appropriate items in all implemented detail Controls. ... through call to \hyperlink{class_ias_pbx_config_1_1_trunk_details_aacce011c33fa9fed315eb27c9d9643ea}{refreshDetails()}. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]the comboBox \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 296 of file TrunkDetails.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_trunk_details_a866767d2389bed7020f9f50ffcab120b}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!GeneralOptionControlData@{GeneralOptionControlData}}
+\index{GeneralOptionControlData@{GeneralOptionControlData}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{GeneralOptionControlData}]{\setlength{\rightskip}{0pt plus 5cm}string \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.TrunkDetails.GeneralOptionControlData}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a866767d2389bed7020f9f50ffcab120b}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ 
+        {
+            
+            new string[] {"Trunk", "TextBox", KeyName},
+            new string[] {"Description", "Textbox", "trunk_longname"},
+            new string[] {"Capacity", "TextBox", "capacity", "", ""},
+            new string[] {
+                "Type", 
+                "ComboBox", 
+                "device_type", 
+                "Asterisk.device_types", 
+                "device_type_id", 
+                "device_type",
+                "byName" 
+            },
+            new string[] {"Caller ID Name", "TextBox", "callerid_name"},
+            new string[] {"Caller ID Number", "TextBox", "callerid_number"},
+            new string[] {
+                "Trunkhandler", 
+                "ComboBox", 
+                "incoming_trunkhandler_id", 
+                "Asterisk.v_trunk_groups", 
+                "trunk_group_id", 
+                "trunk_group_name",
+                "byId"
+            },
+            new string[] {"Record", "TextBox", "record"}
+        }
+\end{DoxyCode}
+
+
+data for populating general option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} 
+
+Definition at line 55 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a626346e22ccfb014143c37c2dde77fd3}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!GeneralOptionOptions@{GeneralOptionOptions}}
+\index{GeneralOptionOptions@{GeneralOptionOptions}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{GeneralOptionOptions}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable {\bf IasPbxConfig.TrunkDetails.GeneralOptionOptions}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a626346e22ccfb014143c37c2dde77fd3}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ new Hashtable()
+        {
+            {"HiddenRows", new string[] {"device_id"}}
+        }
+\end{DoxyCode}
+
+
+some NVGrid options for the general option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} 
+
+Definition at line 50 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a33a6ccc4c818a4c5c3dfffd05ea0fbf4}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!KeyName@{KeyName}}
+\index{KeyName@{KeyName}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{KeyName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.TrunkDetails.KeyName} = \char`\"{}trunk\_\-name\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a33a6ccc4c818a4c5c3dfffd05ea0fbf4}
+
+
+unique key column name in TableName table 
+
+Definition at line 35 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_ae08deb88359e29b30255750ee33072a3}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!log@{log}}
+\index{log@{log}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.TrunkDetails.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_ae08deb88359e29b30255750ee33072a3}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 29 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a23327d72e0f1d36e063e9e6250956314}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-deviceOptionsGrid@{m\_\-deviceOptionsGrid}}
+\index{m\_\-deviceOptionsGrid@{m\_\-deviceOptionsGrid}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-deviceOptionsGrid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf NameValueGrid} {\bf IasPbxConfig.TrunkDetails.m\_\-deviceOptionsGrid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a23327d72e0f1d36e063e9e6250956314}
+
+
+Name-\/Value Grid Helper object for currently selected trunk's. 
+
+Definition at line 87 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a6cf2a5bbc63dabcbd0e688dff152ae49}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-generalOptionsGrid@{m\_\-generalOptionsGrid}}
+\index{m\_\-generalOptionsGrid@{m\_\-generalOptionsGrid}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-generalOptionsGrid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf NameValueGrid} {\bf IasPbxConfig.TrunkDetails.m\_\-generalOptionsGrid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a6cf2a5bbc63dabcbd0e688dff152ae49}
+
+
+Name-\/Value Grid Helper object for trunk general options. 
+
+Definition at line 85 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_ab128217bd9aa7cdc63636166ed26e961}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-parameterNames@{m\_\-parameterNames}}
+\index{m\_\-parameterNames@{m\_\-parameterNames}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-parameterNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.TrunkDetails.m\_\-parameterNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_ab128217bd9aa7cdc63636166ed26e961}
+
+
+list of parameter names passed to this form on creation 
+
+Definition at line 95 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_aed1fa61920a4ef53d137af334d569e40}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-parameterValues@{m\_\-parameterValues}}
+\index{m\_\-parameterValues@{m\_\-parameterValues}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-parameterValues}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.TrunkDetails.m\_\-parameterValues}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_aed1fa61920a4ef53d137af334d569e40}
+
+
+corresponding list of parameter values 
+
+Definition at line 97 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a6d2b111c9d9cbbbe435830d0ec4d2f32}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-uidIds@{m\_\-uidIds}}
+\index{m\_\-uidIds@{m\_\-uidIds}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-uidIds}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.TrunkDetails.m\_\-uidIds}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a6d2b111c9d9cbbbe435830d0ec4d2f32}
+
+
+list of database Ids corresponding to names in uid-\/jump-\/to ComboBox (in this case the trunk) 
+
+Definition at line 90 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a5de586a82e2347a9900caf7e478c96e3}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!m\_\-uidNames@{m\_\-uidNames}}
+\index{m\_\-uidNames@{m\_\-uidNames}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{m\_\-uidNames}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ {\bf IasPbxConfig.TrunkDetails.m\_\-uidNames}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a5de586a82e2347a9900caf7e478c96e3}
+
+
+list of names in ComboBox (the trunk name, same as m\_\-uidIds in this case) 
+
+Definition at line 92 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a63923565253ba942384b5e2bb38a3df7}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!SipDeviceOptionControlData@{SipDeviceOptionControlData}}
+\index{SipDeviceOptionControlData@{SipDeviceOptionControlData}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{SipDeviceOptionControlData}]{\setlength{\rightskip}{0pt plus 5cm}string \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.TrunkDetails.SipDeviceOptionControlData}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a63923565253ba942384b5e2bb38a3df7}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ 
+        {
+        }
+\end{DoxyCode}
+
+
+data for populating device option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid}; empty because we are using auto initMethod above 
+
+Definition at line 45 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_a0647e696eac396ee74192f30deee4709}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!SipDeviceOptionOptions@{SipDeviceOptionOptions}}
+\index{SipDeviceOptionOptions@{SipDeviceOptionOptions}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{SipDeviceOptionOptions}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable {\bf IasPbxConfig.TrunkDetails.SipDeviceOptionOptions}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_a0647e696eac396ee74192f30deee4709}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ new Hashtable()
+        {
+            {"initMethod", "auto"},
+            {"excludeColumns", new List<string> {"device_id"}}
+        }
+\end{DoxyCode}
+
+
+some NVGrid options for the device option \hyperlink{class_ias_pbx_config_1_1_name_value_grid}{NameValueGrid} 
+
+Definition at line 38 of file TrunkDetails.cs.\hypertarget{class_ias_pbx_config_1_1_trunk_details_aa073b291eda0041622361db624283b0b}{
+\index{IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}!TableName@{TableName}}
+\index{TableName@{TableName}!IasPbxConfig::TrunkDetails@{IasPbxConfig::TrunkDetails}}
+\subsubsection[{TableName}]{\setlength{\rightskip}{0pt plus 5cm}const string {\bf IasPbxConfig.TrunkDetails.TableName} = \char`\"{}Asterisk.v\_\-trunks\char`\"{}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_trunk_details_aa073b291eda0041622361db624283b0b}
+
+
+database table name associated with trunks 
+
+Definition at line 33 of file TrunkDetails.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_trunk_details_8cs}{TrunkDetails.cs}\end{DoxyCompactItemize}

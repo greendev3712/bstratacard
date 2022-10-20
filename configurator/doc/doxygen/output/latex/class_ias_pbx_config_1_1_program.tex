@@ -1,0 +1,122 @@
+\hypertarget{class_ias_pbx_config_1_1_program}{
+\section{IasPbxConfig.Program Class Reference}
+\label{class_ias_pbx_config_1_1_program}\index{IasPbxConfig::Program@{IasPbxConfig::Program}}
+}
+
+
+launch point.  
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static string\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_program_a2ddc498936b6e3f273297c78de615d3a}{m\_\-formNames} = \{ \char`\"{}Classes of Service\char`\"{}, \char`\"{}Classes of Service Includes\char`\"{}, \char`\"{}Extentions\char`\"{}, \char`\"{}\hyperlink{class_ias_pbx_config_1_1_extensions}{Extensions} Details\char`\"{}, \char`\"{}\hyperlink{class_ias_pbx_config_1_1_trunks}{Trunks}\char`\"{}, \char`\"{}Trunk Details\char`\"{} \}
+\begin{DoxyCompactList}\small\item\em Full form names. \item\end{DoxyCompactList}\item 
+static string\mbox{[}$\,$\mbox{]} \hyperlink{class_ias_pbx_config_1_1_program_a914e91efe69f6c3856d81120624ba66d}{ErrorMessages} = \{ \char`\"{}\char`\"{}, \char`\"{}Connection Failed.\char`\"{} \}
+\begin{DoxyCompactList}\small\item\em Full user error messages. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ias_pbx_config_1_1_db_helper}{DbHelper} \hyperlink{class_ias_pbx_config_1_1_program_a6342106d36b6b4c21bcc82f3113ff69b}{m\_\-db}
+\begin{DoxyCompactList}\small\item\em instance of \hyperlink{class_ias_pbx_config_1_1_db_helper}{DbHelper} for database access. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm} \hyperlink{class_ias_pbx_config_1_1_program_a5963cd004a93c98ddceb23bb869a021f}{m\_\-mainForm}
+\begin{DoxyCompactList}\small\item\em instance of \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm} which creates and contains all others. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{class_ias_pbx_config_1_1_program_ab161f89011eaa7c002ca750c3f9041c7}{Main} ()
+\begin{DoxyCompactList}\small\item\em The main entry point for the application. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_program_aa85a518f60538b87328eee5503af726c}{log}
+\item 
+static Boolean \hyperlink{class_ias_pbx_config_1_1_program_a6271cbd5697b7b8d3d8df052841389ab}{Debug} = true
+\begin{DoxyCompactList}\small\item\em Toggles stack trace messages etc. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+launch point. Holds global constant strings, db connection type, db connection string. Creates and sets up a db object and launches the main form. 
+
+Definition at line 26 of file Program.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_program_ab161f89011eaa7c002ca750c3f9041c7}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!Main@{Main}}
+\index{Main@{Main}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{Main}]{\setlength{\rightskip}{0pt plus 5cm}static void IasPbxConfig.Program.Main ()\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_ab161f89011eaa7c002ca750c3f9041c7}
+
+
+The main entry point for the application. 
+
+setup our db connection but don't connect yet
+
+loop until m\_\-mainForm is released 
+
+Definition at line 45 of file Program.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_program_a6271cbd5697b7b8d3d8df052841389ab}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!Debug@{Debug}}
+\index{Debug@{Debug}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{Debug}]{\setlength{\rightskip}{0pt plus 5cm}Boolean {\bf IasPbxConfig.Program.Debug} = true\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_a6271cbd5697b7b8d3d8df052841389ab}
+
+
+Toggles stack trace messages etc. 
+
+Definition at line 36 of file Program.cs.\hypertarget{class_ias_pbx_config_1_1_program_a914e91efe69f6c3856d81120624ba66d}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!ErrorMessages@{ErrorMessages}}
+\index{ErrorMessages@{ErrorMessages}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{ErrorMessages}]{\setlength{\rightskip}{0pt plus 5cm}string \mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.Program.ErrorMessages} = \{ \char`\"{}\char`\"{}, \char`\"{}Connection Failed.\char`\"{} \}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_a914e91efe69f6c3856d81120624ba66d}
+
+
+Full user error messages. \begin{DoxySeeAlso}{See also}
+\hyperlink{namespace_ias_pbx_config_afbeaf23ebc85892dc4c2cb09f7f2a0cb}{Errors} 
+\end{DoxySeeAlso}
+
+
+Definition at line 34 of file Program.cs.\hypertarget{class_ias_pbx_config_1_1_program_aa85a518f60538b87328eee5503af726c}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!log@{log}}
+\index{log@{log}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.Program.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_aa85a518f60538b87328eee5503af726c}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 28 of file Program.cs.\hypertarget{class_ias_pbx_config_1_1_program_a6342106d36b6b4c21bcc82f3113ff69b}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!m\_\-db@{m\_\-db}}
+\index{m\_\-db@{m\_\-db}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{m\_\-db}]{\setlength{\rightskip}{0pt plus 5cm}{\bf DbHelper} {\bf IasPbxConfig.Program.m\_\-db}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_a6342106d36b6b4c21bcc82f3113ff69b}
+
+
+instance of \hyperlink{class_ias_pbx_config_1_1_db_helper}{DbHelper} for database access. 
+
+Definition at line 39 of file Program.cs.\hypertarget{class_ias_pbx_config_1_1_program_a2ddc498936b6e3f273297c78de615d3a}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!m\_\-formNames@{m\_\-formNames}}
+\index{m\_\-formNames@{m\_\-formNames}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{m\_\-formNames}]{\setlength{\rightskip}{0pt plus 5cm}string \mbox{[}$\,$\mbox{]} {\bf IasPbxConfig.Program.m\_\-formNames} = \{ \char`\"{}Classes of Service\char`\"{}, \char`\"{}Classes of Service Includes\char`\"{}, \char`\"{}Extentions\char`\"{}, \char`\"{}{\bf Extensions} Details\char`\"{}, \char`\"{}{\bf Trunks}\char`\"{}, \char`\"{}Trunk Details\char`\"{} \}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_a2ddc498936b6e3f273297c78de615d3a}
+
+
+Full form names. \begin{DoxySeeAlso}{See also}
+\hyperlink{namespace_ias_pbx_config_a3304277b6c0e85a58951234034da7f3b}{IASoftSetupForms} 
+\end{DoxySeeAlso}
+
+
+Definition at line 32 of file Program.cs.\hypertarget{class_ias_pbx_config_1_1_program_a5963cd004a93c98ddceb23bb869a021f}{
+\index{IasPbxConfig::Program@{IasPbxConfig::Program}!m\_\-mainForm@{m\_\-mainForm}}
+\index{m\_\-mainForm@{m\_\-mainForm}!IasPbxConfig::Program@{IasPbxConfig::Program}}
+\subsubsection[{m\_\-mainForm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf MainForm} {\bf IasPbxConfig.Program.m\_\-mainForm}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_program_a5963cd004a93c98ddceb23bb869a021f}
+
+
+instance of \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm} which creates and contains all others. 
+
+Definition at line 41 of file Program.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_program_8cs}{Program.cs}\end{DoxyCompactItemize}

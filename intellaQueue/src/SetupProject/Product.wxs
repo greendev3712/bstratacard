@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+<Product Id="9338a306-8b35-4848-bead-5fee2432d323" Name="intellaQueue" Language="1033" Version="1.0.0.0" Manufacturer="Intellasoft" UpgradeCode="cb66e754-77b6-4a97-88bc-7d9131f8f456">
+    <Package InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine"/>
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+
+    <UIRef Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="LicenseAgreement.rtf" />
+  
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      
+      <!-- Shortcut on desktop, can be adjusted as needed -->
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="ApplicationShortcutDesktop" Guid="*">
+          <Shortcut Id="ApplicationDesktopShortcut"
+              Name="intellaQueue"
+              Description="We cast Intellas."
+              Target="[Binaries]IntellaQueue.exe"
+              WorkingDirectory="Binaries"/>
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+          <RegistryValue
+              Root="HKCU"
+              Key="Software/MyAppName"
+              Name="installed"
+              Type="integer"
+              Value="1"
+              KeyPath="yes"/>
+        </Component>
+      </Directory>
+      
+      <!-- IntellaUpdater Windows Service Install -->
+      <Component Id="IntellaUpdate.exe" Guid="83a214dd-0f21-4a1f-9f53-2f535e848e6f">
+        <File Id="IntellaUpdate.exe" Source="$(var.IntellaUpdate.TargetPath)" KeyPath="yes" />
+        <ServiceInstall Name="IntellaUpdate"
+                  DisplayName="IntellaUpdate"
+                  Description="Updater service used for Intellasoft line of software"
+                  ErrorControl="ignore"
+                  Type="ownProcess" 
+                  Vital="yes"
+                  Start="auto"
+                  Account="LocalSystem"
+                  Interactive="no" />
+        <ServiceControl Id="ServiceControl_IntellaUpdate"
+                  Name="IntellaUpdate"
+                  Start="install"
+                  Stop="both"
+                  Remove="uninstall"
+                  Wait="yes" />
+      </Component>
+      
+      <!-- Registry key components for DLL's, for manual registration -->
+      <Component Id="cmpEBqXKeCU59lRv4NzcmFKbzSJYi4" Guid="{303EB645-0575-4AF2-958C-54BF6EE827E5}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}" Root="HKLM">
+          <RegistryValue Value="IVideoWMVSettings" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpJj6HbyvXORjDtppr3YaqL.HRsTo" Guid="{EC897DFE-387C-4DC2-BC42-8DC78EA2E86B}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\ProxyStubClsid32" Root="HKLM">
+          <RegistryValue Value="{00020424-0000-0000-C000-000000000046}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpFBsq78X0U2roL44c__.SwXFlZDE" Guid="{8848E2CD-A016-476A-9977-F15ACB8D85F3}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\TypeLib" Root="HKLM">
+          <RegistryValue Value="{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Type="string" />
+          <RegistryValue Name="Version" Value="1.0" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp0_99eokYWfQaOyyWm5C4WgQTIzY" Guid="{603A3DA9-7940-41DD-8F9B-CFCCC36731FF}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Root="HKLM">
+          <RegistryValue Value="ICapturer" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmplQznzElGxOUzoPzKYcS2pjx_Dvo" Guid="{124C8507-1D42-4808-AF2A-75935C9E301B}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\ProxyStubClsid32" Root="HKLM">
+          <RegistryValue Value="{00020424-0000-0000-C000-000000000046}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp208xoZu1bYVDy85DemqW4nGJcFI" Guid="{0DEB6FF8-C788-4499-9DA9-66ADD99E1368}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\TypeLib" Root="HKLM">
+          <RegistryValue Name="Version" Value="1.0" Type="string" />
+          <RegistryValue Value="{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp5nAcR0s8DNHM4HEq2wCsbVVPrQE" Guid="{B41EA012-5599-43AD-B92A-A78A07E4B670}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0" Root="HKLM">
+          <RegistryValue Value="BytescoutScreenCapturing 1.0 Type Library" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp9fOU796MKckQOmowVNMO9OLNMyc" Guid="{436AE030-88E0-409B-85AA-A67DE677E440}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\FLAGS" Root="HKLM">
+          <RegistryValue Value="0" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpg6ZBHAdE8b5l.Z2drX1dZzidKUc" Guid="{6940CE2B-3292-4484-8930-3D34F13AC057}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\HELPDIR" Root="HKLM">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\lib\" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpDY4SCFr9FqjA9lmjmLWaaeMJGXs" Guid="{007E7490-2AB0-4153-9809-41E23D94AF57}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\InprocServer32" Root="HKLM">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\lib\BytescoutScreenCapturing.dll" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpr82G2bAguZ0zif05dkEPWAQLEtI" Guid="{469EB368-922E-498E-942D-FE8B2AF0A32A}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\CLSID\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Root="HKLM">
+          <RegistryValue Value="PSFactoryBuffer" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp4FtSHWzO5JUpFfJI_al.PYG4zJQ" Guid="{0C6CE522-A2AA-4C2A-9D9A-02A041BCCA9C}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\CLSID\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\InProcServer32" Root="HKLM">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\lib\BytescoutScreenCapturing.dll" Type="string" />
+          <RegistryValue Name="ThreadingModel" Value="Both" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp9AxVtTkUrHrpsmtLfaOYmc4Pch0" Guid="{F75F67D1-1A8D-4841-A6E9-C1DD00D5515F}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}" Root="HKLM">
+          <RegistryValue Value="IVideoWMVSettings" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpcgbSJqAxqCdzNU48Mso9dToVbGY" Guid="{AE3EC7E2-78C0-452F-B8FE-8CDC69D9D516}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\NumMethods" Root="HKLM">
+          <RegistryValue Value="25" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpD3rOSSBTopkZetLnD_f_9jA8Wf0" Guid="{5C58DE1A-A99A-455A-AC5F-7FC414748225}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\ProxyStubClsid32" Root="HKLM">
+          <RegistryValue Value="{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp6l_JSL.qiEnmec4XfTC_a2rxXvE" Guid="{AD467A6F-917B-430F-9523-468EE95950E6}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\TypeLib" Root="HKLM">
+          <RegistryValue Value="{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Type="string" />
+          <RegistryValue Name="Version" Value="1.0" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpUEJFFgFTFGfQxZAFDiCekerHAFU" Guid="{94507F42-A70B-408C-A5A6-E98CCD3EF1D4}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Root="HKLM">
+          <RegistryValue Value="ICapturer" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp0QfIy_FQehcHa3dRP0d8EJGuOvU" Guid="{7ED2E210-9888-4816-8C20-660C268B7134}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\NumMethods" Root="HKLM">
+          <RegistryValue Value="211" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp0W.QTl9PeBwvPk.EQq3UiAxf8Uk" Guid="{DE23288B-8183-4ABD-8D55-49AFA5869D1B}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\ProxyStubClsid32" Root="HKLM">
+          <RegistryValue Value="{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp_VAHztWrvMqfWIxmBEhe8gXPkP0" Guid="{C4061D2E-B71A-4C44-83FB-33293BDCAACB}" KeyPath="yes">
+        <RegistryKey Key="Software\Classes\WOW6432Node\Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\TypeLib" Root="HKLM">
+          <RegistryValue Name="Version" Value="1.0" Type="string" />
+          <RegistryValue Value="{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpgcYVRsTymcwm8iJhMGMCHx4mkA4" Guid="87BA555D-A73D-4012-8F7B-8CD4FDF67C8A" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="AppID" Root="HKCR" />
+      </Component>
+      <Component Id="cmpsII_CGlp9R_SzKSoMizgHYjcFn8" Guid="B29FF5E2-58CA-4FAB-B11E-9F93EE8E62ED" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="AppID\{3B815634-F565-4AFE-B38A-83CDAC980731}" Root="HKCR">
+          <RegistryValue Value="BytescoutScreenCapturing" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpflsUAbQyR.F6yLOPctqwtPMgIRY" Guid="9A3F9ECE-54EF-4408-8FC2-44B7F431CE0E" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="AppID\BytescoutScreenCapturing.DLL" Root="HKCR">
+          <RegistryValue Name="AppID" Value="{3B815634-F565-4AFE-B38A-83CDAC980731}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpn5TDBF4NO0t6I.mklKuNciWrdxI" Guid="13B6149D-CD1B-4F18-8D49-AD644CF5B84E" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="BytescoutScreenCapturing.Capturer.1" Root="HKCR">
+          <RegistryValue Value="Capturer Class" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp82UFmpJ.Nu2pqC_8422X3TbsgzI" Guid="EB33B558-C156-4FE0-B074-968A98666321" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="BytescoutScreenCapturing.Capturer.1\CLSID" Root="HKCR">
+          <RegistryValue Value="{48967118-C4C9-435C-94D8-001247B9A52A}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpN2FP80igvo6iF1mgSiPrYQNOZts" Guid="42B46F96-8B4B-4063-B853-79EBF97127E6" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="BytescoutScreenCapturing.Capturer" Root="HKCR">
+          <RegistryValue Value="Capturer Class" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpWWetN0ulI4XE7r4H8G52Pp0VcHs" Guid="96260C87-DA84-41F6-89AC-CDA2D3DB6C11" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="BytescoutScreenCapturing.Capturer\CLSID" Root="HKCR">
+          <RegistryValue Value="{48967118-C4C9-435C-94D8-001247B9A52A}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmppRxvN9JcaIq_WdojQ6IhdVPEasY" Guid="8E4F64DF-08BA-4472-9A2A-30F561BC19C1" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="BytescoutScreenCapturing.Capturer\CurVer" Root="HKCR">
+          <RegistryValue Value="BytescoutScreenCapturing.Capturer.1" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpFWyHZDfC4Xa8hXXgNglqLzpl9i8" Guid="F0CD55D6-9CE5-4BC1-9D79-7FB9E5EE5933" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID" Root="HKCR" />
+      </Component>
+      <Component Id="cmpEgACEJS_fwe4G7TIHPtUGkLY9SA" Guid="E194EF0F-AF2F-4EA4-A7D0-398E72741868" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}" Root="HKCR">
+          <RegistryValue Value="Capturer Class" Type="string" />
+          <RegistryValue Name="AppID" Value="{3B815634-F565-4AFE-B38A-83CDAC980731}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpkz0vLWCEggYMUjSHsnRgeteiHVM" Guid="AF128268-B70F-4637-9FCD-681803C33906" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\ProgID" Root="HKCR">
+          <RegistryValue Value="BytescoutScreenCapturing.Capturer.1" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpyRdVNCrBanFGCACVtT7ViqI7Axk" Guid="8C852771-EA11-4D44-99AD-9ACE1A23DE00" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\VersionIndependentProgID" Root="HKCR">
+          <RegistryValue Value="BytescoutScreenCapturing.Capturer" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp9nKWldGiGJgT8kVU343YYpTi4cE" Guid="070704AD-C3C3-4DCC-AC75-BE9FBE1F8258" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\Programmable" Root="HKCR" />
+      </Component>
+      <Component Id="cmptkuGsMu0XRwjsskHvKd0XnCHcQY" Guid="D6084D2D-D9A1-4E8E-B296-E505ED6AFAF2" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\InprocServer32" Root="HKCR">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\Lib\BytescoutScreenCapturing.dll" Type="string" />
+          <RegistryValue Name="ThreadingModel" Value="Apartment" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpYw8H8fQpOTJpca75sOAu42fd_ow" Guid="EA45A1C2-8955-4874-9027-A246C4823A8C" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{48967118-C4C9-435C-94D8-001247B9A52A}\TypeLib" Root="HKCR">
+          <RegistryValue Value="{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpvQrhvWbDLoNdyKVIdOf0ZoS0ylg" Guid="F7C7484D-D0A2-4C65-A6C6-50F982A950B7" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib" Root="HKCR" />
+      </Component>
+      <Component Id="cmpLaaHy0VznVJy1h9KRqtqRoBN1o4" Guid="514E7067-5BCE-4179-8911-1747AAF41BD9" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}" Root="HKCR" />
+      </Component>
+      <Component Id="cmph8aYiNAnTOHaCXEay7_JbyRqH3c" Guid="4556AE01-D898-4404-8F69-EED7B539C158" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0" Root="HKCR" />
+      </Component>
+      <Component Id="cmp91FfFo7vm.6t.tK5o1ICL7yCzD0" Guid="FDC17695-A92C-41E8-8B65-7EAD682EDA3E" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\FLAGS" Root="HKCR" />
+      </Component>
+      <Component Id="cmp.BuI9B3m9.169mKEJh0uPjtRdi8" Guid="CB48E174-145A-4820-9F64-7198E0B5BA90" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\0" Root="HKCR" />
+      </Component>
+      <Component Id="cmpFup3U4WRwLqoM8LIC1UTPcJl7Nk" Guid="B1F82EF7-3DE8-4525-ABF3-640EA048CE45" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\0\win32" Root="HKCR">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\Lib\BytescoutScreenCapturing.dll" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp0BgLjolnD24HnSNUOYoM4kEWhuA" Guid="FCF344BB-0F3B-4D51-A1CE-F3BB26D38C50" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="TypeLib\{8EDAD3BB-AE5F-43B4-A2F1-B04F4130F2E0}\1.0\HELPDIR" Root="HKCR" />
+      </Component>
+      <Component Id="cmpe0237x.iPPteEVoqLInUamouvEo" Guid="5265508F-39A6-48F3-B9C4-968CB8A3F1D5" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface" Root="HKCR" />
+      </Component>
+      <Component Id="cmpkS83VjyNWsqASImIWMyoRTD3fmw" Guid="8BE32B3B-9944-4212-96DE-6C5EE0534EE2" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}" Root="HKCR" />
+      </Component>
+      <Component Id="cmpsro8qJDpxtqHdUVwzw.Y3Smv36g" Guid="7596C3BE-02F4-49CB-AB57-DDC6EB3982E5" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\ProxyStubClsid32" Root="HKCR">
+          <RegistryValue Value="{00020424-0000-0000-C000-000000000046}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpIh9r02mB5NB1F40I9UpQVzgd_ps" Guid="2DCED191-5F01-49C7-8DC2-1D1D006A971D" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{DCAFCA37-546E-4D0A-9C02-D3221E65FCA9}\TypeLib" Root="HKCR" />
+      </Component>
+      <Component Id="cmpggFRyvNn6yMkTQKrxUsJLBZjW1s" Guid="E4F98EC2-FD63-4EB7-B691-2AE296CE7498" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}" Root="HKCR" />
+      </Component>
+      <Component Id="cmpl6fFTrJoZIWuIZyP8KIqhH6A2pw" Guid="2599FDE1-5F43-4EBB-B2BB-C6BFFCE18E73" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\ProxyStubClsid32" Root="HKCR">
+          <RegistryValue Value="{00020424-0000-0000-C000-000000000046}" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpYw3gJ06CWhw9Cc8TJReym7pXbKU" Guid="BC4DA76A-288E-416C-876C-9054C9FE5D77" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="Interface\{1A814EC2-55A9-4FA2-99E2-2C20A897C2E7}\TypeLib" Root="HKCR" />
+      </Component>
+      <Component Id="cmpEQtvXi4zs42U4WrSgClICCwG_mw" Guid="BB6C8D69-3E04-415A-AD15-557D06947577" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key=".DEFAULT" Root="HKU" />
+      </Component>
+      <Component Id="cmp_qRZuUxoHrwfS14e.1uUog3Yq4k" Guid="43862306-26B6-405D-BD36-E59B0D0D34A8" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="SOFTWARE" Root="HKLM" />
+      </Component>
+      <Component Id="cmpBnGRDvxqrPq7UR1eamwfr.niMpY" Guid="AB72AFCB-C228-48F1-BFB4-1CB6963D8C77" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="SOFTWARE\Microsoft" Root="HKLM" />
+      </Component>
+      <Component Id="cmpFhryWsoV8twnk2dLu5VyGBqanaI" Guid="E8CD7FC0-460D-46AE-9BFE-3A2E2E1FA26B" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="SOFTWARE\Microsoft\Rpc" Root="HKLM" />
+      </Component>
+      <Component Id="cmpuYEkZnvRXqaJZb_ijm7pBp1A28Q" Guid="35BBAABD-D33A-4D58-8512-E0F42A3FF86D" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{4407F28D-97C2-41C5-A23F-2FAE465CE7BB}" Root="HKCR">
+          <RegistryValue Value="Bytescout Video Mixer Filter" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpRD8ADlKaV0ArrfVP7cjaAxbMXcw" Guid="4D8667FA-1C5F-4B9D-87F8-22156C995AA5" KeyPath="yes">
+        <RegistryKey ForceCreateOnInstall="yes" Key="CLSID\{4407F28D-97C2-41C5-A23F-2FAE465CE7BB}\InprocServer32" Root="HKCR">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\Lib\BytescoutVideoMixerFilter.dll" Type="string" />
+          <RegistryValue Name="ThreadingModel" Value="Both" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmp.PaixRcO2YIyZuucJKPExrSazXI" Guid="{782D0D91-661F-41A5-B454-5CF519C9872E}" KeyPath="yes">
+        <RegistryKey Key="CLSID\{0F5D4CE4-2166-4FF7-9AA1-91330D35978A}" Root="HKCR">
+          <RegistryValue Value="Bytescout Screen Capturing Filter" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="cmpRLlj9NFLV1ukrJTTSKQCkLC1rKo" Guid="{0BA130AB-E05F-4158-9549-C0A7FFE13892}" KeyPath="yes">
+        <RegistryKey Key="CLSID\{0F5D4CE4-2166-4FF7-9AA1-91330D35978A}\InprocServer32" Root="HKCR">
+          <RegistryValue Value="C:\Program Files (x86)\Intellasoft\Lib\BytescoutScreenCapturingFilter.dll" Type="string" />
+          <RegistryValue Name="ThreadingModel" Value="Both" Type="string" />
+        </RegistryKey>
+      </Component>
+      <!-- End registry key entries -->
+
+      <!-- Create installation folders -->
+      <!-- Setup installation directories -->
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Intellasoft">
+          <Component Id="IntellasoftFolder" Guid="7280ae42-3b3a-46c8-a2be-b79d2d973af4">
+            <CreateFolder>
+              <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" GenericWrite="yes" ChangePermission="yes" Read="yes"/>
+            </CreateFolder>
+          </Component>
+          <Directory Id="Binaries" Name="bin">
+            <Component Id="BinFolder" Guid="a97650f6-8cf4-4f68-af52-daa3601dd7f9">
+              <CreateFolder>
+                <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" GenericWrite="yes" ChangePermission="yes" Read="yes"/>
+              </CreateFolder>
+            </Component>
+          </Directory>
+          <Directory Id="Libraries" Name="lib">
+            <Component Id="LibFolder" Guid="f3e63f61-68bc-4939-9eb3-315e94316a13">
+              <CreateFolder>
+                <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" GenericWrite="yes" ChangePermission="yes" Read="yes"/>
+              </CreateFolder>
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="Libraries">
+      <!-- 
+           Add files to lib directory, DLL's that will be registered directly into the registry should be in here
+           IMPORTANT!!! - Make sure registry entries that are extracted from DLL's are adjusted to reflect the correct 
+           path they will be installed into! (i.e. C:\Program Files (x86)\Intellasoft\lib) 
+      -->
+      <Component Id="BytescoutScreenCapturingFilter.dll" Guid="cd69724b-f889-4009-9756-6f9dd75278ef">
+        <File Id="BytescoutScreenCapturingFilter.dll" Source="BytescoutScreenCapturingFilter.dll">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+      
+      <Component Id="BytescoutVideoMixerFilter.dll" Guid="ce658cdc-1631-43a1-9b09-8dd62accc6f5">
+        <File Id="BytescoutVideoMixerFilter.dll" Source="BytescoutVideoMixerFilter.dll">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+
+      <Component Id="BytescoutScreenCapturing.dll" Guid="65ec85a4-b1d9-4687-a84c-bb38982dbe09">
+        <File Id="BytescoutScreenCapturing.dll" Source="BytescoutScreenCapturing.dll">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+
+    </DirectoryRef>
+
+  
+  
+    <Feature Id="ProductFeature" Title="The Greatest Project to ever Project" Level="1">
+      <!-- 
+         Features are what will actually be installed. These can be referenced directly via the components unique ID, or the unique ID 
+         of a component group. I actually tried adding all of the DLL reg entries to a component group to make this section cleaner,
+         but for some reason they would not install. TODO: Come back to this later and see if component group issue can be solved
+      -->
+      <ComponentRef Id="AutomaticUpdater.dll"/>
+      <ComponentGroupRef Id="ProductComponents"/>
+      <ComponentRef Id="ApplicationShortcutDesktop"/>
+      <ComponentRef Id="BytescoutScreenCapturingFilter.dll"/>
+      <ComponentRef Id="BytescoutVideoMixerFilter.dll"/>
+      <ComponentRef Id="BytescoutScreenCapturing.dll"/>
+      <ComponentRef Id="log4net.dll"/>
+      <ComponentRef Id="IntellasoftFolder"/>
+      <ComponentRef Id="BinFolder"/>
+      <ComponentRef Id="LibFolder"/>
+      <ComponentRef Id="cmpFWyHZDfC4Xa8hXXgNglqLzpl9i8" />
+      <ComponentRef Id="cmp.PaixRcO2YIyZuucJKPExrSazXI" />
+      <ComponentRef Id="cmpRLlj9NFLV1ukrJTTSKQCkLC1rKo" />
+      <ComponentRef Id="cmpgcYVRsTymcwm8iJhMGMCHx4mkA4" />
+      <ComponentRef Id="cmpsII_CGlp9R_SzKSoMizgHYjcFn8" />
+      <ComponentRef Id="cmpflsUAbQyR.F6yLOPctqwtPMgIRY" />
+      <ComponentRef Id="cmpn5TDBF4NO0t6I.mklKuNciWrdxI" />
+      <ComponentRef Id="cmp82UFmpJ.Nu2pqC_8422X3TbsgzI" />
+      <ComponentRef Id="cmpN2FP80igvo6iF1mgSiPrYQNOZts" />
+      <ComponentRef Id="cmpWWetN0ulI4XE7r4H8G52Pp0VcHs" />
+      <ComponentRef Id="cmppRxvN9JcaIq_WdojQ6IhdVPEasY" />
+      <ComponentRef Id="cmpEgACEJS_fwe4G7TIHPtUGkLY9SA" />
+      <ComponentRef Id="cmpkz0vLWCEggYMUjSHsnRgeteiHVM" />
+      <ComponentRef Id="cmpyRdVNCrBanFGCACVtT7ViqI7Axk" />
+      <ComponentRef Id="cmp9nKWldGiGJgT8kVU343YYpTi4cE" />
+      <ComponentRef Id="cmptkuGsMu0XRwjsskHvKd0XnCHcQY" />
+      <ComponentRef Id="cmpYw8H8fQpOTJpca75sOAu42fd_ow" />
+      <ComponentRef Id="cmpvQrhvWbDLoNdyKVIdOf0ZoS0ylg" />
+      <ComponentRef Id="cmpLaaHy0VznVJy1h9KRqtqRoBN1o4" />
+      <ComponentRef Id="cmph8aYiNAnTOHaCXEay7_JbyRqH3c" />
+      <ComponentRef Id="cmp91FfFo7vm.6t.tK5o1ICL7yCzD0" />
+      <ComponentRef Id="cmp.BuI9B3m9.169mKEJh0uPjtRdi8" />
+      <ComponentRef Id="cmpFup3U4WRwLqoM8LIC1UTPcJl7Nk" />
+      <ComponentRef Id="cmp0BgLjolnD24HnSNUOYoM4kEWhuA" />
+      <ComponentRef Id="cmpe0237x.iPPteEVoqLInUamouvEo" />
+      <ComponentRef Id="cmpkS83VjyNWsqASImIWMyoRTD3fmw" />
+      <ComponentRef Id="cmpsro8qJDpxtqHdUVwzw.Y3Smv36g" />
+      <ComponentRef Id="cmpIh9r02mB5NB1F40I9UpQVzgd_ps" />
+      <ComponentRef Id="cmpggFRyvNn6yMkTQKrxUsJLBZjW1s" />
+      <ComponentRef Id="cmpl6fFTrJoZIWuIZyP8KIqhH6A2pw" />
+      <ComponentRef Id="cmpYw3gJ06CWhw9Cc8TJReym7pXbKU" />
+      <ComponentRef Id="cmpEQtvXi4zs42U4WrSgClICCwG_mw" />
+      <ComponentRef Id="cmp_qRZuUxoHrwfS14e.1uUog3Yq4k" />
+      <ComponentRef Id="cmpBnGRDvxqrPq7UR1eamwfr.niMpY" />
+      <ComponentRef Id="cmpFhryWsoV8twnk2dLu5VyGBqanaI" />
+      <ComponentRef Id="cmpuYEkZnvRXqaJZb_ijm7pBp1A28Q" />
+      <ComponentRef Id="cmpRD8ADlKaV0ArrfVP7cjaAxbMXcw" />
+      <ComponentRef Id="cmpEQtvXi4zs42U4WrSgClICCwG_mw" />
+      <ComponentRef Id="cmp_qRZuUxoHrwfS14e.1uUog3Yq4k" />
+      <ComponentRef Id="cmpEBqXKeCU59lRv4NzcmFKbzSJYi4" />
+      <ComponentRef Id="cmpJj6HbyvXORjDtppr3YaqL.HRsTo" />
+      <ComponentRef Id="cmpFBsq78X0U2roL44c__.SwXFlZDE" />
+      <ComponentRef Id="cmp0_99eokYWfQaOyyWm5C4WgQTIzY" />
+      <ComponentRef Id="cmplQznzElGxOUzoPzKYcS2pjx_Dvo" />
+      <ComponentRef Id="cmp208xoZu1bYVDy85DemqW4nGJcFI" />
+      <ComponentRef Id="cmp5nAcR0s8DNHM4HEq2wCsbVVPrQE" />
+      <ComponentRef Id="cmp9fOU796MKckQOmowVNMO9OLNMyc" />
+      <ComponentRef Id="cmpg6ZBHAdE8b5l.Z2drX1dZzidKUc" />
+      <ComponentRef Id="cmpDY4SCFr9FqjA9lmjmLWaaeMJGXs" />
+      <ComponentRef Id="cmpr82G2bAguZ0zif05dkEPWAQLEtI" />
+      <ComponentRef Id="cmp4FtSHWzO5JUpFfJI_al.PYG4zJQ" />
+      <ComponentRef Id="cmp9AxVtTkUrHrpsmtLfaOYmc4Pch0" />
+      <ComponentRef Id="cmpcgbSJqAxqCdzNU48Mso9dToVbGY" />
+      <ComponentRef Id="cmpD3rOSSBTopkZetLnD_f_9jA8Wf0" />
+      <ComponentRef Id="cmp6l_JSL.qiEnmec4XfTC_a2rxXvE" />
+      <ComponentRef Id="cmpUEJFFgFTFGfQxZAFDiCekerHAFU" />
+      <ComponentRef Id="cmp0QfIy_FQehcHa3dRP0d8EJGuOvU" />
+      <ComponentRef Id="cmp0W.QTl9PeBwvPk.EQq3UiAxf8Uk" />
+      <ComponentRef Id="cmp_VAHztWrvMqfWIxmBEhe8gXPkP0" />
+    
+      <!-- Install the service -->
+      <ComponentRef Id="IntellaUpdate.exe" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <!-- Add files to bin folder -->
+    <ComponentGroup Id="ProductComponents" Directory="Binaries">
+      <!-- wyUpdate needed executable, version info, and auto update library -->
+      <Component Id="log4net.dll" Guid="6a77c5df-1419-4d13-9574-a084827dbfd6">
+        <File Id="log4net.dll" Source="log4net.dll">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+      
+       <Component Id="AutomaticUpdater.dll" Guid="866cef35-8a25-46ac-b344-c2b974bb5a0f">
+        <File Id="AutomaticUpdater.dll" Source="AutomaticUpdater.dll">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+        
+      <Component Id="wyUpdate.exe" Guid="fd72f343-c7ac-4842-915b-036c631ea860">
+        <File Id="wyUpdate.exe" Source="wyUpdate.exe">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+
+      <Component Id="client.wyc" Guid="0ea2cd7a-e210-41c1-8a57-2399398d97a3">
+        <File Id="client.wyc" Source="client.wyc">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+
+      <Component Id="ProductComponent">
+        <!-- This component is for the main app which we be installed. Must change X in var.X.TargetPath to be project name! -->
+        <File Source="$(var.intellaQueue.TargetPath)" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

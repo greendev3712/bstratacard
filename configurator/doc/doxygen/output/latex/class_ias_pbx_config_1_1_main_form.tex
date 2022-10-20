@@ -1,0 +1,312 @@
+\hypertarget{class_ias_pbx_config_1_1_main_form}{
+\section{IasPbxConfig.MainForm Class Reference}
+\label{class_ias_pbx_config_1_1_main_form}\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+}
+
+
+The main program Form; contains everything else.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_main_form_a5a90f1985458908bd2aa0e29fbfda5de}{MainForm} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a9e37d37f15735de72d7242f27216865b}{closeCurrentTab} ()
+\begin{DoxyCompactList}\small\item\em Closes the current tab. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a5edd3bec577d04401d92562d507c8380}{addFormInTab} (int formId)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a1fde9e37db17057ab571cb0c15093fd3}{addFormInTab} (int formId, string\mbox{[}$\,$\mbox{]} parameterNames, string\mbox{[}$\,$\mbox{]} parameterValues)
+\begin{DoxyCompactList}\small\item\em Dynamically creates a new sub form and tabpage. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a4e7a709ee9db70a8263097fe2541266d}{launchError} (int error)
+\begin{DoxyCompactList}\small\item\em Handle an error based on a code. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a68cad20fefea28e92a5e51e25bffa2e1}{launchError} (string errorMessage)
+\begin{DoxyCompactList}\small\item\em Handle an error based on a message. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_aac03f1254a13b3780e0bd66838c65654}{newCloseTabButton\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Handles \mbox{[}X\mbox{]} (close tab button) click. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_ae464d50243315dc81ede782996ae3258}{addWelcomeTab} ()
+\begin{DoxyCompactList}\small\item\em Dynamically creates a new TabPage welcoming the user to the application. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a11921883e13c19ffd3fad9d1de8f897a}{addCloseTabButton} (ref TabPage targetTabPage)
+\begin{DoxyCompactList}\small\item\em Creates close tab \mbox{[}X\mbox{]} button. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_main_form_a2a8635cccbee2889edeca0ad76095e34}{find} (string\mbox{[}$\,$\mbox{]} strings, string str)
+\begin{DoxyCompactList}\small\item\em Searches for a string str within an array of strings. \item\end{DoxyCompactList}\item 
+internal void \hyperlink{class_ias_pbx_config_1_1_main_form_aa956e1dc7f6496157f289d79d19a18ab}{setStatus} (string message)
+\begin{DoxyCompactList}\small\item\em Change the message displayed in the bottom status strip. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_main_form_a45c777ea67451ec8a3619cd5510522ca}{findUserFriendlyErrorMessage} (string errorMessage)
+\begin{DoxyCompactList}\small\item\em Search an exception/error message for key phrases and return a user friendly message. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a220eaac9b10c90352a62fcb1eea7cfb1}{panel1\_\-Paint} (object sender, PaintEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for paint event for mainPanel. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a4f46ed49282adeaa8154639534a2ec55}{mainTreeView\_\-AfterSelect} (object sender, TreeViewEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for event when item is selected in the mainTreeView in left panel. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_ae06266f74a2fe3984a178d3a036cc434}{mainTreeView\_\-DoubleClick} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for event when doubleclick is detected in the mainTreeView in left panel. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_a3b34ad5c46cb2005f92d87544f5d6a0d}{mainTabControl\_\-MouseClick} (object sender, MouseEventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for event when mouse click is detected in the tab area. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_aef7b05da6bcc8fe3038122275b665ccf}{exitToolStripMenuItem1\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for event when exit option is clicked in top File Menu. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_main_form_aa6699db5558f8792d3d88313a456d423}{viewLogToolStripMenuItem\_\-Click} (object sender, EventArgs e)
+\begin{DoxyCompactList}\small\item\em Callback for event when View Log option is clicked in top Tools Menu. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_main_form_a8851a476622496a7d2d08e1879eafa72}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The main program Form; contains everything else. Contains The main menu, a split view area for browsing and viewing through the other forms, along with a tab area to switch between open forms. Also has a status bar at the bottom. Handles the creation and releasing of sub forms.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000037}{Todo}]Menus for handling db connections 
+
+Status bar interaction (message details (backtrace, full exception message)) \end{Desc}
+
+
+Definition at line 30 of file MainForm.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_main_form_a5a90f1985458908bd2aa0e29fbfda5de}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!MainForm@{MainForm}}
+\index{MainForm@{MainForm}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{MainForm}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.MainForm.MainForm ()}}
+\label{class_ias_pbx_config_1_1_main_form_a5a90f1985458908bd2aa0e29fbfda5de}
+
+
+Constructor. Populates the left split view list of available forms. Calls \hyperlink{class_ias_pbx_config_1_1_main_form_ae464d50243315dc81ede782996ae3258}{addWelcomeTab()} to create a welcome message tab on startup. 
+
+Definition at line 40 of file MainForm.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_main_form_a11921883e13c19ffd3fad9d1de8f897a}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!addCloseTabButton@{addCloseTabButton}}
+\index{addCloseTabButton@{addCloseTabButton}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{addCloseTabButton}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.addCloseTabButton (ref TabPage {\em targetTabPage})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a11921883e13c19ffd3fad9d1de8f897a}
+
+
+Creates close tab \mbox{[}X\mbox{]} button. ...at the top right of the supplied TabPage 
+\begin{DoxyParams}{Parameters}
+\item[{\em targetTabPage}]ref to TabPage to which we are adding our button \end{DoxyParams}
+
+
+Definition at line 105 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a1fde9e37db17057ab571cb0c15093fd3}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!addFormInTab@{addFormInTab}}
+\index{addFormInTab@{addFormInTab}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{addFormInTab}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.addFormInTab (int {\em formId}, \/  string\mbox{[}$\,$\mbox{]} {\em parameterNames}, \/  string\mbox{[}$\,$\mbox{]} {\em parameterValues})}}
+\label{class_ias_pbx_config_1_1_main_form_a1fde9e37db17057ab571cb0c15093fd3}
+
+
+Dynamically creates a new sub form and tabpage. ...based on formId. Parameter arguments are optional. 
+\begin{DoxyParams}{Parameters}
+\item[{\em formId}]specifying which form to open. \end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{namespace_ias_pbx_config_a3304277b6c0e85a58951234034da7f3b}{IASoftSetupForms}. 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em parameterNames}]array of parameter names to pass to the new form. \item[{\em parameterValues}]array of corresponding parameter values. \end{DoxyParams}
+
+
+Definition at line 129 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a5edd3bec577d04401d92562d507c8380}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!addFormInTab@{addFormInTab}}
+\index{addFormInTab@{addFormInTab}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{addFormInTab}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.addFormInTab (int {\em formId})}}
+\label{class_ias_pbx_config_1_1_main_form_a5edd3bec577d04401d92562d507c8380}
+
+
+Definition at line 116 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_ae464d50243315dc81ede782996ae3258}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!addWelcomeTab@{addWelcomeTab}}
+\index{addWelcomeTab@{addWelcomeTab}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{addWelcomeTab}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.addWelcomeTab ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_ae464d50243315dc81ede782996ae3258}
+
+
+Dynamically creates a new TabPage welcoming the user to the application. Called when no other tabs are open. 
+
+Definition at line 84 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a9e37d37f15735de72d7242f27216865b}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!closeCurrentTab@{closeCurrentTab}}
+\index{closeCurrentTab@{closeCurrentTab}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{closeCurrentTab}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.closeCurrentTab ()}}
+\label{class_ias_pbx_config_1_1_main_form_a9e37d37f15735de72d7242f27216865b}
+
+
+Closes the current tab. If no open tabs are left, reopens welcome tab. 
+
+Definition at line 71 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_aef7b05da6bcc8fe3038122275b665ccf}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!exitToolStripMenuItem1\_\-Click@{exitToolStripMenuItem1\_\-Click}}
+\index{exitToolStripMenuItem1\_\-Click@{exitToolStripMenuItem1\_\-Click}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{exitToolStripMenuItem1\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.exitToolStripMenuItem1\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_aef7b05da6bcc8fe3038122275b665ccf}
+
+
+Callback for event when exit option is clicked in top File Menu. We call this.Close() to close the mainForm and thus the entire program. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the exitToolStripMenuItem1 \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 360 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a2a8635cccbee2889edeca0ad76095e34}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!find@{find}}
+\index{find@{find}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{find}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.MainForm.find (string\mbox{[}$\,$\mbox{]} {\em strings}, \/  string {\em str})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a2a8635cccbee2889edeca0ad76095e34}
+
+
+Searches for a string str within an array of strings. Looks for a complete, exact match. 
+\begin{DoxyParams}{Parameters}
+\item[{\em strings}]Array of strings to check. \item[{\em str}]What we're looking for \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+first matching index or -\/1
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000038}{Todo}]combine with \hyperlink{class_ias_pbx_config_1_1_db_helper_a92c16852946e46462fe8bb9923ce374c}{DbHelper.find()} \end{Desc}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_db_helper_a92c16852946e46462fe8bb9923ce374c}{DbHelper.find} 
+\end{DoxySeeAlso}
+
+
+Definition at line 192 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a45c777ea67451ec8a3619cd5510522ca}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!findUserFriendlyErrorMessage@{findUserFriendlyErrorMessage}}
+\index{findUserFriendlyErrorMessage@{findUserFriendlyErrorMessage}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{findUserFriendlyErrorMessage}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.MainForm.findUserFriendlyErrorMessage (string {\em errorMessage})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a45c777ea67451ec8a3619cd5510522ca}
+
+
+Search an exception/error message for key phrases and return a user friendly message. If no match is found, returns a default unknown error message. 
+\begin{DoxyParams}{Parameters}
+\item[{\em errorMessage}]non user friendlymessage to parse \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a user frindly version of the input 
+\end{DoxyReturn}
+
+
+Definition at line 227 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a68cad20fefea28e92a5e51e25bffa2e1}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!launchError@{launchError}}
+\index{launchError@{launchError}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{launchError}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.launchError (string {\em errorMessage})}}
+\label{class_ias_pbx_config_1_1_main_form_a68cad20fefea28e92a5e51e25bffa2e1}
+
+
+Handle an error based on a message. Put the error message into the status bar, log it, and make a message box appear. Use a user friendly version if available. 
+\begin{DoxyParams}{Parameters}
+\item[{\em errorMessage}]the error message to handle \end{DoxyParams}
+
+
+Definition at line 274 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a4e7a709ee9db70a8263097fe2541266d}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!launchError@{launchError}}
+\index{launchError@{launchError}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{launchError}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.launchError (int {\em error})}}
+\label{class_ias_pbx_config_1_1_main_form_a4e7a709ee9db70a8263097fe2541266d}
+
+
+Handle an error based on a code. Put the error message into the status bar, log it, and make a message box appear. 
+\begin{DoxyParams}{Parameters}
+\item[{\em error}]errorCode of error to handle \end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_program_a914e91efe69f6c3856d81120624ba66d}{Program.ErrorMessages} 
+\end{DoxySeeAlso}
+
+
+Definition at line 259 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a3b34ad5c46cb2005f92d87544f5d6a0d}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!mainTabControl\_\-MouseClick@{mainTabControl\_\-MouseClick}}
+\index{mainTabControl\_\-MouseClick@{mainTabControl\_\-MouseClick}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{mainTabControl\_\-MouseClick}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.mainTabControl\_\-MouseClick (object {\em sender}, \/  MouseEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a3b34ad5c46cb2005f92d87544f5d6a0d}
+
+
+Callback for event when mouse click is detected in the tab area. We only care if the middle mouse button is clicked here, in which case we close the clicked tabbed and call \hyperlink{class_ias_pbx_config_1_1_main_form_ae464d50243315dc81ede782996ae3258}{addWelcomeTab()} if we closed the last tab. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the mainTabControl \item[{\em e}]MouseEventArgs \end{DoxyParams}
+
+
+Definition at line 332 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a4f46ed49282adeaa8154639534a2ec55}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!mainTreeView\_\-AfterSelect@{mainTreeView\_\-AfterSelect}}
+\index{mainTreeView\_\-AfterSelect@{mainTreeView\_\-AfterSelect}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{mainTreeView\_\-AfterSelect}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.mainTreeView\_\-AfterSelect (object {\em sender}, \/  TreeViewEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a4f46ed49282adeaa8154639534a2ec55}
+
+
+Callback for event when item is selected in the mainTreeView in left panel. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the mainTreeView \item[{\em e}]TreeViewEventArgs \end{DoxyParams}
+
+
+Definition at line 308 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_ae06266f74a2fe3984a178d3a036cc434}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!mainTreeView\_\-DoubleClick@{mainTreeView\_\-DoubleClick}}
+\index{mainTreeView\_\-DoubleClick@{mainTreeView\_\-DoubleClick}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{mainTreeView\_\-DoubleClick}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.mainTreeView\_\-DoubleClick (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_ae06266f74a2fe3984a178d3a036cc434}
+
+
+Callback for event when doubleclick is detected in the mainTreeView in left panel. A call is made to open a new tab and form correspoding to the doubleclicked item. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the mainTreeView \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 320 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_aac03f1254a13b3780e0bd66838c65654}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!newCloseTabButton\_\-Click@{newCloseTabButton\_\-Click}}
+\index{newCloseTabButton\_\-Click@{newCloseTabButton\_\-Click}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{newCloseTabButton\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.newCloseTabButton\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_aac03f1254a13b3780e0bd66838c65654}
+
+
+Handles \mbox{[}X\mbox{]} (close tab button) click. Handles button clicks of any dynamically created \mbox{[}X\mbox{]} button at the top right of each tab content area (except the welcome tab, which has no close button) 
+
+Definition at line 62 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_a220eaac9b10c90352a62fcb1eea7cfb1}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!panel1\_\-Paint@{panel1\_\-Paint}}
+\index{panel1\_\-Paint@{panel1\_\-Paint}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{panel1\_\-Paint}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.panel1\_\-Paint (object {\em sender}, \/  PaintEventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a220eaac9b10c90352a62fcb1eea7cfb1}
+
+
+Callback for paint event for mainPanel. mainPanel contains the topMenuStrip, mainSplitContainer, and bottomStatusStrip 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the mainPanel \item[{\em e}]PaintEventArgs \end{DoxyParams}
+
+
+Definition at line 299 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_aa956e1dc7f6496157f289d79d19a18ab}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!setStatus@{setStatus}}
+\index{setStatus@{setStatus}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{setStatus}]{\setlength{\rightskip}{0pt plus 5cm}internal void IasPbxConfig.MainForm.setStatus (string {\em message})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_aa956e1dc7f6496157f289d79d19a18ab}
+
+
+Change the message displayed in the bottom status strip. We clear all items in tthe strip before adding the message to keep things clean. \begin{Desc}
+\item[\hyperlink{todo__todo000039}{Todo}]make the message clickable to see a full backtrace/exception/etc. \end{Desc}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em message}]the message to display \end{DoxyParams}
+
+
+Definition at line 213 of file MainForm.cs.\hypertarget{class_ias_pbx_config_1_1_main_form_aa6699db5558f8792d3d88313a456d423}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!viewLogToolStripMenuItem\_\-Click@{viewLogToolStripMenuItem\_\-Click}}
+\index{viewLogToolStripMenuItem\_\-Click@{viewLogToolStripMenuItem\_\-Click}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{viewLogToolStripMenuItem\_\-Click}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.MainForm.viewLogToolStripMenuItem\_\-Click (object {\em sender}, \/  EventArgs {\em e})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_aa6699db5558f8792d3d88313a456d423}
+
+
+Callback for event when View Log option is clicked in top Tools Menu. Exec notepad.exe with our log file, and handle errors. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sender}]ref to the viewLogToolStripMenuItem \item[{\em e}]EventArgs \end{DoxyParams}
+
+
+Definition at line 371 of file MainForm.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_main_form_a8851a476622496a7d2d08e1879eafa72}{
+\index{IasPbxConfig::MainForm@{IasPbxConfig::MainForm}!log@{log}}
+\index{log@{log}!IasPbxConfig::MainForm@{IasPbxConfig::MainForm}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.MainForm.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_main_form_a8851a476622496a7d2d08e1879eafa72}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 32 of file MainForm.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_main_form_8cs}{MainForm.cs}\end{DoxyCompactItemize}

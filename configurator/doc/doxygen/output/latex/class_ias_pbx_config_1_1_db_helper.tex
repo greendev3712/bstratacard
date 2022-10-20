@@ -1,0 +1,655 @@
+\hypertarget{class_ias_pbx_config_1_1_db_helper}{
+\section{IasPbxConfig.DbHelper Class Reference}
+\label{class_ias_pbx_config_1_1_db_helper}\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+}
+
+
+creates and maintains connection to database, and provides helper methods.  
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_db_helper_a89a1108a7133811930d8a20f0c53909d}{DbHelper} (string type, string connectionString, int options)
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_ias_pbx_config_1_1_db_helper_a1f1f49a5678367e1ebe7552e51627642}{getValidValuesForColumn} (string tableName, string columnName)
+\begin{DoxyCompactList}\small\item\em return the valid values for a database column that has a custom datatype. \item\end{DoxyCompactList}\item 
+Hashtable \hyperlink{class_ias_pbx_config_1_1_db_helper_ac35315fd4d2d96439ae8efcc4150aa80}{getValidValuesForAllEnumColumnsInTable} (string tableName)
+\item 
+Hashtable \hyperlink{class_ias_pbx_config_1_1_db_helper_a5f9ac6d60871e936168cc8c00ed2eb90}{getValidValuesForAllEnumColumnsInTable} (string tableName, bool doNotReturnNonCustomColumns)
+\begin{DoxyCompactList}\small\item\em return the valid values for each database column in a single table that has a custom datatype. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_ab796d249ab48e0f89248fd41891f1763}{getTable} (ref DataGridView grid, string table, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_ac404860e05ce2c60f03893c92ae51cef}{getTable} (ref DataGridView grid, string table)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a826d8d2c372759bf407b7da4b5633ff6}{getTable} (ref DataGridView grid, string table, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues, string\mbox{[}$\,$\mbox{]} visibleColumnNames, string\mbox{[}$\,$\mbox{]} visibleColumnHeadings)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a10079976d673fae758ec466ffcc1ee11}{getTable} (ref DataGridView grid, string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues, string\mbox{[}$\,$\mbox{]} visibleColumnNames, string\mbox{[}$\,$\mbox{]} visibleColumnHeadings, string keyColumnName)
+\begin{DoxyCompactList}\small\item\em fills a DataGridView with results from an sql query. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a52d4f0ce67921374957b1468cd54b01f}{getColumn} (ref List$<$ string $>$ result, string columnName, string tableName)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_aee81007408e5c21c279bc01afb4b8cff}{getColumn} (ref List$<$ string $>$ result, string columnName, string tableName, string whereName, string whereValue)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a8f01f867cfceb3fbfc8f8c1e1aff8071}{getColumn} (ref List$<$ string $>$ result, string columnName, string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues)
+\begin{DoxyCompactList}\small\item\em fills a List of strings with values from a single table column in the database. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a6e8af81bb90d20f397a5874435e6b382}{updateDbField} (string columnName, string newValue, string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues, ref string errorMessage)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a773ba33589b73240e7b71a28b8d794f7}{updateDbField} (string columnName, string newValue, string tableName, string whereName, string whereValue, ref string errorMessage)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a20b28dce1dacde9f6bf7b8ae9fc3ec36}{updateDbField} (string columnName, string newValue, string tableName, string whereName, string whereValue, ref string errorMessage, bool quoteNewValue)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_affab755fb8424c45031cb8d7736799e1}{updateDbField} (string columnName, string newValue, string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues, ref string errorMessage, bool quoteNewValue)
+\begin{DoxyCompactList}\small\item\em updates a table column (0 or more rows) in the database with a supplied value. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a07cb2de735cc96442d59ac4e3abd9ed5}{getSingleFromDb} (ref string target, string getColumnName, string schemaTable)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a8a20b88489b781ed779cf683a5005194}{getSingleFromDb} (ref string target, string getColumnName, string schemaTable, string whereName, string whereValue)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_afee22408d70a9c0f496b8f2957f19379}{getSingleFromDb} (ref string target, string columnName, string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues)
+\begin{DoxyCompactList}\small\item\em get a single value from the database \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_ae39e091f5a141a7b43c8baca1ec520f2}{insertIntoDb} (string tableName, string\mbox{[}$\,$\mbox{]} columnNames, string\mbox{[}$\,$\mbox{]} newValues, ref string errorMessage)
+\begin{DoxyCompactList}\small\item\em inserts new entry into specified database table. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_ad5986e97e1ec60f2e9ad2b83429d7d11}{deleteFromDb} (string tableName, string whereName, string whereValue)
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a0b0e09192378e91c00084b10b52bff0a}{deleteFromDb} (string tableName, string\mbox{[}$\,$\mbox{]} whereNames, string\mbox{[}$\,$\mbox{]} whereValues)
+\begin{DoxyCompactList}\small\item\em delete entry(s) from database table. \item\end{DoxyCompactList}\item 
+delegate void \hyperlink{class_ias_pbx_config_1_1_db_helper_a9553dce2157909e881ef96ea9370ab41}{refreshCallbackType} (string selectedExtensionSuggestion)
+\begin{DoxyCompactList}\small\item\em delegate description for callback used if unique key was changed. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a08bf253f903973562550f24d9fb3308a}{addUpdateEventsToControl} (Control targetControl, Control uniqueKeyValueHolderControl, string uniqueKeyName, string updateTableName, string updateColumnName)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a24581849a3366fdb2b017501e7dc62ce}{addUpdateEventsToControl} (Control targetControl, Control uniqueKeyValueHolderControl, string uniqueKeyName, string updateTableName, string updateColumnName, List$<$ string $>$ useThisListOfCorrespondingTargetControlIds)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_ac588d2d2d428389c00a882b2b36fac52}{addUpdateEventsToControl} (Control targetControl, Control uniqueKeyValueHolderControl, string uniqueKeyName, string updateTableName, string updateColumnName, refreshCallbackType uniqueKeyValueHolderControlCallback)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a25ba7bab44135f537dbee9d82952cb10}{addUpdateEventsToControl} (Control targetControl, Control uniqueKeyValueHolderControl, string uniqueKeyName, string updateTableName, string updateColumnName, List$<$ string $>$ useThisListOfCorrespondingTargetControlIds, refreshCallbackType uniqueKeyValueHolderControlCallback)
+\begin{DoxyCompactList}\small\item\em add events to a control which launch database actions. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_a52df15fe3a440e493b8a082995f9c246}{getNextAvailableUniqueId} (string tableName, string columnName, string startValueKeyword)
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_af6021c5b8518091fd73155119935ebd8}{getNextAvailableUniqueId} (string tableName, string columnName, string startValueKeyword, string prefix)
+\begin{DoxyCompactList}\small\item\em find the next available (numerically with an optional prefix) unique value for a database table's column. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a12c26ddcef05d832dccb1643da9d6ba7}{reactToGridUpdate} (DataGridView grid, int rowIndex, int columnIndex, string tableName)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a1654a203283dc1ce83552b8466d7e19b}{reactToGridUpdate} (DataGridView grid, int rowIndex, int columnIndex, string tableName, string keyColumnName)
+\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a2f4f23f5cdabcac3cdda6e7983bc3d49}{reactToGridUpdate} (DataGridView grid, int rowIndex, int columnIndex, string tableName, string keyColumnName, string\mbox{[}$\,$\mbox{]} additionalInsertNames, string\mbox{[}$\,$\mbox{]} additionalInsertValues)
+\begin{DoxyCompactList}\small\item\em updates database to reflect a user change made in a DataGridView. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const int \hyperlink{class_ias_pbx_config_1_1_db_helper_a579e32b9a71d8f601e01d6b5a1f98022}{OPTION\_\-NONE} = 0
+\begin{DoxyCompactList}\small\item\em no options bit index \item\end{DoxyCompactList}\item 
+const int \hyperlink{class_ias_pbx_config_1_1_db_helper_a13592d975c10f3fe39a3577b741efcac}{OPTION\_\-DEBUG} = 1
+\begin{DoxyCompactList}\small\item\em debug option bit index \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ias_pbx_config_1_1_db_helper_a0bf0a2cea3701b5ab736c9da279c6ec3}{$\sim$DbHelper} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_aad194ee869204b99082e7779888addd1}{dbEncode} (ref string str)
+\begin{DoxyCompactList}\small\item\em encode a string to be used as a literal in an sql statement. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a92c16852946e46462fe8bb9923ce374c}{find} (string\mbox{[}$\,$\mbox{]} strings, string str)
+\begin{DoxyCompactList}\small\item\em Searches for a string str within an array of strings. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_ias_pbx_config_1_1_db_helper_a0b6833e58769ca9396160a5cf189adfc}{tackOnWhereCondition} (ref string query, ref string\mbox{[}$\,$\mbox{]} whereNames, ref string\mbox{[}$\,$\mbox{]} whereValues)
+\begin{DoxyCompactList}\small\item\em constructs and concatenates a where clause to the end of an sql query string. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a447599403ee4d744b04b98b1642a80ed}{connect} (OdbcConnection connection)
+\begin{DoxyCompactList}\small\item\em opens the connection to the database. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_a2bd877f0a61b7989f6da77d7f637ecb8}{getNextAvailableUniqueId} (string tableName, string columnName, int startValue)
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_ae67ee3d912d67babce90e7ef22d1ef75}{getNextAvailableUniqueId} (string tableName, string columnName, int startValue, string prefix)
+\begin{DoxyCompactList}\small\item\em find the next available (numerically with an optional prefix) unique value for a database table's column. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+OdbcConnection \hyperlink{class_ias_pbx_config_1_1_db_helper_ad2f4da25190daab4caadf0fd961fdc7a}{m\_\-connection}
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_a6b83549fc7774e7b50312bcc61a53f77}{m\_\-type}
+\item 
+int \hyperlink{class_ias_pbx_config_1_1_db_helper_a0efac22d5176062fc601faff46508240}{m\_\-options}
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_acec1410fc508a1269f93e1e378aa3006}{m\_\-connectionString}
+\item 
+string \hyperlink{class_ias_pbx_config_1_1_db_helper_af297028c911777148642b2eed5c2d42b}{m\_\-previousValue}
+\begin{DoxyCompactList}\small\item\em spot to hold previous value of the active Control while it is edited by user, in case their edit is canceled. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static readonly ILog \hyperlink{class_ias_pbx_config_1_1_db_helper_a0857140c11e1ae5ca696a95337a655b2}{log}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+creates and maintains connection to database, and provides helper methods. Each instance handles 1 connection. Currently handles only odbc connections. 
+
+Definition at line 27 of file DbHelper.cs.
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ias_pbx_config_1_1_db_helper_a89a1108a7133811930d8a20f0c53909d}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!DbHelper@{DbHelper}}
+\index{DbHelper@{DbHelper}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{DbHelper}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.DbHelper.DbHelper (string {\em type}, \/  string {\em connectionString}, \/  int {\em options})}}
+\label{class_ias_pbx_config_1_1_db_helper_a89a1108a7133811930d8a20f0c53909d}
+
+
+Constructor. Initializes the db connection object, but does not connect yet. 
+\begin{DoxyParams}{Parameters}
+\item[{\em type}]Type of connection. Only odbc supported. \item[{\em connectionString}]connection string as needed by corresponding .NET Connection object \item[{\em options}]bit encoding representing options \end{DoxyParams}
+
+
+Definition at line 52 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a0bf0a2cea3701b5ab736c9da279c6ec3}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!$\sim$DbHelper@{$\sim$DbHelper}}
+\index{$\sim$DbHelper@{$\sim$DbHelper}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{$\sim$DbHelper}]{\setlength{\rightskip}{0pt plus 5cm}IasPbxConfig.DbHelper.$\sim$DbHelper ()\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a0bf0a2cea3701b5ab736c9da279c6ec3}
+
+
+Destructor. Checks if database connection is still open and close it. 
+
+Definition at line 77 of file DbHelper.cs.
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ias_pbx_config_1_1_db_helper_a25ba7bab44135f537dbee9d82952cb10}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!addUpdateEventsToControl@{addUpdateEventsToControl}}
+\index{addUpdateEventsToControl@{addUpdateEventsToControl}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{addUpdateEventsToControl}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.addUpdateEventsToControl (Control {\em targetControl}, \/  Control {\em uniqueKeyValueHolderControl}, \/  string {\em uniqueKeyName}, \/  string {\em updateTableName}, \/  string {\em updateColumnName}, \/  List$<$ string $>$ {\em useThisListOfCorrespondingTargetControlIds}, \/  refreshCallbackType {\em uniqueKeyValueHolderControlCallback})}}
+\label{class_ias_pbx_config_1_1_db_helper_a25ba7bab44135f537dbee9d82952cb10}
+
+
+add events to a control which launch database actions. TextBox and ComboBox Controls are supported. Enter Focus, Validating, and Validated events are supported. An anonymous delegate is created and added to the Control.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em targetControl}]the Control to add an event to \item[{\em uniqueKeyValueHolderControl}]another control. check it for the currently selected unique key value. \item[{\em uniqueKeyName}]name of the unique key column in the database \item[{\em updateTableName}]name of database table to update on new input \item[{\em updateColumnName}]name of database column to update on new input \item[{\em useThisListOfCorrespondingTargetControlIds}]List of strings of ids which correspond to the list of names in a ComboBox targetControl. We pass this in so we can look up the id of the selected item.. \item[{\em uniqueKeyValueHolderControlCallback}]function to callback to pass back the new selected item in case this is a unique key selection control \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000023}{Todo}]consider moving the methods below into a new UI helper class? \end{Desc}
+
+
+Enter focus inline delegate function: handle entering focus on a Control.
+
+Save the Control's current value. This method is an anonymous delegate.
+
+Param: sender the Control that is Entering focus Param: e EventArgs of the Enter focus event
+
+Validating inline delegate function: handle Validating a new value set in a Control.
+
+Insert the newly entered value into the database. If the insert fails, cancel the Validating event and give user an error message. This method is an anonymous delegate.
+
+Param: sender the Control that is Validating Param: e CancelEventArgs of the Validating event
+
+Validated inline delegate function: handle Validated event on a Control.
+
+if we made a change, update the previous value to the new value. Also, if the field we updated is a unique key field, make a callback to let the Control's Super form reload what it needs to. This method is an anonymous delegate.
+
+Param: sender the Control that is Validated Param: e EventArgs of the Validated event 
+
+Definition at line 837 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ac588d2d2d428389c00a882b2b36fac52}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!addUpdateEventsToControl@{addUpdateEventsToControl}}
+\index{addUpdateEventsToControl@{addUpdateEventsToControl}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{addUpdateEventsToControl}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.addUpdateEventsToControl (Control {\em targetControl}, \/  Control {\em uniqueKeyValueHolderControl}, \/  string {\em uniqueKeyName}, \/  string {\em updateTableName}, \/  string {\em updateColumnName}, \/  refreshCallbackType {\em uniqueKeyValueHolderControlCallback})}}
+\label{class_ias_pbx_config_1_1_db_helper_ac588d2d2d428389c00a882b2b36fac52}
+
+
+Definition at line 813 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a24581849a3366fdb2b017501e7dc62ce}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!addUpdateEventsToControl@{addUpdateEventsToControl}}
+\index{addUpdateEventsToControl@{addUpdateEventsToControl}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{addUpdateEventsToControl}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.addUpdateEventsToControl (Control {\em targetControl}, \/  Control {\em uniqueKeyValueHolderControl}, \/  string {\em uniqueKeyName}, \/  string {\em updateTableName}, \/  string {\em updateColumnName}, \/  List$<$ string $>$ {\em useThisListOfCorrespondingTargetControlIds})}}
+\label{class_ias_pbx_config_1_1_db_helper_a24581849a3366fdb2b017501e7dc62ce}
+
+
+Definition at line 808 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a08bf253f903973562550f24d9fb3308a}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!addUpdateEventsToControl@{addUpdateEventsToControl}}
+\index{addUpdateEventsToControl@{addUpdateEventsToControl}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{addUpdateEventsToControl}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.addUpdateEventsToControl (Control {\em targetControl}, \/  Control {\em uniqueKeyValueHolderControl}, \/  string {\em uniqueKeyName}, \/  string {\em updateTableName}, \/  string {\em updateColumnName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a08bf253f903973562550f24d9fb3308a}
+
+
+Definition at line 803 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a447599403ee4d744b04b98b1642a80ed}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!connect@{connect}}
+\index{connect@{connect}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{connect}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.connect (OdbcConnection {\em connection})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a447599403ee4d744b04b98b1642a80ed}
+
+
+opens the connection to the database. checks to see if it isn't already open. catches and handles an exception. 
+\begin{DoxyParams}{Parameters}
+\item[{\em connection}]connection object to open \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or an error code 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000017}{Todo}]add global error handling \end{Desc}
+
+
+Definition at line 445 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_aad194ee869204b99082e7779888addd1}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!dbEncode@{dbEncode}}
+\index{dbEncode@{dbEncode}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{dbEncode}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.dbEncode (ref string {\em str})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_aad194ee869204b99082e7779888addd1}
+
+
+encode a string to be used as a literal in an sql statement. escapes ' with ''. 
+\begin{DoxyParams}{Parameters}
+\item[{\em str}]ref to string to encode \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000013}{Todo}]: find bug which calls this twice on query strings 
+
+: look into prepared queries \end{Desc}
+
+
+Definition at line 92 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a0b0e09192378e91c00084b10b52bff0a}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!deleteFromDb@{deleteFromDb}}
+\index{deleteFromDb@{deleteFromDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{deleteFromDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.deleteFromDb (string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues})}}
+\label{class_ias_pbx_config_1_1_db_helper_a0b0e09192378e91c00084b10b52bff0a}
+
+
+delete entry(s) from database table. \begin{Desc}
+\item[\hyperlink{todo__todo000021}{Todo}]add return value? \end{Desc}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]name of the database table to delete from \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 or error code 
+\end{DoxyReturn}
+
+
+Definition at line 771 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ad5986e97e1ec60f2e9ad2b83429d7d11}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!deleteFromDb@{deleteFromDb}}
+\index{deleteFromDb@{deleteFromDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{deleteFromDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.deleteFromDb (string {\em tableName}, \/  string {\em whereName}, \/  string {\em whereValue})}}
+\label{class_ias_pbx_config_1_1_db_helper_ad5986e97e1ec60f2e9ad2b83429d7d11}
+
+
+Definition at line 758 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a92c16852946e46462fe8bb9923ce374c}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!find@{find}}
+\index{find@{find}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{find}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.find (string\mbox{[}$\,$\mbox{]} {\em strings}, \/  string {\em str})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a92c16852946e46462fe8bb9923ce374c}
+
+
+Searches for a string str within an array of strings. Returns the first matching index or -\/1. Looks for a complete, exact match. 
+\begin{DoxyParams}{Parameters}
+\item[{\em strings}]Array of strings to check. \item[{\em str}]What we're looking for \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+first matching index or -\/1
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000014}{Todo}]combine with \hyperlink{class_ias_pbx_config_1_1_main_form_a2a8635cccbee2889edeca0ad76095e34}{MainForm.find()} \end{Desc}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ias_pbx_config_1_1_main_form_a2a8635cccbee2889edeca0ad76095e34}{MainForm.find} 
+\end{DoxySeeAlso}
+
+
+Definition at line 109 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a8f01f867cfceb3fbfc8f8c1e1aff8071}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getColumn@{getColumn}}
+\index{getColumn@{getColumn}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getColumn}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getColumn (ref List$<$ string $>$ {\em result}, \/  string {\em columnName}, \/  string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues})}}
+\label{class_ias_pbx_config_1_1_db_helper_a8f01f867cfceb3fbfc8f8c1e1aff8071}
+
+
+fills a List of strings with values from a single table column in the database. 
+\begin{DoxyParams}{Parameters}
+\item[{\em result}]ref to List of strings to create \item[{\em columnName}]name of the database column to get \item[{\em tableName}]name of the database table to get from \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success or an error code 
+\end{DoxyReturn}
+
+
+Definition at line 485 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_aee81007408e5c21c279bc01afb4b8cff}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getColumn@{getColumn}}
+\index{getColumn@{getColumn}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getColumn}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getColumn (ref List$<$ string $>$ {\em result}, \/  string {\em columnName}, \/  string {\em tableName}, \/  string {\em whereName}, \/  string {\em whereValue})}}
+\label{class_ias_pbx_config_1_1_db_helper_aee81007408e5c21c279bc01afb4b8cff}
+
+
+Definition at line 471 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a52d4f0ce67921374957b1468cd54b01f}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getColumn@{getColumn}}
+\index{getColumn@{getColumn}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getColumn}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getColumn (ref List$<$ string $>$ {\em result}, \/  string {\em columnName}, \/  string {\em tableName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a52d4f0ce67921374957b1468cd54b01f}
+
+
+Definition at line 466 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ae67ee3d912d67babce90e7ef22d1ef75}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getNextAvailableUniqueId@{getNextAvailableUniqueId}}
+\index{getNextAvailableUniqueId@{getNextAvailableUniqueId}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getNextAvailableUniqueId}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.DbHelper.getNextAvailableUniqueId (string {\em tableName}, \/  string {\em columnName}, \/  int {\em startValue}, \/  string {\em prefix})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_ae67ee3d912d67babce90e7ef22d1ef75}
+
+
+find the next available (numerically with an optional prefix) unique value for a database table's column. same as other version of getNextAvailableUniqueId, except takes startValue instead of startValueKeyword
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]the database table to find an available unique value in \item[{\em columnName}]the database column to find an available unique value in \item[{\em startValue}]start with this numeric value \item[{\em prefix}]if supplied, will maintain this prefix and increment a numeric value in the next word \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the next available unique value 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000025}{Todo}]since this uses sql min and max, it may return undesirable results if the keys are in a character type column \end{Desc}
+
+
+Definition at line 1049 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a2bd877f0a61b7989f6da77d7f637ecb8}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getNextAvailableUniqueId@{getNextAvailableUniqueId}}
+\index{getNextAvailableUniqueId@{getNextAvailableUniqueId}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getNextAvailableUniqueId}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.DbHelper.getNextAvailableUniqueId (string {\em tableName}, \/  string {\em columnName}, \/  int {\em startValue})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a2bd877f0a61b7989f6da77d7f637ecb8}
+
+
+Definition at line 1029 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_af6021c5b8518091fd73155119935ebd8}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getNextAvailableUniqueId@{getNextAvailableUniqueId}}
+\index{getNextAvailableUniqueId@{getNextAvailableUniqueId}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getNextAvailableUniqueId}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.DbHelper.getNextAvailableUniqueId (string {\em tableName}, \/  string {\em columnName}, \/  string {\em startValueKeyword}, \/  string {\em prefix})}}
+\label{class_ias_pbx_config_1_1_db_helper_af6021c5b8518091fd73155119935ebd8}
+
+
+find the next available (numerically with an optional prefix) unique value for a database table's column. same as other version of getNextAvailableUniqueId, except takes startValueKeyword instead of startValue
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]the database table to find an available unique value in \item[{\em columnName}]the database column to find an available unique value in \item[{\em startValueKeyword}]min or max; wether to start with the lowest or highest value currently in the column \item[{\em prefix}]if supplied, will maintain this prefix and increment a numeric value in the next word \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the next available unique value 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000024}{Todo}]since this uses sql min and max, it may return undesirable results if the keys are in a character type column \end{Desc}
+
+
+Definition at line 939 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a52df15fe3a440e493b8a082995f9c246}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getNextAvailableUniqueId@{getNextAvailableUniqueId}}
+\index{getNextAvailableUniqueId@{getNextAvailableUniqueId}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getNextAvailableUniqueId}]{\setlength{\rightskip}{0pt plus 5cm}string IasPbxConfig.DbHelper.getNextAvailableUniqueId (string {\em tableName}, \/  string {\em columnName}, \/  string {\em startValueKeyword})}}
+\label{class_ias_pbx_config_1_1_db_helper_a52df15fe3a440e493b8a082995f9c246}
+
+
+Definition at line 918 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_afee22408d70a9c0f496b8f2957f19379}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getSingleFromDb@{getSingleFromDb}}
+\index{getSingleFromDb@{getSingleFromDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getSingleFromDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getSingleFromDb (ref string {\em target}, \/  string {\em columnName}, \/  string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues})}}
+\label{class_ias_pbx_config_1_1_db_helper_afee22408d70a9c0f496b8f2957f19379}
+
+
+get a single value from the database 
+\begin{DoxyParams}{Parameters}
+\item[{\em target}]put the result into this string \item[{\em columnName}]name of the database column to get \item[{\em tableName}]name of the database table to get \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success or an error code 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000019}{Todo}]change error codes to match with errors in \hyperlink{_program_8cs}{Program.cs} (add 2 and 3 to \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm}?) \end{Desc}
+
+
+Definition at line 611 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a8a20b88489b781ed779cf683a5005194}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getSingleFromDb@{getSingleFromDb}}
+\index{getSingleFromDb@{getSingleFromDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getSingleFromDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getSingleFromDb (ref string {\em target}, \/  string {\em getColumnName}, \/  string {\em schemaTable}, \/  string {\em whereName}, \/  string {\em whereValue})}}
+\label{class_ias_pbx_config_1_1_db_helper_a8a20b88489b781ed779cf683a5005194}
+
+
+Definition at line 596 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a07cb2de735cc96442d59ac4e3abd9ed5}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getSingleFromDb@{getSingleFromDb}}
+\index{getSingleFromDb@{getSingleFromDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getSingleFromDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getSingleFromDb (ref string {\em target}, \/  string {\em getColumnName}, \/  string {\em schemaTable})}}
+\label{class_ias_pbx_config_1_1_db_helper_a07cb2de735cc96442d59ac4e3abd9ed5}
+
+
+Definition at line 591 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a10079976d673fae758ec466ffcc1ee11}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getTable@{getTable}}
+\index{getTable@{getTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getTable}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getTable (ref DataGridView {\em grid}, \/  string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues}, \/  string\mbox{[}$\,$\mbox{]} {\em visibleColumnNames}, \/  string\mbox{[}$\,$\mbox{]} {\em visibleColumnHeadings}, \/  string {\em keyColumnName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a10079976d673fae758ec466ffcc1ee11}
+
+
+fills a DataGridView with results from an sql query. 
+\begin{DoxyParams}{Parameters}
+\item[{\em grid}]ref to DataGridView to fill \item[{\em tableName}]table to query \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \item[{\em visibleColumnNames}]if supplied, make invisible all columns in grid which do not mach this list \item[{\em visibleColumnHeadings}]corresponding (to visibleColumnNames) grid column headings to show \item[{\em keyColumnName}]if supplied stores copy of this db column in a hidden column at end of grid; allows for easy updates \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or an error code
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000016}{Todo}]onlyShowSpecifiedColumns == true may be the only case needed, if we find manually adding columns in gui is not needed (true) 
+
+look into removing eraseMeNow! hack. Not needed for onlyShowSpecifiedColumns == true? 
+
+break apart into 2 separate functions?: for handling when grid's columns are specified in 1. .NET UI Builder, and 2. as function arguments. \end{Desc}
+
+
+Definition at line 311 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a826d8d2c372759bf407b7da4b5633ff6}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getTable@{getTable}}
+\index{getTable@{getTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getTable}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getTable (ref DataGridView {\em grid}, \/  string {\em table}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues}, \/  string\mbox{[}$\,$\mbox{]} {\em visibleColumnNames}, \/  string\mbox{[}$\,$\mbox{]} {\em visibleColumnHeadings})}}
+\label{class_ias_pbx_config_1_1_db_helper_a826d8d2c372759bf407b7da4b5633ff6}
+
+
+Definition at line 284 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ac404860e05ce2c60f03893c92ae51cef}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getTable@{getTable}}
+\index{getTable@{getTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getTable}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getTable (ref DataGridView {\em grid}, \/  string {\em table})}}
+\label{class_ias_pbx_config_1_1_db_helper_ac404860e05ce2c60f03893c92ae51cef}
+
+
+Definition at line 279 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ab796d249ab48e0f89248fd41891f1763}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getTable@{getTable}}
+\index{getTable@{getTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getTable}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.getTable (ref DataGridView {\em grid}, \/  string {\em table}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues})}}
+\label{class_ias_pbx_config_1_1_db_helper_ab796d249ab48e0f89248fd41891f1763}
+
+
+Definition at line 274 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a5f9ac6d60871e936168cc8c00ed2eb90}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getValidValuesForAllEnumColumnsInTable@{getValidValuesForAllEnumColumnsInTable}}
+\index{getValidValuesForAllEnumColumnsInTable@{getValidValuesForAllEnumColumnsInTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getValidValuesForAllEnumColumnsInTable}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable IasPbxConfig.DbHelper.getValidValuesForAllEnumColumnsInTable (string {\em tableName}, \/  bool {\em doNotReturnNonCustomColumns})}}
+\label{class_ias_pbx_config_1_1_db_helper_a5f9ac6d60871e936168cc8c00ed2eb90}
+
+
+return the valid values for each database column in a single table that has a custom datatype. such as t\_\-record, t\_\-yesno, etc. for non custom datatype columns, returns an empty list (0 length), unless doNotReturnNonCustomColumns is set. 
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]the view or table name. do not include the schema. ex: just use \char`\"{}v\_\-trunks\char`\"{} \item[{\em doNotReturnNonCustomColumns}]if true, non custom columns are not included in the returned hash \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a Hashtable of lists of valid values; the hash key is the database column name 
+\end{DoxyReturn}
+
+
+Definition at line 206 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ac35315fd4d2d96439ae8efcc4150aa80}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getValidValuesForAllEnumColumnsInTable@{getValidValuesForAllEnumColumnsInTable}}
+\index{getValidValuesForAllEnumColumnsInTable@{getValidValuesForAllEnumColumnsInTable}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getValidValuesForAllEnumColumnsInTable}]{\setlength{\rightskip}{0pt plus 5cm}Hashtable IasPbxConfig.DbHelper.getValidValuesForAllEnumColumnsInTable (string {\em tableName})}}
+\label{class_ias_pbx_config_1_1_db_helper_ac35315fd4d2d96439ae8efcc4150aa80}
+
+
+Definition at line 190 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a1f1f49a5678367e1ebe7552e51627642}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!getValidValuesForColumn@{getValidValuesForColumn}}
+\index{getValidValuesForColumn@{getValidValuesForColumn}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{getValidValuesForColumn}]{\setlength{\rightskip}{0pt plus 5cm}List$<$string$>$ IasPbxConfig.DbHelper.getValidValuesForColumn (string {\em tableName}, \/  string {\em columnName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a1f1f49a5678367e1ebe7552e51627642}
+
+
+return the valid values for a database column that has a custom datatype. such as t\_\-record, t\_\-yesno. 
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]the view or table name. do not include the schema. ex: just use \char`\"{}v\_\-trunks\char`\"{} \item[{\em columnName}]the name of the custom typed column to get valid values for. ex: \char`\"{}record\char`\"{} \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a list of valid values 
+\end{DoxyReturn}
+
+
+Definition at line 152 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ae39e091f5a141a7b43c8baca1ec520f2}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!insertIntoDb@{insertIntoDb}}
+\index{insertIntoDb@{insertIntoDb}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{insertIntoDb}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.insertIntoDb (string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em columnNames}, \/  string\mbox{[}$\,$\mbox{]} {\em newValues}, \/  ref string {\em errorMessage})}}
+\label{class_ias_pbx_config_1_1_db_helper_ae39e091f5a141a7b43c8baca1ec520f2}
+
+
+inserts new entry into specified database table. catches and tries to handle some exceptions. 
+\begin{DoxyParams}{Parameters}
+\item[{\em tableName}]name of the database table to update \item[{\em columnNames}]names of the database columns for which we are providing values in newValues \item[{\em newValues}]corresponding (to columnNames) values for new entry \item[{\em errorMessage}]ref to more detailed error message that may be set \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success or an error code 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000020}{Todo}]test exceptions 
+
+change error codes to match with errors in \hyperlink{_program_8cs}{Program.cs} (add 2, 5, and 3 to \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm}?) \end{Desc}
+
+
+Definition at line 692 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a2f4f23f5cdabcac3cdda6e7983bc3d49}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!reactToGridUpdate@{reactToGridUpdate}}
+\index{reactToGridUpdate@{reactToGridUpdate}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{reactToGridUpdate}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.reactToGridUpdate (DataGridView {\em grid}, \/  int {\em rowIndex}, \/  int {\em columnIndex}, \/  string {\em tableName}, \/  string {\em keyColumnName}, \/  string\mbox{[}$\,$\mbox{]} {\em additionalInsertNames}, \/  string\mbox{[}$\,$\mbox{]} {\em additionalInsertValues})}}
+\label{class_ias_pbx_config_1_1_db_helper_a2f4f23f5cdabcac3cdda6e7983bc3d49}
+
+
+updates database to reflect a user change made in a DataGridView. handles a value change (update datatbase) or a new row creation (insert into database). 
+\begin{DoxyParams}{Parameters}
+\item[{\em grid}]the DataGridView that was changed \item[{\em rowIndex}]the index of the row in the grid which was changed \item[{\em columnIndex}]the index of the column in the grid which was changed \item[{\em tableName}]table to update or insert into \item[{\em keyColumnName}]the name of the column in the table used as a unique key \item[{\em additionalInsertNames}]list of additional column names to insert into table \item[{\em additionalInsertValues}]corresponding values to additionalInsertNames \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000026}{Todo}]better error handling (use global error call, or return error to caller) \end{Desc}
+
+
+Definition at line 1094 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a1654a203283dc1ce83552b8466d7e19b}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!reactToGridUpdate@{reactToGridUpdate}}
+\index{reactToGridUpdate@{reactToGridUpdate}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{reactToGridUpdate}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.reactToGridUpdate (DataGridView {\em grid}, \/  int {\em rowIndex}, \/  int {\em columnIndex}, \/  string {\em tableName}, \/  string {\em keyColumnName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a1654a203283dc1ce83552b8466d7e19b}
+
+
+Definition at line 1076 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a12c26ddcef05d832dccb1643da9d6ba7}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!reactToGridUpdate@{reactToGridUpdate}}
+\index{reactToGridUpdate@{reactToGridUpdate}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{reactToGridUpdate}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.reactToGridUpdate (DataGridView {\em grid}, \/  int {\em rowIndex}, \/  int {\em columnIndex}, \/  string {\em tableName})}}
+\label{class_ias_pbx_config_1_1_db_helper_a12c26ddcef05d832dccb1643da9d6ba7}
+
+
+Definition at line 1071 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a9553dce2157909e881ef96ea9370ab41}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!refreshCallbackType@{refreshCallbackType}}
+\index{refreshCallbackType@{refreshCallbackType}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{refreshCallbackType}]{\setlength{\rightskip}{0pt plus 5cm}delegate void IasPbxConfig.DbHelper.refreshCallbackType (string {\em selectedExtensionSuggestion})}}
+\label{class_ias_pbx_config_1_1_db_helper_a9553dce2157909e881ef96ea9370ab41}
+
+
+delegate description for callback used if unique key was changed. 
+\begin{DoxyParams}{Parameters}
+\item[{\em selectedExtensionSuggestion}]the new selected value for the unique key selection control \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000022}{Todo}]consider moving the methods below into a new UI helper class? \end{Desc}
+\hypertarget{class_ias_pbx_config_1_1_db_helper_a0b6833e58769ca9396160a5cf189adfc}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!tackOnWhereCondition@{tackOnWhereCondition}}
+\index{tackOnWhereCondition@{tackOnWhereCondition}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{tackOnWhereCondition}]{\setlength{\rightskip}{0pt plus 5cm}void IasPbxConfig.DbHelper.tackOnWhereCondition (ref string {\em query}, \/  ref string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  ref string\mbox{[}$\,$\mbox{]} {\em whereValues})\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a0b6833e58769ca9396160a5cf189adfc}
+
+
+constructs and concatenates a where clause to the end of an sql query string. Supplied conditions must all be true (AND). 
+\begin{DoxyParams}{Parameters}
+\item[{\em query}]ref to query string to add to \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \end{DoxyParams}
+\begin{Desc}
+\item[\hyperlink{todo__todo000015}{Todo}]: find bug which calls this twice on query strings \end{Desc}
+
+
+Definition at line 131 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_affab755fb8424c45031cb8d7736799e1}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!updateDbField@{updateDbField}}
+\index{updateDbField@{updateDbField}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{updateDbField}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.updateDbField (string {\em columnName}, \/  string {\em newValue}, \/  string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues}, \/  ref string {\em errorMessage}, \/  bool {\em quoteNewValue})}}
+\label{class_ias_pbx_config_1_1_db_helper_affab755fb8424c45031cb8d7736799e1}
+
+
+updates a table column (0 or more rows) in the database with a supplied value. 
+\begin{DoxyParams}{Parameters}
+\item[{\em columnName}]name of the database column to update \item[{\em newValue}]new value to put into the database column \item[{\em tableName}]name of the database table to update \item[{\em whereNames}]column names which must have specific value (whereValues) to match \item[{\em whereValues}]correspoding array of values to whereNames \item[{\em errorMessage}]ref to more detailed error message that may be set \item[{\em quoteNewValue}]whether or not to put single quotes around the new value. needed? \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success or an error code 
+\end{DoxyReturn}
+\begin{Desc}
+\item[\hyperlink{todo__todo000018}{Todo}]change error codes to match with errors in \hyperlink{_program_8cs}{Program.cs} (add 2 and 3 to \hyperlink{class_ias_pbx_config_1_1_main_form}{MainForm}?) \end{Desc}
+
+
+Definition at line 538 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a20b28dce1dacde9f6bf7b8ae9fc3ec36}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!updateDbField@{updateDbField}}
+\index{updateDbField@{updateDbField}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{updateDbField}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.updateDbField (string {\em columnName}, \/  string {\em newValue}, \/  string {\em tableName}, \/  string {\em whereName}, \/  string {\em whereValue}, \/  ref string {\em errorMessage}, \/  bool {\em quoteNewValue})}}
+\label{class_ias_pbx_config_1_1_db_helper_a20b28dce1dacde9f6bf7b8ae9fc3ec36}
+
+
+Definition at line 521 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a773ba33589b73240e7b71a28b8d794f7}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!updateDbField@{updateDbField}}
+\index{updateDbField@{updateDbField}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{updateDbField}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.updateDbField (string {\em columnName}, \/  string {\em newValue}, \/  string {\em tableName}, \/  string {\em whereName}, \/  string {\em whereValue}, \/  ref string {\em errorMessage})}}
+\label{class_ias_pbx_config_1_1_db_helper_a773ba33589b73240e7b71a28b8d794f7}
+
+
+Definition at line 516 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a6e8af81bb90d20f397a5874435e6b382}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!updateDbField@{updateDbField}}
+\index{updateDbField@{updateDbField}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{updateDbField}]{\setlength{\rightskip}{0pt plus 5cm}int IasPbxConfig.DbHelper.updateDbField (string {\em columnName}, \/  string {\em newValue}, \/  string {\em tableName}, \/  string\mbox{[}$\,$\mbox{]} {\em whereNames}, \/  string\mbox{[}$\,$\mbox{]} {\em whereValues}, \/  ref string {\em errorMessage})}}
+\label{class_ias_pbx_config_1_1_db_helper_a6e8af81bb90d20f397a5874435e6b382}
+
+
+Definition at line 511 of file DbHelper.cs.
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ias_pbx_config_1_1_db_helper_a0857140c11e1ae5ca696a95337a655b2}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!log@{log}}
+\index{log@{log}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}readonly ILog {\bf IasPbxConfig.DbHelper.log}\hspace{0.3cm}{\ttfamily  \mbox{[}static, private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a0857140c11e1ae5ca696a95337a655b2}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+ LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+\end{DoxyCode}
+
+
+Definition at line 29 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_ad2f4da25190daab4caadf0fd961fdc7a}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!m\_\-connection@{m\_\-connection}}
+\index{m\_\-connection@{m\_\-connection}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{m\_\-connection}]{\setlength{\rightskip}{0pt plus 5cm}OdbcConnection {\bf IasPbxConfig.DbHelper.m\_\-connection}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_ad2f4da25190daab4caadf0fd961fdc7a}
+
+
+Definition at line 37 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_acec1410fc508a1269f93e1e378aa3006}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!m\_\-connectionString@{m\_\-connectionString}}
+\index{m\_\-connectionString@{m\_\-connectionString}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{m\_\-connectionString}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.DbHelper.m\_\-connectionString}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_acec1410fc508a1269f93e1e378aa3006}
+
+
+Definition at line 40 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a0efac22d5176062fc601faff46508240}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!m\_\-options@{m\_\-options}}
+\index{m\_\-options@{m\_\-options}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{m\_\-options}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf IasPbxConfig.DbHelper.m\_\-options}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a0efac22d5176062fc601faff46508240}
+
+
+Definition at line 39 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_af297028c911777148642b2eed5c2d42b}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!m\_\-previousValue@{m\_\-previousValue}}
+\index{m\_\-previousValue@{m\_\-previousValue}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{m\_\-previousValue}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.DbHelper.m\_\-previousValue}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_af297028c911777148642b2eed5c2d42b}
+
+
+spot to hold previous value of the active Control while it is edited by user, in case their edit is canceled. 
+
+Definition at line 43 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a6b83549fc7774e7b50312bcc61a53f77}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!m\_\-type@{m\_\-type}}
+\index{m\_\-type@{m\_\-type}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{m\_\-type}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf IasPbxConfig.DbHelper.m\_\-type}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{class_ias_pbx_config_1_1_db_helper_a6b83549fc7774e7b50312bcc61a53f77}
+
+
+Definition at line 38 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a13592d975c10f3fe39a3577b741efcac}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!OPTION\_\-DEBUG@{OPTION\_\-DEBUG}}
+\index{OPTION\_\-DEBUG@{OPTION\_\-DEBUG}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{OPTION\_\-DEBUG}]{\setlength{\rightskip}{0pt plus 5cm}const int {\bf IasPbxConfig.DbHelper.OPTION\_\-DEBUG} = 1}}
+\label{class_ias_pbx_config_1_1_db_helper_a13592d975c10f3fe39a3577b741efcac}
+
+
+debug option bit index 
+
+Definition at line 35 of file DbHelper.cs.\hypertarget{class_ias_pbx_config_1_1_db_helper_a579e32b9a71d8f601e01d6b5a1f98022}{
+\index{IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}!OPTION\_\-NONE@{OPTION\_\-NONE}}
+\index{OPTION\_\-NONE@{OPTION\_\-NONE}!IasPbxConfig::DbHelper@{IasPbxConfig::DbHelper}}
+\subsubsection[{OPTION\_\-NONE}]{\setlength{\rightskip}{0pt plus 5cm}const int {\bf IasPbxConfig.DbHelper.OPTION\_\-NONE} = 0}}
+\label{class_ias_pbx_config_1_1_db_helper_a579e32b9a71d8f601e01d6b5a1f98022}
+
+
+no options bit index 
+
+Definition at line 33 of file DbHelper.cs.
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+C:/Documents and Settings/Mike/Desktop/ias\_\-bzr/trunk/src/IasPbxConfig/\hyperlink{_db_helper_8cs}{DbHelper.cs}\end{DoxyCompactItemize}
