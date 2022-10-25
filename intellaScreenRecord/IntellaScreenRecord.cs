@@ -103,6 +103,7 @@ namespace IntellaScreenRecord
             // Where to find FFMPEG
             appPath                 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             FFmpegLoader.FFmpegPath = System.IO.Path.Combine(appPath, "ffmpeg");
+            EnableFFMPegLogs(ffmpeg.AV_LOG_DEBUG);
         }
  
         public bool RecordingStart(string path, ScreenRecordingCompleteCallback recordingCompleteCallback)
@@ -197,6 +198,24 @@ namespace IntellaScreenRecord
         // QD.QD_LoggerFunction = (string msg, params string[] msgFormat)
         public void SetLoggerCallback(QD.QD_LoggerFunction loggerFn) {
             m_logger = loggerFn;
+        }
+
+        public unsafe void EnableFFMPegLogs(int logLevel)
+        {
+            ffmpeg.av_log_set_level(logLevel);
+            ffmpeg.av_log_set_flags(ffmpeg.AV_LOG_DEBUG);
+
+            av_log_set_callback_callback logCallback = (p0, level, format, vl) => {
+                var lineSize = 1024;
+                var lineBuffer = stackalloc byte[lineSize];
+                var printPrefix = 1;
+                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                var line = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                Console.WriteLine("LOG: " + line);
+            };
+
+            ffmpeg.av_log_set_callback(logCallback);
+
         }
     }
 
