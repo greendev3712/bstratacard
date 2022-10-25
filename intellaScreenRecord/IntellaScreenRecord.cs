@@ -210,8 +210,8 @@ namespace IntellaScreenRecord
                 var lineBuffer = stackalloc byte[lineSize];
                 var printPrefix = 1;
                 ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-                var line = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                Console.WriteLine("LOG: " + line);
+                var low_log = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                m_logger("FFMPEG: {0}", low_log);
             };
 
             ffmpeg.av_log_set_callback(logCallback);
