@@ -20,15 +20,8 @@ using Lib;
 
 namespace IntellaScreenRecord
 {
-    public enum SystemMetric
-    {
-        VirtualScreenWidth  = 78, // CXVIRTUALSCREEN 0x0000004E 
-        VirtualScreenHeight = 79, // CYVIRTUALSCREEN 0x0000004F 
-        SM_CYFULLSCREEN = 17,
-        SM_CXFULLSCREEN = 16,
-    }
 
-    public class IntellaScreenRecording
+    public class IntellaScreenRecording2
     {
         public delegate void ScreenRecordingCompleteCallback(IntellaScreenRecordingResult result);
 
@@ -88,7 +81,7 @@ namespace IntellaScreenRecord
             return ImageCodecInfo.GetImageDecoders().FirstOrDefault(codec => codec.FormatID == format.Guid);
         }
 
-        public IntellaScreenRecording()
+        public IntellaScreenRecording2()
         {
             InitVariables();
         }
@@ -103,6 +96,7 @@ namespace IntellaScreenRecord
             // Where to find FFMPEG
             appPath                 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             FFmpegLoader.FFmpegPath = System.IO.Path.Combine(appPath, "ffmpeg");
+            EnableFFMPegLogs(ffmpeg.AV_LOG_DEBUG);
         }
  
         public bool RecordingStart(string path, ScreenRecordingCompleteCallback recordingCompleteCallback)
@@ -198,15 +192,23 @@ namespace IntellaScreenRecord
         public void SetLoggerCallback(QD.QD_LoggerFunction loggerFn) {
             m_logger = loggerFn;
         }
-    }
 
-    public class IntellaScreenRecordingResult
-    {
-        public DateTime StartTime;
-        public DateTime EndTime;
+        public unsafe void EnableFFMPegLogs(int logLevel)
+        {
+            ffmpeg.av_log_set_level(logLevel);
+            ffmpeg.av_log_set_flags(ffmpeg.AV_LOG_DEBUG);
 
-        public string RecordingFilePath;
+            av_log_set_callback_callback logCallback = (p0, level, format, vl) => {
+                var lineSize = 1024;
+                var lineBuffer = stackalloc byte[lineSize];
+                var printPrefix = 1;
+                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                var low_log = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                m_logger("FFMPEG: {0}", low_log);
+            };
 
-        public bool Success;
+            ffmpeg.av_log_set_callback(logCallback);
+
+        }
     }
 }
