@@ -40,7 +40,7 @@
             // Button_Close
             // 
             this.Button_Close.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.Button_Close.Location = new System.Drawing.Point(463, 154);
+            this.Button_Close.Location = new System.Drawing.Point(463, 182);
             this.Button_Close.Name = "Button_Close";
             this.Button_Close.Size = new System.Drawing.Size(75, 23);
             this.Button_Close.TabIndex = 9;
@@ -51,7 +51,7 @@
             // Label_Copyright
             // 
             this.Label_Copyright.AutoSize = true;
-            this.Label_Copyright.Location = new System.Drawing.Point(19, 88);
+            this.Label_Copyright.Location = new System.Drawing.Point(25, 118);
             this.Label_Copyright.Name = "Label_Copyright";
             this.Label_Copyright.Size = new System.Drawing.Size(212, 39);
             this.Label_Copyright.TabIndex = 8;
@@ -82,7 +82,7 @@
             // Logo
             // 
             this.Logo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Logo.BackgroundImage")));
-            this.Logo.Location = new System.Drawing.Point(288, 42);
+            this.Logo.Location = new System.Drawing.Point(288, 87);
             this.Logo.Name = "Logo";
             this.Logo.Size = new System.Drawing.Size(250, 70);
             this.Logo.TabIndex = 5;
@@ -93,7 +93,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(559, 192);
+            this.ClientSize = new System.Drawing.Size(559, 212);
             this.Controls.Add(this.Button_Close);
             this.Controls.Add(this.Label_Copyright);
             this.Controls.Add(this.Label_Version);

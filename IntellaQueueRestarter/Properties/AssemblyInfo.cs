@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IntellaUpdate")]
+[assembly: AssemblyTitle("IntellaQueueRestarter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IntellaUpdate")]
+[assembly: AssemblyProduct("IntellaQueueRestarter")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("47f33c19-49e7-4186-95ee-9fd51fbdf161")]
+[assembly: Guid("39c1e0f4-384f-4bd1-92a5-059f38893bfb")]
 
 // Version information for an assembly consists of the following four values:
 //

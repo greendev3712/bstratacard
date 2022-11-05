@@ -144,8 +144,6 @@ namespace Lib
 		}
 
 	    private bool _connect() {
-			bool result = false;
-
             if (false && Debugger.IsAttached)
             {
                 if (!this.getState().HasFlag(ConnectionState.Open)) {

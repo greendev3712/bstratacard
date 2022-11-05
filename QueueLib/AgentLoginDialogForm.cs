@@ -9,6 +9,7 @@ using IntellaScreenRecord;
 using System.IO;
 using Lib;
 using LibICP;
+using static Lib.QD;
 
 namespace QueueLib
 {
@@ -22,6 +23,8 @@ namespace QueueLib
 		private SuccessCallback m_successCallback;
         public delegate AgentLoginDialogForm.ValidationCode ValidateCallback(string agentExtension, string agentNumber, string agentPin);
 		public delegate void SuccessCallback();
+
+		private QD_LoggerFunction m_logger;
 
 		private int m_trysDefault = 3;
 
@@ -80,6 +83,10 @@ namespace QueueLib
 		{
 			agentNumberTextBox.Text = agentNum;
 			agentExtensionTextBox.Text = agentExtension;
+		}
+
+		public void SetLoggerCallBack_QD(QD_LoggerFunction loggerCallback) {
+			this.m_logger = loggerCallback;
 		}
 
 		public void SetValidateCallback(ValidateCallback callback)
@@ -172,15 +179,23 @@ namespace QueueLib
 		// TEMP TEMP
 		private void button1_Click(object sender, EventArgs e) {
 			IntellaScreenRecording m_screenRecord = new IntellaScreenRecording();
+			IntellaScreenRecording2 m_screenRecord2 = new IntellaScreenRecording2();
+
+			m_screenRecord.SetLoggerCallBack_QD(m_logger);
+			m_screenRecord2.SetLoggerCallBack_QD(m_logger);
 
 			string screen_recording_file_path = Path.GetTempPath() + "SCREEN.mp4";
 			
-            m_screenRecord.RecordingStart(screen_recording_file_path,
-                // Callback for when recording is finished
-                delegate (IntellaScreenRecordingResult result) {
-                    Console.WriteLine("ScreenCapture -- End Screen Recording: " + screen_recording_file_path);
-                }
-            );
+			try {
+				m_screenRecord2.RecordingStart(screen_recording_file_path,
+					// Callback for when recording is finished
+					delegate (IntellaScreenRecordingResult result) {
+						Console.WriteLine("ScreenCapture -- End Screen Recording: " + screen_recording_file_path);
+					}
+				);
+			} catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
+			}
 		}
 	}
 }

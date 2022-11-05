@@ -31,12 +31,11 @@
             this.Button_Close = new System.Windows.Forms.Button();
             this.Button_QueueSettings = new System.Windows.Forms.Button();
             this.Button_ServerSettings = new System.Windows.Forms.Button();
-            this.cmpExitApplicationButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Button_Close
             // 
-            this.Button_Close.Location = new System.Drawing.Point(97, 152);
+            this.Button_Close.Location = new System.Drawing.Point(97, 70);
             this.Button_Close.Name = "Button_Close";
             this.Button_Close.Size = new System.Drawing.Size(98, 23);
             this.Button_Close.TabIndex = 5;
@@ -57,7 +56,7 @@
             // 
             // Button_ServerSettings
             // 
-            this.Button_ServerSettings.Location = new System.Drawing.Point(97, 62);
+            this.Button_ServerSettings.Location = new System.Drawing.Point(97, 41);
             this.Button_ServerSettings.Name = "Button_ServerSettings";
             this.Button_ServerSettings.Size = new System.Drawing.Size(98, 23);
             this.Button_ServerSettings.TabIndex = 3;
@@ -65,22 +64,11 @@
             this.Button_ServerSettings.UseVisualStyleBackColor = true;
             this.Button_ServerSettings.Click += new System.EventHandler(this.Button_ServerSettings_Click);
             // 
-            // cmpExitApplicationButton
-            // 
-            this.cmpExitApplicationButton.Location = new System.Drawing.Point(97, 107);
-            this.cmpExitApplicationButton.Name = "cmpExitApplicationButton";
-            this.cmpExitApplicationButton.Size = new System.Drawing.Size(98, 23);
-            this.cmpExitApplicationButton.TabIndex = 6;
-            this.cmpExitApplicationButton.Text = "Exit Application";
-            this.cmpExitApplicationButton.UseVisualStyleBackColor = true;
-            this.cmpExitApplicationButton.Click += new System.EventHandler(this.cmpExitApplicationButton_Click);
-            // 
             // QueueAppConfigMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 187);
-            this.Controls.Add(this.cmpExitApplicationButton);
+            this.ClientSize = new System.Drawing.Size(292, 101);
             this.Controls.Add(this.Button_Close);
             this.Controls.Add(this.Button_QueueSettings);
             this.Controls.Add(this.Button_ServerSettings);
@@ -97,6 +85,5 @@
 		internal System.Windows.Forms.Button Button_Close;
 		internal System.Windows.Forms.Button Button_QueueSettings;
 		internal System.Windows.Forms.Button Button_ServerSettings;
-		private System.Windows.Forms.Button cmpExitApplicationButton;
 	}
 }

@@ -17,10 +17,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Lib;
+using FFmpeg.AutoGen;
 
 namespace IntellaScreenRecord
 {
-
     public class IntellaScreenRecording2
     {
         public delegate void ScreenRecordingCompleteCallback(IntellaScreenRecordingResult result);
@@ -90,7 +90,12 @@ namespace IntellaScreenRecord
         {
             screenWidth  = GetSystemMetrics(SystemMetric.VirtualScreenWidth);
             screenHeight = GetSystemMetrics(SystemMetric.VirtualScreenHeight);
-            //mainWindow.Title = "Screen size: " + screenWidth.ToString() + " ×" + screenHeight.ToString();
+
+            // ffmpeg does NOT like a non-even height
+            if ((screenHeight % 2) != 0) {
+                screenHeight -= 1;
+            }
+
             m_currentlyRecording = false;
 
             // Where to find FFMPEG
@@ -189,7 +194,7 @@ namespace IntellaScreenRecord
         }
         
         // QD.QD_LoggerFunction = (string msg, params string[] msgFormat)
-        public void SetLoggerCallback(QD.QD_LoggerFunction loggerFn) {
+        public void SetLoggerCallBack_QD(QD.QD_LoggerFunction loggerFn) {
             m_logger = loggerFn;
         }
 
@@ -208,7 +213,6 @@ namespace IntellaScreenRecord
             };
 
             ffmpeg.av_log_set_callback(logCallback);
-
         }
     }
 }

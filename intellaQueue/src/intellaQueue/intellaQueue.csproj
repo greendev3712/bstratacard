@@ -138,11 +138,17 @@
     <Compile Include="DispositionCodesHistoryForm.Designer.cs">
       <DependentUpon>DispositionCodesHistoryForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="intellaQueue.cs">
+    <Compile Include="IntellaQueueForm.Updater.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="intellaQueue.Designer.cs">
-      <DependentUpon>intellaQueue.cs</DependentUpon>
+    <Compile Include="IntellaQueueForm.Debug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntellaQueueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntellaQueueForm.Designer.cs">
+      <DependentUpon>IntellaQueueForm.cs</DependentUpon>
     </Compile>
     <Compile Include="CurrentCallForm.cs">
       <SubType>Form</SubType>
@@ -150,10 +156,13 @@
     <Compile Include="CurrentCallForm.Designer.cs">
       <DependentUpon>CurrentCallForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IntellaQueueData.cs">
+    <Compile Include="IntellaQueueForm.Data.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IntellaQueueGUI.cs">
+    <Compile Include="IntellaQueueForm.EventHandlers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntellaQueueForm.GUI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="StatusCodesForm.cs">
@@ -185,8 +194,8 @@
     <EmbeddedResource Include="EditDebugSettings.resx">
       <DependentUpon>EditDebugSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="intellaQueue.resx">
-      <DependentUpon>intellaQueue.cs</DependentUpon>
+    <EmbeddedResource Include="IntellaQueueForm.resx">
+      <DependentUpon>IntellaQueueForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="CurrentCallForm.resx">

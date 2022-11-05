@@ -16,7 +16,7 @@
         <Component Id="ApplicationShortcutDesktop" Guid="*">
           <Shortcut Id="ApplicationDesktopShortcut"
               Name="intellaQueue"
-              Description="We cast Intellas."
+              Description="IntellaQueue Toolbar"
               Target="[Binaries]IntellaQueue.exe"
               WorkingDirectory="Binaries"/>
           <RemoveFolder Id="DesktopFolder" On="uninstall"/>
@@ -361,27 +361,28 @@
           <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
         </File>
       </Component>
-
     </DirectoryRef>
 
-  
-  
-    <Feature Id="ProductFeature" Title="The Greatest Project to ever Project" Level="1">
+    <Feature Id="ProductFeature" Title="IntellaQueueToolbar" Level="1">
       <!-- 
          Features are what will actually be installed. These can be referenced directly via the components unique ID, or the unique ID 
          of a component group. I actually tried adding all of the DLL reg entries to a component group to make this section cleaner,
          but for some reason they would not install. TODO: Come back to this later and see if component group issue can be solved
       -->
-      <ComponentRef Id="AutomaticUpdater.dll"/>
       <ComponentGroupRef Id="ProductComponents"/>
       <ComponentRef Id="ApplicationShortcutDesktop"/>
+
+      <ComponentRef Id="AutomaticUpdater.dll"/>
       <ComponentRef Id="BytescoutScreenCapturingFilter.dll"/>
       <ComponentRef Id="BytescoutVideoMixerFilter.dll"/>
       <ComponentRef Id="BytescoutScreenCapturing.dll"/>
+      <ComponentRef Id="IntellaQueueRestarter.exe" />      
       <ComponentRef Id="log4net.dll"/>
+
       <ComponentRef Id="IntellasoftFolder"/>
       <ComponentRef Id="BinFolder"/>
       <ComponentRef Id="LibFolder"/>
+      
       <ComponentRef Id="cmpFWyHZDfC4Xa8hXXgNglqLzpl9i8" />
       <ComponentRef Id="cmp.PaixRcO2YIyZuucJKPExrSazXI" />
       <ComponentRef Id="cmpRLlj9NFLV1ukrJTTSKQCkLC1rKo" />
@@ -441,7 +442,7 @@
       <ComponentRef Id="cmp0QfIy_FQehcHa3dRP0d8EJGuOvU" />
       <ComponentRef Id="cmp0W.QTl9PeBwvPk.EQq3UiAxf8Uk" />
       <ComponentRef Id="cmp_VAHztWrvMqfWIxmBEhe8gXPkP0" />
-    
+
       <!-- Install the service -->
       <ComponentRef Id="IntellaUpdate.exe" />
     </Feature>
@@ -471,6 +472,12 @@
 
       <Component Id="client.wyc" Guid="0ea2cd7a-e210-41c1-8a57-2399398d97a3">
         <File Id="client.wyc" Source="client.wyc">
+          <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
+        </File>
+      </Component>
+
+      <Component Id="IntellaQueueRestarter.exe" Guid="1ea2cd7a-e210-41c1-8a57-2399398d97a4">
+        <File Id="IntellaQueueRestarter.exe" Source="c:\intellaApps\IntellaQueueRestarter/bin/Debug/IntellaQueueRestarter.exe">
           <util:PermissionEx  User="Everyone" GenericRead="yes" GenericExecute="yes" ChangePermission="yes" Read="yes" Execute="yes" />
         </File>
       </Component>

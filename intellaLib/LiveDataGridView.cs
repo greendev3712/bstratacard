@@ -125,16 +125,8 @@ namespace Lib {
             };
             
             grid.CellMouseDown += (object sender, DataGridViewCellMouseEventArgs e) => {
-                return; // TEMP
-                TweakedDataGridView data_grid = (TweakedDataGridView)sender;
-                int selected_row = e.RowIndex;
-
-			    if (e.Button != System.Windows.Forms.MouseButtons.Left)
-				    return;
-
-                grid.SetRowColor(selected_row, Color.Blue);
-
-//			    Debug.Print("MOUSEDOWNCELL " + sender.. + " " + m_mouseDownCellRowIndex);
+                // Placeholder for.... something?
+                return;
             };
 
             //grid.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(grid_CellMouseEnter);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -154,7 +155,7 @@ namespace ScreenRecord
             settings.EncoderPreset = EncoderPreset.VerySlow;
             settings.CRF = 17;
             fileMp4 = MediaBuilder.CreateContainer(path).WithVideo(settings).Create();
-            //*/
+            //
 
             StartRecording(path);
          
@@ -313,3 +314,4 @@ namespace ScreenRecord
 
     }
 }
+*/

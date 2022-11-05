@@ -448,6 +448,7 @@ namespace Lib {
         public Boolean  Success  { get; set; } = false;
         public string   Code     { get; set; } = "UNKNOWN";
         public string   Reason   { get; set; } = "A result has not been stored";
+        public string   UUID     { get; set; } = "";
         public JsonHash Data     { get; set; } = new JsonHash();
 
         public override string ToString() {
@@ -455,9 +456,11 @@ namespace Lib {
             ht.Add("success", this.Success);
             ht.Add("code",    this.Code);
             ht.Add("reason",  this.Reason);
+            ht.Add("uuid",    this.UUID);
             ht.Add("data",    this.Data);
 
             JsonHash jh = new JsonHash(ht);
+
             return jh.ToString();
         }
     }
@@ -465,7 +468,6 @@ namespace Lib {
     public class JsonHashSerializer : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             var json_hash = value as JsonHash;
-
 
             writer.WriteStartObject(); // Start of a Hash/Object
 

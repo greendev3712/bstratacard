@@ -73,8 +73,10 @@
             this.cmpSysTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmpSystrayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmpSystrayContextMenuItemAdmin = new System.Windows.Forms.ToolStripMenuItem();
-            this.setAgentExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAgentExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmpExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dropGridTemplate)).BeginInit();
             this.MainContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sizeAdjustorPb)).BeginInit();
@@ -524,11 +526,13 @@
             // cmpSystrayContextMenu
             // 
             this.cmpSystrayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem1,
             this.cmpSystrayContextMenuItemAdmin,
             this.debugToolStripMenuItem1,
-            this.setAgentExtensionToolStripMenuItem});
+            this.setAgentExtensionToolStripMenuItem,
+            this.cmpExitToolStripMenuItem});
             this.cmpSystrayContextMenu.Name = "cmpSystrayContextMenu";
-            this.cmpSystrayContextMenu.Size = new System.Drawing.Size(181, 92);
+            this.cmpSystrayContextMenu.Size = new System.Drawing.Size(181, 136);
             // 
             // cmpSystrayContextMenuItemAdmin
             // 
@@ -537,6 +541,13 @@
             this.cmpSystrayContextMenuItemAdmin.Text = "Admin";
             this.cmpSystrayContextMenuItemAdmin.Click += new System.EventHandler(this.AdminToolStripMenuItem_Click);
             // 
+            // debugToolStripMenuItem1
+            // 
+            this.debugToolStripMenuItem1.Name = "debugToolStripMenuItem1";
+            this.debugToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.debugToolStripMenuItem1.Text = "Debug";
+            this.debugToolStripMenuItem1.Click += new System.EventHandler(this.debugToolStripMenuItem1_Click);
+            // 
             // setAgentExtensionToolStripMenuItem
             // 
             this.setAgentExtensionToolStripMenuItem.Name = "setAgentExtensionToolStripMenuItem";
@@ -544,12 +555,19 @@
             this.setAgentExtensionToolStripMenuItem.Text = "Set Agent Extension";
             this.setAgentExtensionToolStripMenuItem.Click += new System.EventHandler(this.cmpSetAgentExtensionToolStripMenuItem_Click);
             // 
-            // debugToolStripMenuItem1
+            // cmpExitToolStripMenuItem
             // 
-            this.debugToolStripMenuItem1.Name = "debugToolStripMenuItem1";
-            this.debugToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.debugToolStripMenuItem1.Text = "Debug";
-            this.debugToolStripMenuItem1.Click += new System.EventHandler(this.debugToolStripMenuItem1_Click);
+            this.cmpExitToolStripMenuItem.Name = "cmpExitToolStripMenuItem";
+            this.cmpExitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cmpExitToolStripMenuItem.Text = "Exit";
+            this.cmpExitToolStripMenuItem.Click += new System.EventHandler(this.cmpExitToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem1.Text = "About";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // IntellaQueueForm
             // 
@@ -645,6 +663,8 @@
         private System.Windows.Forms.ToolStripMenuItem cmpSystrayContextMenuItemAdmin;
         private System.Windows.Forms.ToolStripMenuItem setAgentExtensionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem cmpExitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
     }
 }
 

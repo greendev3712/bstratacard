@@ -47,8 +47,10 @@ $SCRIPT_NAME =~ s/^\.\///;
 $0 = $SCRIPT_NAME;
 
 use Data::Dumper;
-use Getopt::Long;
 use File::Slurp;
+use File::stat;
+use Getopt::Long;
+use POSIX qw();
 
 my $OP = '';
 my $VERBOSE = 0;
@@ -72,6 +74,10 @@ $CMD_CC = qq{"$CMD_CC"};
 
 my %APPS = (
   intellaQueue => {
+    gitBase          => '/cygdrive/c/intellaApps',
+    appBinary        => '/cygdrive/c/intellaApps/intellaQueue/src/intellaQueue/bin/Debug/intellaQueue.exe',
+    # The rest of these are quoted so we can use them directly wyUpdate.exe 
+    #  (which needs windows paths) without having to quote (in case in the future these paths might contain spaces or something)
     project          => '"c:\\intellaApps\\intellaQueueWithIntellaCast.sln"',
     setupProject     => '"c:\\intellaApps\\intellaQueue\\src\\SetupProject\\SetupProject.wixproj"',
     bootstrapProject => '"c:\\intellaApps\\intellaQueue\\src\\Bootstrapper\\Bootstrapper.wixproj"',
@@ -90,6 +96,11 @@ my %DEPLOYMENTS = (
   'vbox-markm' => {
      config_wyp     => 'IntellaQueue - VBOX-MarkM.wyp',
      default_server => 'vbox-markm.intellasoft.local',
+  },
+
+  'vbox-markm-64' => {
+     config_wyp     => 'IntellaQueue - VBOX-MarkM-64.wyp',
+     default_server => 'vbox-markm-64.intellasoft.local',
   },
     
   'intellasoft' => {
@@ -162,6 +173,12 @@ sub getCurrentAppVersion {
 
   my $current_version = $current_deploy_path_parts[0];
 
+  if (! -d "$current_deploy/") {
+    # New deployment entirely
+    say "--> Detected brand new deployment";
+    return ('0.0', '1.0');
+  }
+  
   # If we do have the current version deployed, then we're not an initial release
   if (-e "$current_deploy/version.txt") {
     $next_version = $current_version + 0.1;
@@ -288,7 +305,7 @@ sub build_new_version {
     # Copy existing files to speed up update (wyUpdate will not re-reploy unchanged files)
     say "--> Clone $current_version -> $next_version";
     say qq{cp -r "$previous_deploy" "$new_deploy"};
-    `cp -rap "$previous_deploy" "$new_deploy"`;
+    `cp -rap "$previous_deploy"/* "$new_deploy"`;
     
     if ($? ne '0') {
       say "!!! Prepare Failed";
@@ -296,14 +313,28 @@ sub build_new_version {
     }
   }
 
+  my $app_binary_stat       = File::stat::stat($APPS{intellaQueue}{appBinary});
+  my $app_binary_mtime      = $app_binary_stat->mtime();
+  my $app_binary_build_time = POSIX::strftime("%c %Z", localtime($app_binary_mtime));
+
+  my $cwd = Cwd::getcwd();
+  chdir($APPS{intellaQueue}{gitBase});
+  my $git_version = `git rev-parse --verify HEAD`; chomp($git_version);
+  chdir($cwd);
+
+  $git_version .= " ($app_binary_build_time)";
+
   write_file("$new_deploy/version.txt",          $next_version);
+  write_file("$new_deploy/version_build.txt",    $git_version);
   write_file("$new_deploy/default_settings.txt", $DEPLOYMENT->{default_server});
 
   say "--- Setup for wyUpdate: Previous: $previous_deploy -- New: $new_deploy";
 
+  unlink(" intellaQueue/src/intellaQueue/bin/Debug/IntellaQueueRestarter.exe");
+  
   # Anything that's new
   say "--> RSYNC New... -> $new_deploy";
-  do_cmd(qq{rsync -rt intellaQueue/src/intellaQueue/bin/Debug/ "$new_deploy" $DEPLOYMENT_RSYNC_OPTS});
+  do_cmd(qq{rsync -rt intellaQueue/src/intellaQueue/bin/Debug/ "$new_deploy"/ $DEPLOYMENT_RSYNC_OPTS});
 
   # wyUpdate file
   my $wyupdate_xml = qq{<?xml version="1.0" encoding="utf-8"?>
@@ -331,12 +362,23 @@ sub build_new_version {
   #build_updates(); # Generalize the below... pass params to build_updates
   say "--> wyUpdate -- Add/Build Updates...";
 
-#  my $out = do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu -vs="1.0" -ve="$next_version" -add="add.xml"});
-  my $out = do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu -vs="$current_version" -ve="$next_version" -add="add.xml"});
-  if ($? ne '0') {
+  # Build all versions to all other versions
+  #my $out = do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu -vs="1.0"              -ve="$next_version" -add="add.xml"});
+
+  my $opts = "";
+
+  # If we're doing a first build... this is not needed
+  if ($current_version ne '0.0') {
+    $opts .= qq{/-vs="$current_version"};
+  }
+
+  # Only build from the current version to the next
+  my $out = do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu $opts -ve="$next_version" -add="add.xml"});
+  
+  if ($out !~ /.*Succeeded.*Succeeded.*Succeeded.*/ms) {
     say "!!! wybuild.cmd.exe failed";
     say "";
-    say qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu -vs="1.0" -ve="$next_version" -add="add.xml"};
+    say qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /bu $opts -ve="$next_version" -add="add.xml"};
     say $out if (defined($out));
     exit;
   }
@@ -351,10 +393,12 @@ sub build_new_version {
   say "--> wyUpdate -- Add/Build Complete";
 
   say "--> wyUpdate -- Upload Updates...";
-  do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /upload});
+  $out = do_cmd(qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /upload});
+
   if ($? ne '0') {
     say "!!! wybuild.cmd.exe failed";
     say qq{$CMD_WYBUILD "$DEPLOYMENT_WYP" /upload};
+    say $out if (defined($out));
     exit;
   }
 
@@ -434,11 +478,14 @@ sub do_cmd {
   $opts          //= {};
   $opts->{debug} //= 0;
 
+  unlink('/tmp/cmd_out');
+
   my $pid = fork();
   die if not defined $pid;
 
   if (!$pid) {
     # Child
+
     if ($opts->{debug})  {
       say "Exec: $cmd";
     }
@@ -446,16 +493,15 @@ sub do_cmd {
       open(STDOUT,  '>', '/tmp/cmd_out') || die("Could not redirect STDOUT to /tmp/cmd_out");
     }
 
+    say "Exec: $cmd"; # This goes to the out file
+
     exec($cmd);
     exit;
   }
 
-  if ($pid) {
-    # parent
-    waitpid($pid, 0);
-  }
-
-  return read_file('/tmp/out') if (-e '/tmp/out');
+  # parent
+  waitpid($pid, 0);
+  return read_file('/tmp/cmd_out') if (-e '/tmp/cmd_out');
 }
 
 if (!defined($DEPLOYMENT)) {

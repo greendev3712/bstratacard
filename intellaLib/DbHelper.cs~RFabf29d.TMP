@@ -35,15 +35,13 @@ namespace Lib {
 
         }
 
-        [Obsolete ("Use DbHelper Constructor")]
         public SimpleDbConnectionParameters(Hashtable initParams) {
-            this.Host         = (string)  initParams["host"];
-            this.Port         = (string)  initParams["port"];
-            this.DB           = (string)  initParams["database"];
-            this.User         = (string)  initParams["user"];
-            this.Password     = (string)  initParams["pass"];
-            this.Pooling      = (string)  initParams["pooling"];
-            this.SSL_Required = (Boolean) initParams["useSSL"];
+            this.Host     = (string) initParams["host"];
+            this.Port     = (string) initParams["port"];
+            this.DB       = (string) initParams["database"];
+            this.User     = (string) initParams["user"];
+            this.Password = (string) initParams["pass"];
+            this.Pooling  = (string) initParams["pooling"];
 
             // Defaults
             if (this.Pooling == "") { this.Pooling = "false"; }
@@ -136,18 +134,21 @@ namespace Lib {
         private DbHelperConnection m_connection;
         private string m_lastError;
 
-        // New-Style Error Handler
-        private QD.QE_ErrorCallbackFunction m_handleErrorCallback = QD.GenericErrorCallbackFunction;
-
-        // Old-Style Error Handler
-        public delegate void handleErrorLegacyCallback(Exception ex, string errorMessage);
+        private static QD.QE_ErrorCallbackFunction m_handleErrorCallback = QD.GenericErrorCallbackFunction;
 
         private string m_type;
+        private int m_options;
+        /// spot to hold previous value of the active Control while it is edited by user, in case their 
+        /// edit is canceled.
+        private string m_previousValue;
+
         private bool m_isDisposed;
 
         public bool m_useSSL = false;
 
         private Hashtable m_dbColumnInfoCache;
+
+        handleErrorCallbackType
 
         //////////////////////////////////////////////////////////////////////////////////
         /// Constructors
@@ -170,21 +171,11 @@ namespace Lib {
             _construct(host, port, user, pass, database, false, null);
         }
 
-        public DbHelper(handleErrorLegacyCallback errorLegacyCallback) {
-            // Backwards-compat
-            // Our error handler will Invoke old-style errorCallback with our new-style params we get from the error handler
-            m_handleErrorCallback = delegate (QD.ERROR_LEVEL errorLevel, string errorToken, Exception ex, string msg, string[] msgFormat) {
-                errorLegacyCallback.Invoke(ex, String.Format("{0} {1} {2}", errorLevel, errorToken, String.Format(msg, msgFormat)));
-                return "";
-            };
-            
-            _construct("", "", "", "", "", false, null);
-        }
-
         private void _construct(string host, string port, string user, string pass, string database, Boolean useSsl, int? commandTimeout) {
             log.Debug("");
             m_connectionString = "";
             m_type = "npgsql";
+            m_options = OPTION_DEBUG;
             m_handleErrorCallback = null;
 
             m_connection = new DbHelperConnection(m_connectionString, m_type);
@@ -200,13 +191,13 @@ namespace Lib {
             m_userName = user;
             m_userPassword = pass;
 
-            SimpleDbConnectionParameters connection = generateConnectionDataObject(host, port, user, pass, database, useSsl);
+            SimpleDbConnectionParameters connection = generateConnectionDataObject(host, port, user, pass, database);
             initConnection(connection);
             m_dbColumnInfoCache = new Hashtable(16);
         }
 
         public void SetErrorCallback(QD.QE_ErrorCallbackFunction errorHandler) {
-            m_handleErrorCallback = errorHandler;
+            m_errorHandler = errorHandler;
             m_connection.SetErrorCallback(errorHandler);
         }
 
@@ -219,14 +210,15 @@ namespace Lib {
         /// @param type Type of connection. npgsql and odbc supported.
         /// @param connectionString connection string as needed by corresponding .NET Connection object
         /// @param options bit encoding representing options
-        public DbHelper(string type, string connectionString, int options, handleErrorLegacyCallback errorLegacyCallback) {
+        public DbHelper(string type, string connectionString, int options, handleErrorCallbackType errorCallback) {
             m_connectionString = connectionString;
             m_type = type;
+            m_options = options;
 
             // Backwards-compat
             // Our error handler will Invoke old-style errorCallback with our new-style params we get from the error handler
-            m_handleErrorCallback = delegate (QD.ERROR_LEVEL errorLevel, string errorToken, Exception ex, string msg, string[] msgFormat) {
-                errorLegacyCallback.Invoke(ex, String.Format("{0} {1} {2}", errorLevel, errorToken, String.Format(msg, msgFormat)));
+            m_handleErrorCallback = delegate (QD.ERROR_LEVEL errorLevel, Exception ex, string errorToken, string msg, string[] msgFormat) {
+                errorCallback.Invoke(ex, String.Format("{0} {1} {2}", errorLevel, errorToken, String.Format(msg, msgFormat)));
                 return "";
             };
             
@@ -243,6 +235,7 @@ namespace Lib {
         public DbHelper(string type, string connectionString, int options, QD.QE_ErrorCallbackFunction errorCallback) {
             m_connectionString = connectionString;
             m_type = type;
+            m_options = options;
 
             m_handleErrorCallback = errorCallback;
             
@@ -255,6 +248,7 @@ namespace Lib {
         public DbHelper() {
             m_connectionString = "";
             m_type = "npgsql";
+            m_options = OPTION_DEBUG;
 
             m_connection = new DbHelperConnection(m_connectionString, m_type);
 
@@ -264,6 +258,7 @@ namespace Lib {
         public DbHelper(NpgsqlConnection n, QD.QE_ErrorCallbackFunction errorCallback) {
             m_connectionString = "";
             m_type = "npgsql";
+            m_options = OPTION_DEBUG;
             m_handleErrorCallback = errorCallback;
 
             m_connection = new DbHelperConnection(n);
@@ -332,15 +327,14 @@ namespace Lib {
         }
 
         [Obsolete("generateConnectionDataObject should be migrated right into SimpleDbConnectionParameters")]
-        public static SimpleDbConnectionParameters generateConnectionDataObject(string host, string port, string user, string pass, string database, bool useSSL = true) {
+        public static SimpleDbConnectionParameters generateConnectionDataObject(string host, string port, string user, string pass, string database) {
             SimpleDbConnectionParameters result = new SimpleDbConnectionParameters(new Hashtable()
             {
-                {"host",     host},
-                {"port",     port},
-                {"user",     user},
-                {"pass",     pass},
-                {"database", database},
-                {"useSSL",   useSSL }
+                {"host", host},
+                {"port", port},
+                {"user", user},
+                {"pass", pass},
+                {"database", database}
             });
 
             return result;
@@ -366,7 +360,6 @@ namespace Lib {
         }
 
         public void initConnection(SimpleDbConnectionParameters connectionParameters) {
-
             m_connection.init(connectionParameters);
         }
 
@@ -502,12 +495,19 @@ namespace Lib {
             query += wherePart;
         }
 
-        private void handleError(string errorMessage) {
-            this.m_handleErrorCallback.Invoke(QD.ERROR_LEVEL.ERROR, "DB_ERROR", null, errorMessage);
+         private void handleError(string errorMessage, bool useErrorCallBack = true) {
+            handleError(null, errorMessage, useErrorCallBack);
         }
 
-        private void handleError(Exception ex, string errorMessage) {
-            this.m_handleErrorCallback.Invoke(QD.ERROR_LEVEL.ERROR, "DB_ERROR", ex, errorMessage);
+        private void handleError(Exception ex, string errorMessage, bool useErrorCallBack = true) {
+            m_errorHandler.Invoke(QD.ERROR_LEVEL.WARNING, ex, "DB_ERROR", errorMessage);
+
+            this.m_lastError = errorMessage;
+
+            // Backwards Compat
+            if (useErrorCallBack && (m_handleErrorCallback != null)) {
+                m_handleErrorCallback(ex, errorMessage);
+            }
         }
 
         public DateTime GetDbConnectTime() {
@@ -527,18 +527,19 @@ namespace Lib {
             }
         }
 
+        
         // TODO: TO BE DEPRECATED
         //
         // return 1 on success
         // return 0 on query error
         [Obsolete("dbQuery is deprecated, please use DbSelect instead.")]
-        public int dbQuery(string sqlQuery, List<OrderedDictionary> resultData) {
+        public int dbQuery(string sqlQuery, List<OrderedDictionary> resultData, Boolean useErrorCallBack = true) {
             lock (this.m_connection) {
-                return _dbQuery(sqlQuery, resultData);
+                return _dbQuery(sqlQuery, resultData, useErrorCallBack);
             }
         }
 
-        private int _dbQuery(string sqlQuery, List<OrderedDictionary> resultData) {
+        private int _dbQuery(string sqlQuery, List<OrderedDictionary> resultData, Boolean useErrorCallBack = true) {
             DbHelperCommand command;
             IDataReader reader;
 
@@ -561,7 +562,7 @@ namespace Lib {
             }
             catch (Exception ex) {
                 string error = "Error running SQL:\r\n " + sqlQuery + "\r\n\r\n" + ex.Message + (ex.InnerException == null ? "" : ex.InnerException.Message);
-                handleError(ex, error);
+                handleError(ex, error, useErrorCallBack);
                 return 0;
             }
 
@@ -1017,11 +1018,6 @@ namespace Lib {
 
             // TODO: This doesn't handle having the column specified by hashTableKey not exist
             foreach (QueryResultSetRecord row in result_set) {
-                if (h.ContainsKey(row[hashTableKey])) {
-                    Console.Write("!!!! DbSelectIntoHash hashTableKey already exists: " + row[hashTableKey]);
-                    continue;
-                }
-
                 h.Add(row[hashTableKey], row);
             }
 

@@ -133,14 +133,5 @@ namespace QueueLib
 		{
 			Form_Close();
 		}
-
-		private void cmpExitApplicationButton_Click(object sender, EventArgs e) {
-			this.m_invoke_success = false;
-
-			if (m_applicationExitCallback != null) {
-				m_applicationExitCallback.Invoke();
-			}
-		}
 	}
-
 }

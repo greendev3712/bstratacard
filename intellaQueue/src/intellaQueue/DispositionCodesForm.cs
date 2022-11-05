@@ -16,14 +16,8 @@ namespace QueueLib {
         private Thread m_guiThread;
         private IntellaQueueForm m_intellaQueueForm;
         
-        // Index of [queue_name][status_longname] = status_code_name
-        //   so that a status longname can point us directly to a status_code_name
-        private Dictionary<string, Dictionary<string, string>> m_agentStatusIndex;
-
         public Boolean m_currentCallDispositionSet = false;
-        private int m_statusControlsHeight_Hideable; // The collapsible height of all controls (the amount of space that goes away when we hide)
-        private Hashtable m_cmpComboBoxes; // <string, ComboBox>
-        
+                
         private DateTime m_dispositionLastSet = DateTime.Now;
         private bool m_dispositionUpdating = false;
         private System.Windows.Forms.Timer m_dispositionUpdateTimeoutTimer = new System.Windows.Forms.Timer();
@@ -276,7 +270,6 @@ namespace QueueLib {
 
             string selected_item = cmpDispositionComboBox.Items[selected_idx].ToString();
 
-            QueryResultSetRecord result;
             JsonHash result_json;
 
             IntellaQueueForm.MQD("[DispositionSet] Set Disposition Requested -- CallLogID: {0}, CallSegmentID: {1}, CallerID: {2}, CallType: {3}, Disposition: {4}", call_log_id, call_segment_id, callerid_num, call_type, selected_item);

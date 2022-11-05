@@ -20,6 +20,10 @@ namespace Lib {
         private Thread m_guiThread;
         private bool m_dumperNullOutput = true;
 
+        // This is used for periodic log-uploaders to upload just the newest logs since the last time we got the logs
+        private List<string> m_recentLog = new List<string>();
+        private DateTime m_recentLogLastUpdated = DateTime.Now;
+
         // Note: Make sure to construct from the gui thread
         public DataDumperForm(Boolean showByDefault = true) {
             m_guiThread = Thread.CurrentThread;
@@ -66,6 +70,11 @@ namespace Lib {
             return this.m_pause;
         }
 
+        public string GetBacklogText(int backlogLines) {
+            // FIXME: backlogLines not yet implemented
+            return this.cmpTextBox.Text;
+        }
+
         public string D(string line, params string[] argsRest) {
             string log_line = buildLogLine(line, argsRest);
 
@@ -90,8 +99,34 @@ namespace Lib {
             return log_line;
         }
 
+        /// <summary>
+        /// Build a final log line with the timestamp and wrap it in String.Format()
+        /// Example: buildLogLine("Something {0} {1} {2}", foo, bar, baz, ...)
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="argsRest"></param>
+        /// <returns></returns>
+        //
+        //
         private string buildLogLine(string line, params string[] argsRest) {
-            string new_line = String.Format("[{0}] {1}\r\n", DateTime.Now, line);
+            string string_format_result = line;
+
+            if (argsRest.Length != 0) {
+                try {
+                    string_format_result = String.Format(line, argsRest);
+                }
+                catch (Exception ex) {
+                    if (Debugger.IsAttached) {
+                        throw ex;
+                    }
+                    else {
+                        doAppendText(String.Format("DataDumperForm::buildLogLine() -- Failed to process String.Format({0}, {1})", line, argsRest.ToString()));
+                    }
+                }
+            }
+
+            // We're adding either the String.Format or the original line 
+            string new_line = String.Format("[{0}] {1}\r\n", DateTime.Now, string_format_result);
             return new_line;
         }
 
@@ -123,7 +158,27 @@ namespace Lib {
             }
 
             this.cmpTextBox.AppendText(new_line);
+
+            lock (m_recentLog) {
+                m_recentLog.Add(new_line);
+            }
+
             return;
+        }
+
+        public string GetLatestBacklogText() {
+            StringBuilder recent_log_string = new StringBuilder();
+
+            lock (m_recentLog) {
+                foreach (string line in m_recentLog) {
+                    recent_log_string.Append(line);
+                }
+
+                m_recentLog.Clear();
+                m_recentLogLastUpdated = DateTime.Now;
+            }
+
+            return recent_log_string.ToString();
         }
 
         public void Dumper(string nameOfObject, object dataItemToDump) {
@@ -140,27 +195,27 @@ namespace Lib {
 
             if (dataItemToDump is List<OrderedDictionary>)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyListOfOrderedDictionary((List<OrderedDictionary>)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyListOfOrderedDictionary((List<OrderedDictionary>) dataItemToDump));
             }
             else if (dataItemToDump is Dictionary<string, QueryResultSet>)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyDictionaryOfQueryResultSet((Dictionary<string, QueryResultSet>)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyDictionaryOfQueryResultSet((Dictionary<string, QueryResultSet>) dataItemToDump));
             }
             else if (dataItemToDump is QueryResultSet)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyQueryResultSet((QueryResultSet)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyQueryResultSet((QueryResultSet) dataItemToDump));
             }
             else if (dataItemToDump is QueryResultSetRecord)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyQueryResultSetRecord((QueryResultSetRecord)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyQueryResultSetRecord((QueryResultSetRecord) dataItemToDump));
             }
             else if (dataItemToDump is JsonHash)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyJsonHash((JsonHash)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyJsonHash((JsonHash) dataItemToDump));
             }
             else if (dataItemToDump is StackTrace)
             {
-                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyStackTrace((StackTrace)dataItemToDump));
+                D("Item: " + nameOfObject + " " + dataItemToDump.GetType() + "\r\n" + StringifyStackTrace((StackTrace) dataItemToDump));
             }
             else if (dataItemToDump is Dictionary<string, List<OrderedDictionary>>)
             {

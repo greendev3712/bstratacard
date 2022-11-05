@@ -107,10 +107,14 @@ namespace LibICP
             }
 
             // Some systems may tell us to connect to somewhere else
-            string agent_specific_server = "comm5.nyc.intellasoft.net";
+            string agent_specific_server = host;
 
-            if (agent_specific_server != null) {
-                login_status = CreateConnetionAndAuthHelper(agent_specific_server, user, pass, port, agentNumber, agentExtension, agentPin);
+            JsonHash tenant_info      = login_status.agent_data.GetItem("tenant_info");
+            string tenant_info_server = tenant_info.GetString("default_server_addr");
+
+            if (tenant_info_server != null) {
+                agent_specific_server = tenant_info_server;
+                login_status          = CreateConnetionAndAuthHelper(agent_specific_server, user, pass, port, agentNumber, agentExtension, agentPin);
             }
 
             // Trigger reconnects (if enabled) since we successfullly logged in            
@@ -122,10 +126,15 @@ namespace LibICP
 
             return login_status;
         }
-        
+
         // CONVERTED
         private JsonQueueLoginLogoutResult CreateConnetionAndAuthHelper(string host, string user, string pass, string port, string agentNumber, string agentExtension, string agentPin = null) {
             string api_handler_desc = String.Format("CallQueueRemoteAPI: For Extension: {0}, Agent Number: {1}", agentExtension, agentNumber);
+
+            // TODO: AAAH HACKY
+            if (host == "vbox-markm-64.intellasoft.local") {
+                port = "80";
+            }
 
             JsonHashResult connect_result = CreateConnection(host, user, pass, port, api_handler_desc);
             if (!connect_result.Success) {
@@ -182,6 +191,27 @@ namespace LibICP
                 request.AddBody(json.ToJson(), "application/json");
             }
 
+            return RestRequest_Send(path, request);
+        }
+
+        /// <summary>
+        /// Example:
+        ///  RestRequest request = new RestRequest();
+        ///  request.AddParameter("var", "value");
+        ///  request.AddFile("file", "c:\foo.txt");
+        ///  RestRequest_SendFormPost(url_path, request);
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private JsonHashResult RestRequest_SendFormPost(string path, RestRequest request) {
+            request.Method   = Method.Post;
+            request.Resource = path;
+
+            return RestRequest_Send(path, request);
+        }
+
+        private JsonHashResult RestRequest_Send(string path, RestRequest request) {
             JsonHashResult jhr;
             RestResponse result = m_icp_rc.Execute(request);
 
@@ -199,22 +229,38 @@ namespace LibICP
                 return jhr;
             }
 
-            // MessageBox.Show(result.Content);
+            JsonHash jh;
 
-            JsonHash jh = new JsonHash(result.Content);
+            try {
+                jh = new JsonHash(result.Content);
+            }
+            catch (Exception ex) {
+                JsonHash jhd = new JsonHash();
+                jhd.AddString("Exception", ex.ToString());
+
+                jhr = new JsonHashResult{
+                    Success = false,
+                    Code    = "INVALID_JSON_RECEIVED",
+                    Reason  = "Web Server did not return valud JSON",
+                    Data    = jhd,
+                };
+
+                return jhr;
+            }
 
             jhr = new JsonHashResult{
                 Success  = jh.GetBool("success"),
                 Code     = jh.GetString("code"),
                 Reason   = jh.GetString("reason"),
-                Data     = jh.GetItem("data")
+                UUID     = jh.GetString("uuid"),
+                Data     = jh.GetItem("data"),
             };
 
             return jhr;
         }
 
         // CONVERTED
-        private JsonHashResult RestRequest(Method method, string path) {
+        private JsonHashResult RestRequestSendingJSON_ReturningJSON(Method method, string path) {
             return RestRequest_SendJson(method, path, null);
         }
 
@@ -255,7 +301,7 @@ namespace LibICP
         }
 
         public JsonHashResult GetServerTime() {
-            return this.RestRequest(Method.Get, "/api/public/Core/ConnectionTest");
+            return this.RestRequestSendingJSON_ReturningJSON(Method.Get, "/api/public/Core/ConnectionTest");
         }
 
         // CONVERTED
@@ -692,6 +738,42 @@ namespace LibICP
             }
 
             return result[0]["result"];
+        }
+
+        public JsonHashResult UploadLogFile(string logFileName) {
+            if (!this.AgentConnected()) {
+                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
+            }
+
+            RestRequest request = new RestRequest();
+            request.AddOrUpdateHeader("Content-Type", "multipart/form-data");
+            request.AddParameter("agent_extension", m_agentExtension);
+            request.AddParameter("agent_number",    m_agentNumber);
+
+            request.AddParameter("file_name", logFileName);
+            request.AddFile("file",           logFileName);
+         
+            JsonHashResult result = RestRequest_SendFormPost("/api/public/CallQueue/UploadLogFile", request);
+
+            return result;
+        }
+
+        public JsonHashResult UploadLogText(string logFileName, string log_data) {
+            if (!this.AgentConnected()) {
+                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
+            }
+
+            RestRequest request = new RestRequest();
+            request.AddOrUpdateHeader("Content-Type", "multipart/form-data");
+            request.AddParameter("agent_extension", m_agentExtension);
+            request.AddParameter("agent_number",    m_agentNumber);
+
+            request.AddParameter("file_name", logFileName);
+            request.AddFile("file",           Encoding.ASCII.GetBytes(log_data), logFileName, "text/plain", null);
+         
+            JsonHashResult result = RestRequest_SendFormPost("/api/public/CallQueue/UploadLogFile", request);
+
+            return result;
         }
     }
 }

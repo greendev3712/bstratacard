@@ -15,8 +15,6 @@ namespace intellaQueue
     public partial class DispositionCodesHistoryForm : Form
     {
         private DbHelper m_db = null;
-        private string m_tenantName;
-        private string m_agentNumber;
         private IntellaQueueForm m_intellaQueueForm;
 
         private static Color QueueColorRegular = Color.FromArgb(173, 173, 173);

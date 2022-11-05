@@ -170,8 +170,6 @@ namespace QueueLib
             string pass     = Registry_GetToolbarConfigItem(m_registryParent, "Config", "DB_Pass");
             string database = Registry_GetToolbarConfigItem(m_registryParent, "Config", "DB_Name");
 
-            int dbConnectResult = -1; ;
-
             lock (dbHelper)
             {
                 dbHelper.initConnection(DbHelper.generateConnectionDataObject(host, port, user, pass, database));

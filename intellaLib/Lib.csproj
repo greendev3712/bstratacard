@@ -161,6 +161,7 @@
     <Compile Include="LiveDataGridViewForm.Designer.cs">
       <DependentUpon>LiveDataGridViewForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogFileUploader.cs" />
     <Compile Include="Opts.cs" />
     <Compile Include="QD.cs" />
     <Compile Include="QueryResultSet.cs" />

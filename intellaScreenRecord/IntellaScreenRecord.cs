@@ -32,6 +32,8 @@ namespace IntellaScreenRecord
     {
         public delegate void ScreenRecordingCompleteCallback(IntellaScreenRecordingResult result);
 
+        private static bool m_ffmpeg_init = false;
+
         /// ///////////////////////////////////////////////////////////////////
         
         // Callbacks
@@ -97,12 +99,22 @@ namespace IntellaScreenRecord
         {
             screenWidth  = GetSystemMetrics(SystemMetric.VirtualScreenWidth);
             screenHeight = GetSystemMetrics(SystemMetric.VirtualScreenHeight);
+
+            // ffmpeg does NOT like a non-even height
+            if ((screenHeight % 2) != 0) {
+                screenHeight -= 1;
+            }
+
             //mainWindow.Title = "Screen size: " + screenWidth.ToString() + " ×" + screenHeight.ToString();
             m_currentlyRecording = false;
 
-            // Where to find FFMPEG
-            appPath                 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            FFmpegLoader.FFmpegPath = System.IO.Path.Combine(appPath, "ffmpeg");
+            if (!IntellaScreenRecording.m_ffmpeg_init) {
+                // Where to find FFMPEG
+                appPath                 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                FFmpegLoader.FFmpegPath = System.IO.Path.Combine(appPath, "ffmpeg");
+            }
+
+           IntellaScreenRecording.m_ffmpeg_init = true;
         }
  
         public bool RecordingStart(string path, ScreenRecordingCompleteCallback recordingCompleteCallback)
@@ -135,6 +147,7 @@ namespace IntellaScreenRecord
         public bool RecordingStop()
         {
             if (!m_currentlyRecording) return false;
+
             m_currentlyRecording = false;
 
             return true;
@@ -195,7 +208,7 @@ namespace IntellaScreenRecord
         }
         
         // QD.QD_LoggerFunction = (string msg, params string[] msgFormat)
-        public void SetLoggerCallback(QD.QD_LoggerFunction loggerFn) {
+        public void SetLoggerCallBack_QD(QD.QD_LoggerFunction loggerFn) {
             m_logger = loggerFn;
         }
     }

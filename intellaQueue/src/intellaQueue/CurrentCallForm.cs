@@ -10,13 +10,7 @@ namespace QueueLib {
         private Thread m_guiThread;
         private IntellaQueueForm m_intellaQueueForm;
 
-        // Index of [queue_name][status_longname] = status_code_name
-        //   so that a status longname can point us directly to a status_code_name
-        private Dictionary<string, Dictionary<string, string>> m_agentStatusIndex;
-
         private QueryResultSet m_currentCallsData;
-        private int m_statusControlsHeight_Hideable; // The collapsible height of all controls (the amount of space that goes away when we hide)
-        private Hashtable m_cmpComboBoxes; // <string, ComboBox>
         private string m_currentCallString;
 
         private void ThisFormConstruct() {

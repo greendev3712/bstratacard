@@ -428,6 +428,8 @@ namespace Lib {
             }
             catch (Exception ex)
             {
+                ex.ToString(); // Avoid warnings
+
                 if (Debugger.IsAttached) { throw; }
                 // handleError(ex, "Threading error: creating new thread worker.");
                 return false;
@@ -461,6 +463,8 @@ namespace Lib {
                 worker.RunWorkerAsync(data);
             }
             catch (Exception ex) {
+                ex.ToString(); // Avoid warnings
+
                 if (Debugger.IsAttached) { throw; }
                 // handleError(ex, "Threading error: creating new thread worker.");
                 return false;
