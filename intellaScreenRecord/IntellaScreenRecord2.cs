@@ -198,21 +198,23 @@ namespace IntellaScreenRecord
             m_logger = loggerFn;
         }
 
+       public unsafe void FFMPegLogCallback(void* p0, int level, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, byte* vl)
+        {
+            var lineSize = 1024;
+            var lineBuffer = stackalloc byte[lineSize];
+            var printPrefix = 1;
+            ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+            var line = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+
+            if (m_logger != null)
+                m_logger("FFMPEG: {0}", line);
+        }
+
         public unsafe void EnableFFMPegLogs(int logLevel)
         {
             ffmpeg.av_log_set_level(logLevel);
             ffmpeg.av_log_set_flags(ffmpeg.AV_LOG_DEBUG);
-
-            av_log_set_callback_callback logCallback = (p0, level, format, vl) => {
-                var lineSize = 1024;
-                var lineBuffer = stackalloc byte[lineSize];
-                var printPrefix = 1;
-                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-                var low_log = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                m_logger("FFMPEG: {0}", low_log);
-            };
-
-            ffmpeg.av_log_set_callback(logCallback);
+            ffmpeg.av_log_set_callback((av_log_set_callback_callback_func)FFMPegLogCallback);
         }
     }
 }
