@@ -17,10 +17,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Lib;
+using FFmpeg.AutoGen;
 
 namespace IntellaScreenRecord
 {
-
     public class IntellaScreenRecording2
     {
         public delegate void ScreenRecordingCompleteCallback(IntellaScreenRecordingResult result);
@@ -90,7 +90,12 @@ namespace IntellaScreenRecord
         {
             screenWidth  = GetSystemMetrics(SystemMetric.VirtualScreenWidth);
             screenHeight = GetSystemMetrics(SystemMetric.VirtualScreenHeight);
-            //mainWindow.Title = "Screen size: " + screenWidth.ToString() + " ×" + screenHeight.ToString();
+
+            // ffmpeg does NOT like a non-even height
+            if ((screenHeight % 2) != 0) {
+                screenHeight -= 1;
+            }
+
             m_currentlyRecording = false;
 
             // Where to find FFMPEG
@@ -189,27 +194,25 @@ namespace IntellaScreenRecord
         }
         
         // QD.QD_LoggerFunction = (string msg, params string[] msgFormat)
-        public void SetLoggerCallback(QD.QD_LoggerFunction loggerFn) {
+        public void SetLoggerCallBack_QD(QD.QD_LoggerFunction loggerFn) {
             m_logger = loggerFn;
-        }
-
-        public unsafe void FFMPegLogCallback(void* p0, int level, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, byte* vl)
-        {
-            var lineSize = 1024;
-            var lineBuffer = stackalloc byte[lineSize];
-            var printPrefix = 1;
-            ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-            var line = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-
-            if (m_logger != null)
-                m_logger("FFMPEG: {0}", line);
         }
 
         public unsafe void EnableFFMPegLogs(int logLevel)
         {
             ffmpeg.av_log_set_level(logLevel);
             ffmpeg.av_log_set_flags(ffmpeg.AV_LOG_DEBUG);
-            ffmpeg.av_log_set_callback((av_log_set_callback_callback_func)FFMPegLogCallback);
+
+            av_log_set_callback_callback logCallback = (p0, level, format, vl) => {
+                var lineSize = 1024;
+                var lineBuffer = stackalloc byte[lineSize];
+                var printPrefix = 1;
+                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                var low_log = System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                m_logger("FFMPEG: {0}", low_log);
+            };
+
+            ffmpeg.av_log_set_callback(logCallback);
         }
     }
 }
