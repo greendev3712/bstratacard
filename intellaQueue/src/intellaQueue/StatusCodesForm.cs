@@ -544,7 +544,7 @@ namespace QueueLib {
 
             foreach (string queue_name in newAgentStatus.Keys) {
                 QueryResultSetRecord first_agent_status_item = newAgentStatus[queue_name][0];
-                string real_queue_name = first_agent_status_item["queue_name"];
+                string real_queue_name = first_agent_status_item["queue_name"]; // We always want the actual queue name (Since multisite uses prefixed queue names)
 
                 this.m_agentStatusIndex.Add(real_queue_name, new Dictionary<string, string>()); // Index for mapping status_code_longname to status_code_name
 
@@ -575,7 +575,7 @@ namespace QueueLib {
 
                     string status = (string) status_item["is_current_status"];
 
-                    if (status == "True") {
+                    if (Utils.StringToBoolean(status)) {
                         agent_status_combobox.SelectedIndex = pos;
                         selected_status = (string) status_item["status_code_name"];
                     }

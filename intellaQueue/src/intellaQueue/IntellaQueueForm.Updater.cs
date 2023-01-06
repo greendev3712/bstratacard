@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualBasic;
-using QueueLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -10,12 +9,44 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Lib;
+
 namespace intellaQueue
 {
+    public class AppVersionDetail
+    {
+        public string DeployedVersion;
+        public string DeployedVersionError;
+        public string AssemblyVersion;
+        public string BuildTimePretty;
+        public double BuildUnixTime;
+
+        public string ToString() {
+            return String.Format("{0}, {1}, Built: {2}", DeployedVersion, AssemblyVersion, BuildTimePretty);
+        }
+    }
+
     public partial class IntellaQueueForm : System.Windows.Forms.Form
     {
         private Timer m_cmpApplicationRestartCheckTimer;
         private bool m_canWeUpdateAndRestart = false; // During-Call will set this to false
+        public DateTime m_compileTime        = Utils.TicksToDateTime(Builtin.CompileTime);
+
+        public AppVersionDetail GetVersionDetail() {
+            string current_version       = "<Unknown>";
+            string current_version_error = null;
+            try { current_version = System.IO.File.ReadAllText(@"version.txt"); } catch (Exception ex) { current_version_error = ex.ToString(); }
+
+            m_compileTime        = Utils.TicksToDateTime(Builtin.CompileTime);
+
+            return new AppVersionDetail{ 
+                DeployedVersion      = current_version,
+                DeployedVersionError = current_version_error,
+                AssemblyVersion      = Application.ProductVersion,
+                BuildTimePretty      = Utils.DateTimePrettyString(m_compileTime),
+                BuildUnixTime        = Utils.DateTimeToUnixTime(m_compileTime),
+            };
+        }
 
         private void InitializeUpdateChecks() {
             // 
@@ -29,12 +60,14 @@ namespace intellaQueue
             this.cmpAutomaticWY_Updater.UpdateType = wyDay.Controls.UpdateType.OnlyCheck;
 
             this.cmpAutomaticWY_Updater.UpdateAvailable += delegate (System.Object sender, System.EventArgs e) {
-                string current_version = "<Unknown>";
-                try { current_version = System.IO.File.ReadAllText(@"version.txt"); } catch (Exception ex) { ex.ToString(); }
-
                 wyDay.Controls.AutomaticUpdaterBackend au = (wyDay.Controls.AutomaticUpdaterBackend) sender;
+                AppVersionDetail version = GetVersionDetail();
 
-                MQD("[UpdateCheck] Software update available. Restart to apply update. Current Version: {0}, New Version: {1}", current_version, au.Version);
+                if (version.DeployedVersionError != null) {
+                    MQD("[UpdateCheck/UpdateAvailable] Error getting CurrentVersion: {0}", version.DeployedVersionError);
+                }
+
+                MQD("[UpdateCheck] Software update available. Restart to apply update. Current Version: [{0}], New Version: {1}", version.ToString(), au.Version);
 
                 // Run this on the GUI thread so we can interact with the GUI
                 this.Invoke((MethodInvoker) delegate {
@@ -58,25 +91,28 @@ namespace intellaQueue
             };
 
             this.cmpAutomaticWY_Updater.CheckingFailed += delegate (System.Object sender, wyDay.Controls.FailArgs f) {
-                MQD("[UpdateCheck] !!! Failed: {0}", f.ErrorMessage);
+                MQD("[UpdateCheck/CheckingFailed] !!! Failed: {0}", f.ErrorMessage);
                 this.SetStatusBarMessage(Color.Red, "Failed to check for software update.  Check log.");
             };
 
             this.cmpAutomaticWY_Updater.BeforeChecking += delegate (System.Object sender, wyDay.Controls.BeforeArgs b) {
-                MQD("[UpdateCheck] Start");
+                MQD("[UpdateCheck/BeforeChecking] Start");
             };
 
             this.cmpAutomaticWY_Updater.UpdateFailed += delegate (System.Object sender, wyDay.Controls.FailArgs f) {
-                MQD("[UpdateCheck] Failed: {0}", f.ToString());
+                MQD("[UpdateCheck/UpdateFailed] Failed: {0}", f.ToString());
                 this.SetStatusBarMessage(Color.Red, "Update Check Failed!");
             };
 
             this.cmpAutomaticWY_Updater.UpToDate += delegate (object sender, wyDay.Controls.SuccessArgs e) {
                 // wyUpdate variable: e.Version doesn't return the correct version... it's empty!
-                string current_version = "<Unknown>";
-                try { current_version = System.IO.File.ReadAllText(@"version.txt"); } catch (Exception ex) { ex.ToString(); }
+                AppVersionDetail version = GetVersionDetail();
 
-                MQD("[UpdateCheck] Complete.  Up to date at version: {0} {1}", current_version, e.Version);
+                if (version.DeployedVersionError != null) {
+                    MQD("[UpdateCheck/UpdateAvailable] Error getting CurrentVersion: {0}", version.DeployedVersionError);
+                }
+
+                MQD("[UpdateCheck/UpdateAvailable] Complete.  Up to date at version: [{0}] {1}", version.ToString(), e.Version);
 
                 // If we're on automatic checks, we only care about errors
                 if (this.m_wyUpdateCheckManual) {
@@ -110,7 +146,7 @@ namespace intellaQueue
 
             this.m_wyUpdateCheckManual = true;
 
-            MQD("Checking for updates...");
+            MQD("[UpdateCheck/CheckForUpdatesManual] Checking for updates...");
             this.SetStatusBarMessage(Color.White, "Checking for updates...");
 
             this.cmpAutomaticWY_Updater.ForceCheckForUpdate(true);
@@ -125,7 +161,7 @@ namespace intellaQueue
             this.m_wyUpdate_Timer.Stop();
 
             this.m_wyUpdateCheckManual = false;
-            MQD("Checking for updates...");
+            MQD("[UpdateCheckCheckForUpdatesAuto] Checking for updates...");
 
             this.cmpAutomaticWY_Updater.ForceCheckForUpdate(true);
             this.m_wyUpdateLastCheck = DateTime.Now;

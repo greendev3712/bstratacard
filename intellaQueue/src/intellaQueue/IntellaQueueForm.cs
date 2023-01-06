@@ -17,14 +17,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Net;
+using IntellaScreenRecord;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 // using System.Runtime.ExceptionServices;
 
@@ -36,9 +37,9 @@ namespace intellaQueue
 
         public static IntellaQueueForm IntellaQueueFormApplicationForm; // So we can get to the main Form from anywhere
 
-        private Label m_cmpToolbarStatusMessage = new Label(); // Message to display at the bottom of the toolbar.
+        private Label m_cmpToolbarStatusMessage           = new Label(); // Message to display at the bottom of the toolbar.
         private DateTime m_ToolbarStatusMessageLastUpdate = DateTime.Now;
-        private TimeSpan m_ToolbarStatusMessageKeep = TimeSpan.FromSeconds(15);
+        private TimeSpan m_ToolbarStatusMessageKeep       = TimeSpan.FromSeconds(15);
 
         private wyDay.Controls.AutomaticUpdaterBackend cmpAutomaticWY_Updater;
         private bool m_wyUpdateCheckManual                  = true; // First one is a yes.. Output the results to the statusbar if we're up to date
@@ -57,9 +58,11 @@ namespace intellaQueue
         private static string m_logFileDirectory = Path.Combine(Path.GetTempPath(), "IntellaQueue");
         private static string m_logFileBase      = Path.Combine(m_logFileDirectory, "log");
         private static StreamWriter m_logFileHandle = null;
-        private static DateTime m_logFileOpenedWhen;
-        private static int m_LogFilesKeep = 3;
-        private static double m_uploadLogFileMinutes = 15; 
+        private DateTime m_logFileOpenedWhen;
+        private int m_LogFilesKeep                 = 3;
+        private int m_uploadLogFileIntervalSeconds = (int) TimeSpan.FromMinutes(1).TotalSeconds;
+        private int m_UploadLogRetries             = 5;
+
         private LogFileUploader m_logFileUploader;
 
         // Live Data Grids
@@ -171,10 +174,11 @@ namespace intellaQueue
         private string   m_screenPopURL               = "";     // Will be populated by per-queue  config (queue.toolbar_config -> screenpop_url)
 
         // Screen Recording Related
-        private bool     m_screenRecordingEnabled     = false;  // Will be populated by per-tenant config (queue.tenant -> toolbar_screen_recording_enabled)
-        private string   m_screenRecordingUploadURL   = "";     // Will be populated by per-tenant config (queue.tenant -> toolbar_screen_recording_upload_url)
-        private JsonHash m_lastScreenPopData          = null;
-        private IntellaScreenRecording m_screenRecord = new IntellaScreenRecording();
+        private bool     m_screenRecordingEnabled       = false;  // Will be populated by per-tenant config (queue.tenant          -> toolbar_screen_recording_enabled)
+        private string   m_screenRecordingUploadURL     = "";     // Will be populated by per-tenant config (queue.tenant          -> toolbar_screen_recording_upload_url)
+        private int      m_screenRecordingUploadRetries = 5;      // Will be populated by per-tenant config (queue.toolbar_config  -> screen_recording_upload_retries)
+        private JsonHash m_lastScreenPopData            = null;
+        private IntellaScreenRecording m_screenRecord   = new IntellaScreenRecording();
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -406,6 +410,20 @@ namespace intellaQueue
 
             m_IsToolbarFullySetup = true;
         }
+        
+        /// <summary>
+        /// Only used when running in a production deployment
+        /// </summary>
+        /// <param name="ex"></param>
+        public void ApplicationExceptionHandler(Exception ex) {
+            MQD("Uncaught Exception: " + ex.ToString());
+            MQD("Uploading log...");
+
+            TryAndUploadCurrentLog(completedCallback: delegate(List<JsonHashResult> upload_results) {
+                Thread.Sleep(30000);
+                ApplicationExit();
+            });
+        }
 
         ////
         // Agent Login Successful
@@ -419,9 +437,14 @@ namespace intellaQueue
             // Upload Previous Log File Data
             string log_file = GetTodaysLogFileName();
 
-            TryAndUploadLogFile(log_file); // Upload what we have so far
+            // Exception Testing
+            // string zero = "0";
+            // var a = 1 / int.Parse(zero);
+
+            // This was an attempt to ensure that we're not missing anything at the server side but results in a lot of extra logs uploaded that we already have
+            // TryAndUploadLogFile(log_file); // Upload what we have so far
+
             TryOpenAndRotateLog(log_file);
-            TryAndUploadCurrentLog();
 
             MQD("-- Setup Main Toolbar Connection");
 
@@ -495,11 +518,14 @@ namespace intellaQueue
             MQD("-- Setup Data Threads");
             SetupUpdateThreads();
 
-            MQD("-- Setup LogFile Uploader");
+            MQD("-- Setup LogFile Uploader"); // We will regularly upload our scrollback to the server
             this.m_logFileUploader = new LogFileUploader(
-                timerInterval:         (int) TimeSpan.FromMinutes(m_uploadLogFileMinutes).TotalSeconds,
-                logFileUploadCallback: TryAndUploadCurrentLog
+                timerInterval:         m_uploadLogFileIntervalSeconds,
+                logFileUploadCallback: delegate() { TryAndUploadCurrentLog(); }
             );
+
+            MQD("-- Process Screen Recording Backlog");
+            ScreenCapture_UploadFileBacklog();
         }
 
         public DbHelper GetDatabaseHandle() { return this.m_mainTSC.m_db; }
@@ -512,9 +538,6 @@ namespace intellaQueue
             ApplicationExit();
         }
 
-        private void handleDatabaseSuccess() {
-        }
-        
         private void Form_Load(object sender, System.EventArgs e) {
             m_MainDF = new DataDumperForm(Debugger.IsAttached); // If debugger, show window on startup
             m_MainDF.SetTitle("Debug Log");
@@ -568,10 +591,10 @@ namespace intellaQueue
             m_toolbarLiveData = new ToolBarLiveData();
 
             m_liveDatas["caller"] = new Dictionary<string, List<OrderedDictionary>>();
-            m_liveDatas["agent"] = new Dictionary<string, List<OrderedDictionary>>();
-            m_liveDatas["queue"] = new Dictionary<string, List<OrderedDictionary>>();
+            m_liveDatas["agent"]  = new Dictionary<string, List<OrderedDictionary>>();
+            m_liveDatas["queue"]  = new Dictionary<string, List<OrderedDictionary>>();
             m_liveDatas["status"] = new Dictionary<string, List<OrderedDictionary>>();
-            m_liveDatas["call"] = new Dictionary<string, List<OrderedDictionary>>();
+            m_liveDatas["call"]   = new Dictionary<string, List<OrderedDictionary>>();
 
             m_main_db = new DbHelper();
             m_main_db.SetPrepared(true);
@@ -583,6 +606,9 @@ namespace intellaQueue
             // Add our main server into our list of servers
             // m_toolbarConfig = Pass on our global toolbar configuration (AgentDevice, IsManager, and other global toolbar settings)
             ToolbarServerConnection tsc = new ToolbarServerConnection("LOCAL", "Local Server", m_toolbarConfig);
+            tsc.SetErrorCallback(m_errorHandler); // TODO: We don't actually set m_errorHandler anywhere
+            tsc.SetLogCallback(MQD);
+
             m_mainTSC = tsc;
 
             // Subscribedqueues for MAIN is populated in fillQueuesFromDb()
@@ -590,6 +616,7 @@ namespace intellaQueue
             tsc.m_isMainServer = true;
             tsc.m_db = m_main_db;
             tsc.m_iqc = m_iqc;
+            tsc.m_multiSite = m_multiSite;
 
             m_toolbarServers.Add("LOCAL", tsc);
 
@@ -598,16 +625,7 @@ namespace intellaQueue
 
             // FIXME.. to be removed
             // This also connects to the database
-            ToolBarHelper.DatabaseSetupCheck(ref m_main_db, null, DatabaseSuccess, StartupConfigurationFailure);
-        }
-
-        public string GetTodaysLogFileName() {
-            DateTime today = DateTime.Today;
-
-            string logsuffix = string.Format("{0}{1,2:D2}{2,2:D2}", today.Year, today.Month, today.Day);
-            string todays_logfilename = (m_logFileBase + (logsuffix + ".log"));
-
-            return todays_logfilename;
+            ToolBarHelper.DatabaseSetupCheck(m_main_db, null, DatabaseSuccess, StartupConfigurationFailure);
         }
 
         private void DatabaseSuccess(string message) {
@@ -856,791 +874,6 @@ namespace intellaQueue
             }
         }
 
-        private void dbRefreshWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-            throw new NotImplementedException();
-        }
-
-        private void dbRefreshWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            QD.p("RunWorkerCompleted !!!");
-        }
-
-        private void dbRefreshWorker_DoWork(object sender, DoWorkEventArgs e) {
-            ToolbarServerConnection tsc = (ToolbarServerConnection) e.Argument;
-            ToolBarLiveData new_live_datas;
-
-            tsc.m_operatingThread      = Thread.CurrentThread;
-            tsc.m_operatingThread.Name = "DB Update " + tsc.m_serverLongname;
-
-            int log_update_count = 10;
-
-            while (true) {
-                // QD.p(String.Format("dbRefreshWorker_DoWork Thread: {0} [{1}] ({2})", System.Threading.Thread.CurrentThread.ManagedThreadId, tsc.m_serverName, tsc.m_serverLongname));
-                // ToggleStatusLightFromThread();
-
-                if (tsc.Cancel) {
-                    // Something else told us to stop
-                    goto exit_thread;
-                }
-
-                new_live_datas = new ToolBarLiveData();
-                tsc.SetUpdating(true);
-
-                // TODO: We should not be locking m_db here.  Per-query locks should be used instead that are handled deep in DbHelper
-                // We should lock the individual TSC data bucket instead
-                try {
-                    dbRefreshWorker_DoWorkOnTSC(sender, e, tsc, new_live_datas);
-                }
-                catch (Exception ex) {
-                    MQD("NON-DB Exception while processing: dbRefreshWorker_DoWorkOnTSC: " + ex.ToString());
-
-                    // We have a problem!
-                    m_db_reconnects++;
-                    m_db_reconnecting = true;   // UpdateDisplay will now be paused
-
-                    goto exit_thread;
-                }
-
-                /*
-                    Error_DatabaseMainConnection_Failed();
-                    SetStatusBarMessage(Color.Red, String.Format("Connection interrupted ({0}), reconnecting.", tsc.m_serverName));
-
-                    // Cross-Thread Queue For Logging
-                    // https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentqueue-1?redirectedfrom=MSDN&view=netframework-4.8
-                    // MQD("[DB] Reconnecting: {0}", tsc.m_serverName);  
-                */
-
-                if (!tsc.m_db.isConnected()) {
-                    if (tsc.m_db.connect()) {
-                        // We're good!
-
-                        if (tsc == m_mainTSC) {
-                            m_db_active       = true;  // Resume UpdateDisplayTimer
-                            m_db_reconnecting = false; // FIXME: We need PER TSC Reconnecting Flags
-                        }
-
-                         SetStatusBarMessage(Color.Green, String.Format("Reconnected to server: {0}", tsc.m_serverName));
-                    }
-                    else {
-                        // Still have a problem... Wait a few
-                        System.Threading.Thread.Sleep(5000);
-                        continue;
-                    }
-
-                    // Try again after we connect
-                }
-
-                // For a Major Main-DB Reconnecting event
-                if (e.Cancel) {
-                    goto exit_thread;
-                }
-
-                tsc.m_updateCount++;
-
-                /*
-                {
-                string msg = String.Format("dbRefreshWorker_DoWork Thread: {0} [{1}] ({2}) -- Completed Update {3}",  
-                        System.Threading.Thread.CurrentThread.ManagedThreadId, 
-                        tsc.m_serverName, 
-                        tsc.m_serverLongname, 
-                        tsc.m_updateCount);
-                MQD(msg);
-                }
-                */
-
-                if ((tsc.m_updateCount % (ulong)log_update_count) == 0) {
-                    string msg = String.Format("dbRefreshWorker_DoWork Thread: {0} [{1}] ({2}) -- Completed {3} Updates",
-                        System.Threading.Thread.CurrentThread.ManagedThreadId,
-                        tsc.m_serverName,
-                        tsc.m_serverLongname,
-                        log_update_count
-                    );
-
-                    MQD(msg);
-                }
-
-                System.Threading.Thread.Sleep(1500);
-            }
-
-          exit_thread:
-            tsc.m_operatingThread = null;
-            e.Cancel = true;
-            return;
-        }
-
-        private void dbRefreshWorker_DoWorkOnTSC(object sender, DoWorkEventArgs e, ToolbarServerConnection tsc, ToolBarLiveData new_live_datas) {
-            if (!this.m_IsAgentLoggedIn) {
-                // Nothing to do yet.  Wait for the next call.
-                return;
-            }
-
-            /////
-            // TODO -- This goes away when we remove m_db of course
-            // Are we still connected?
-            tsc.m_db.DbSelectFunction("NOW");
-
-            if (tsc.m_db.LastQueryWasError()) {
-                Error_DatabaseMainConnection_Failed();
-                return;
-            }
-            ////
-
-            DateTime last_db_connect_time = tsc.m_db.GetDbConnectTime();
-
-            if ((DateTime.Now - last_db_connect_time).TotalSeconds >= m_database_reconnect_sec) {
-                // Gracefully reconnect to the db without rebuilding the gui
-                MQD("Reconnect to DB: " + tsc.m_serverLongname);
-                tsc.m_db.disconnect();
-                tsc.m_db.connect();
-
-                if (tsc == m_mainTSC) {
-                  this.m_db_reconnecting = false; // Main DB No longer in the Reconnecting state
-		        }
-            }
-
-            try {
-                dbRefreshWorker_DoWorkOnDB(sender, e, tsc, new_live_datas);
-            }
-            catch (DatabaseException ex) {
-                handleError(ex, "DB Error");
-                if (Debugger.IsAttached) { throw; }
-            }
-            catch (Exception ex) {
-                handleError(ex, "DB Error");
-                if (Debugger.IsAttached) { throw; }
-            }
-
-            tsc.m_lastUpdated = DateTime.Now;
-
-            if (tsc.m_isMainServer) {
-                m_lastMainDatabaseUpdate = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// - Get data from the backend database
-        /// - Massage the data to be displayed in the toolbar gui
-        /// - Handle updating current call information
-        /// - Handle screenpops
-        /// - Handle screen cast recording
-        /// </summary>
-        /// 
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <param name="tsc"></param>
-        /// <param name="new_live_datas"></param>
-        ///
-        private void dbRefreshWorker_DoWorkOnDB(object sender, DoWorkEventArgs e, ToolbarServerConnection tsc, ToolBarLiveData new_live_datas) {
-            JsonHashResult backend       = tsc.m_iqc.GetServerTime();
-            DateTime current_local_time  = DateTime.Now;
-
-            if (backend.Success) {
-                DateTime current_server_time = Utils.UnixTimeToDateTime(backend.Data.GetInt64("now"));
-                tsc.m_serverTimeOffset       = (current_server_time - current_local_time);
-            }
-
-            SortedList<string, Hashtable> subscribed_queues = tsc.m_subscribedQueues;
-
-            // QD.p(String.Format("dbRefreshWorker_DoWorkOnDB() Backend Pid: {0}", backend_pid["pg_backend_pid"]));
-
-            // All data items are indexed by queue_name_prefixed
-            Dictionary<string, List<OrderedDictionary>> live_caller_data       = getLiveCallerData(tsc);
-            Dictionary<string, List<OrderedDictionary>> live_agent_data        = m_enableTeamView ? getLiveAgentData(tsc) : new Dictionary<string, List<OrderedDictionary>>();
-            Dictionary<string, List<OrderedDictionary>> live_queue_data        = getLiveQueueData(tsc);
-            Dictionary<string, List<OrderedDictionary>> agent_status_available = getAvailableStatusCodes(tsc);
-            Dictionary<string, List<OrderedDictionary>> agent_call_data        = new Dictionary<string, List<OrderedDictionary>>();
-            QueryResultSet agent_current_calls                                 = getCurrentCallsForAgent(tsc);
-
-            //if (tsc.m_serverName.StartsWith("hum")) {
-            //    var live_caller_data_r       = DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(live_caller_data);
-            //    var live_agent_data_r        = DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(live_agent_data);
-            //    var live_queue_data_r        = DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(live_queue_data);
-            //    var agent_status_available_r = DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(agent_status_available);
-            //    var agent_call_data_r        = DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(agent_call_data);
-
-            //    // if (m_MainDF.IsPaused()) { Debugger.Break(); }
-            //}
-
-            // Dictionary<string, string[]> agent_call_data = new Dictionary<string, string[]>();
-
-            ////////////////////////////////////
-            // We have the data, start using it
-            ////////////////////////////////////
-
-            ////
-            // ScreenPop and Screen Recording Related
-
-            // Only process this on the local system
-            if (tsc.m_isMainServer) {
-                screenPopIfNecessary(tsc);
-
-                if (m_currentCallEnabled && (m_currentCallForm != null)) {
-                    ////////////////////////////////////
-                    // Current Call In Progress Handling
-                    //
-                    // FIXME: This only supports a single call
-                    //
-
-                    QueryResultSetRecord current_call = null;
-
-                    bool call_status_answered     = false;
-                    bool call_status_answered_new = false;
-                    bool call_status_changed      = false;
-                    bool call_status_ended        = false;
-
-                    string old_caller_channel = m_currentCallChannel;
-                    string new_caller_channel = "";
-
-                    string old_current_call_string = m_currentCallForm.GetCurrentCallString();
-                    string new_current_call_string = "";
-
-                    if (agent_current_calls.Count > 0) {
-                        // Currently talking to someone
-                        current_call = agent_current_calls[0];
-                        new_caller_channel = current_call["channel"]; // TODO: Only supports a single call in progress
-                        call_status_answered = true;
-                    }
-                    else {
-                        // We used to be talking to someone
-                        current_call = this.m_currentCallRecord; // TODO: Only supports a single call in progress
-                        call_status_ended = true;
-                    }
-
-                    if (old_caller_channel != new_caller_channel) {
-                        call_status_changed = true;
-
-                        if (new_caller_channel != "") {
-                            // We previously were not talking to someone, and now we are
-                            call_status_answered_new = true;
-                        }
-                    }
-
-                    // TODO: Would be a good place for some event hooks!
-                    if (call_status_changed) {
-                        // If Current Call Changed.  Either we were off a call and now we're on... or we were on a call and now we're off.
-
-                        if (call_status_ended) {
-                            // Current call JUST ended, Last round must have been a call in progress
-
-                            // We now don't have a call in progress
-                            stopScreenRecordingIfNecessary();
-
-                            if (m_dispositionCodesEnabled) {
-                                if (m_dispositionForm.m_currentCallDispositionSet) {
-                                    // Last round was a call in progress AND the user has already set the disposition... Get ready for the next call
-                                    m_dispositionForm.ResetDisposition_Full();
-                                }
-                            }
-                        }
-                        else {
-                            // We have a call that's alive and well
-
-                            if (call_status_answered_new) {
-                                // Last round was NO call in progress, but we have a NEW call NOW
-
-                                // Get ready for the new call no matter what.  
-                                if (m_dispositionCodesEnabled) {
-                                    // If the user did not set a disposition for this call, too bad
-                                    m_dispositionForm.ResetDisposition_Full();
-                                }
-
-                                startScreenRecordingIfNecessary(current_call, tsc.m_serverTimeOffset);
-                            }
-                            else {
-                                // We're continuing a call in progress
-                            }
-                        }
-
-                        // TODO: This check is temp... Eventually we'll have this enabled for all sites
-                        if (current_call == null) {
-                            // TODO: Handle timeout... clear current call info after 5 minutes
-                        }
-                        else {
-                            // We either have a call right now, or we used to have a call, and now it's ended.
-
-                            if (m_currentCallEnabled) {
-                                if (!call_status_ended) {
-                                    // If we're in the ended-state, we're not going to have current agent calls data
-                                    m_currentCallForm.SetCurrentCallData(agent_current_calls);
-                                }
-
-                                // Display the active/ended call information
-
-                                new_current_call_string = String.Format("{0} <{1}> -- {2}",
-                                        current_call["callerid_name"],
-                                        current_call["callerid_num"],
-                                        current_call["queue_longname"]
-                                );
-
-                                if (call_status_ended) {
-                                    new_current_call_string += " (Ended)";
-                                }
-
-                                m_currentCallForm.SetCurrentCallString(new_current_call_string);
-                            }
-                        }
-
-                        // This is who we are talking to as of right now
-                        // TODO: Does not support more than one concurrent call
-                        if (current_call != null) {
-                            m_currentCallChannel = current_call["channel"];
-                        }
-
-                        // We know the status changed, so here's what we have, null or otherwise
-                        m_currentCallRecord = current_call;
-                    }
-                }
-            }
-
-            ////////////////
-
-            // populate maximums for longest talk
-            foreach (string queue_name in tsc.m_subscribedQueues.Keys) {
-                // We use a List of OrderedDictionary just to be compatible with the other live data structures
-                // We don't really need a List, so this particular one just has one element, which is [0]
-
-                // This should never happen!
-                if (!live_queue_data.ContainsKey(queue_name)) {
-                    continue;
-                }
-
-                var this_queue_data = live_queue_data[queue_name][0]; // [0]  Because each live_queue_data entry is a single row
-                var this_queue_data_r = DbHelper.ConvertOrderedDictionary_To_QueryResultSetRecord(this_queue_data);
-
-                if (queue_name.StartsWith("hum")) {
-                    // Debugger.Break();
-                }
-
-                //
-                // agent_call_data[queue_name][0][longest_talk_seconds]
-                // agent_call_data[queue_name][0][longest_talk_time]
-                //
-                agent_call_data.Add(queue_name, new List<OrderedDictionary> {
-                  new OrderedDictionary() {
-                      {"longest_talk_seconds", this_queue_data["longest_talk_seconds"]},
-                      {"longest_talk_time",    this_queue_data["longest_talk_time"]}
-                  }
-                });
-            }
-
-            foreach (string queue_name in subscribed_queues.Keys) {
-                if (live_caller_data.ContainsKey(queue_name))       { new_live_datas.AddData_Caller(queue_name, live_caller_data[queue_name]); }
-                if (live_agent_data.ContainsKey(queue_name))        { new_live_datas.AddData_Agent(queue_name,  live_agent_data[queue_name]); }
-                if (live_queue_data.ContainsKey(queue_name))        { new_live_datas.AddData_Queue(queue_name,  live_queue_data[queue_name]); }
-                if (agent_call_data.ContainsKey(queue_name))        { new_live_datas.AddData_Call(queue_name,   agent_call_data[queue_name]); }
-                if (agent_status_available.ContainsKey(queue_name)) { new_live_datas.AddData_Status(queue_name, agent_status_available[queue_name]); }
-            }
-
-            ///
-            // Update the main data store
-
-            lock (m_liveDatas) {
-                // Server-Specific Data we just got back
-                Dictionary<string, List<OrderedDictionary>> s_live_caller_data       = new_live_datas.GetData_Caller();
-                Dictionary<string, List<OrderedDictionary>> s_live_agent_data        = new_live_datas.GetData_Agent();
-                Dictionary<string, List<OrderedDictionary>> s_live_queue_data        = new_live_datas.GetData_Queue();
-                Dictionary<string, List<OrderedDictionary>> s_agent_status_available = new_live_datas.GetData_Status();
-                Dictionary<string, List<OrderedDictionary>> s_agent_call_data        = new_live_datas.GetData_Call();
-
-                // QueryResultSetRecord r = DbHelper.ConvertOrderedDictionary_To_QueryResultSetRecord(s_live_caller_data["installer_hs"][0]);
-
-                // Existing live data as of the last update
-                Dictionary<string, List<OrderedDictionary>> main_live_caller_data       = (Dictionary<string, List<OrderedDictionary>>)m_liveDatas["caller"];
-                Dictionary<string, List<OrderedDictionary>> main_live_agent_data        = (Dictionary<string, List<OrderedDictionary>>)m_liveDatas["agent"];
-                Dictionary<string, List<OrderedDictionary>> main_live_queue_data        = (Dictionary<string, List<OrderedDictionary>>)m_liveDatas["queue"];
-                Dictionary<string, List<OrderedDictionary>> main_agent_status_available = (Dictionary<string, List<OrderedDictionary>>)m_liveDatas["status"];
-                Dictionary<string, List<OrderedDictionary>> main_agent_call_data        = (Dictionary<string, List<OrderedDictionary>>)m_liveDatas["call"];
-
-                // MQDU("s_live_agent_data", DbHelper.ConvertDictionaryString_ListOrderedDictionary_To_DictionaryString_QueryResultSet(s_live_agent_data));
-                // MQDU("s_live_agent_data", main_agent_call_data);
-
-                ////
-                // Merge our recently aquired data into the data we already have.. (we may have data from other servers... so we can't just clobber what we have)
-                // The other servers (ToolbarServerConnections) will each get to this block of code, and each merge in their server-specific data with the overall data
-                // This is because we have a single list of all queues from all servers that we send to the gui.  These queues are indexed by ServerName_QueueName for uniqueness
-
-                List<
-                    List<
-                      Dictionary<string, List<OrderedDictionary>>
-                    >
-                > live_data_for_server = new List<
-                    List<
-                      Dictionary<string, List<OrderedDictionary>>
-                    >
-                >
-                () { //                                                    Main m_liveDatas             New Server-Specific data
-                    new List<Dictionary<string, List<OrderedDictionary>>> {main_live_caller_data,       s_live_caller_data},
-                    new List<Dictionary<string, List<OrderedDictionary>>> {main_live_agent_data,        s_live_agent_data},
-                    new List<Dictionary<string, List<OrderedDictionary>>> {main_live_queue_data,        s_live_queue_data},
-                    new List<Dictionary<string, List<OrderedDictionary>>> {main_agent_status_available, s_agent_status_available},
-                    new List<Dictionary<string, List<OrderedDictionary>>> {main_agent_call_data,        s_agent_call_data}
-                };
-
-                int live_list_position = 0;
-
-                // For each live data item in the livedata listing.. 
-                //   clear out the specific data for the queues that came back previously on the last run for this particular server
-                //
-                foreach (List<Dictionary<string, List<OrderedDictionary>>> live_data_item_pair in live_data_for_server) {
-                    Dictionary<string, List<OrderedDictionary>> main_live_data_item   = live_data_item_pair[0];
-                    Dictionary<string, List<OrderedDictionary>> server_live_data_item = live_data_item_pair[1];
-
-                    // each live data item has a group of queues... clear out the queues for OUR server
-
-                    foreach (string queue_name in subscribed_queues.Keys) {
-                        // Merge in New Live Data
-                        if (server_live_data_item.ContainsKey(queue_name)) {
-                            main_live_data_item[queue_name] = server_live_data_item[queue_name];
-                        }
-                        else {
-                            main_live_data_item.Remove(queue_name);
-                        }
-                    }
-
-                    live_list_position++;
-                }
-
-                // Done Merging
-                ////////////////
-
-
-                // Agent  (By Queue Name)
-                // Queue  (By Queue Name)
-                // Status (By Queue Name)
-                // Call   (By Queue Name)
-
-                /*
-                // Alternative way to Merge in new changes for the single-server result of live data... this doesn't work and needs some adjustments
-                // x = item from the left (ie: s_live_caller_data)
-                //
-                s_live_caller_data       .ToList().ForEach(x => main_live_caller_data[x.Key]       = x.Value);
-                s_live_agent_data        .ToList().ForEach(x => main_live_agent_data[x.Key]        = x.Value);
-                s_live_queue_data        .ToList().ForEach(x => main_live_queue_data[x.Key]        = x.Value);
-                s_agent_status_available .ToList().ForEach(x => main_agent_status_available[x.Key] = x.Value);
-                s_agent_call_data        .ToList().ForEach(x => main_agent_call_data[x.Key]        = x.Value);
-                */
-
-                // Trigger GUI Updates
-                m_liveGuiDataNeedsUpdate = true;
-            }
-
-            // Debug.Print("DB Update Complete: " + tsc.m_serverLongname);
-        }
-
-        private void SetupUpdateThreads() {
-            // Handle Updating data from all servers
-
-            foreach (KeyValuePair<string, ToolbarServerConnection> server_item in m_toolbarServers) {
-                string server_name = server_item.Key;   // ex: passaic
-                ToolbarServerConnection tsc = server_item.Value;
-                DbHelper db = tsc.m_db;
-
-                if (!m_multiSite) {
-                    if (!tsc.m_isMainServer) {
-                        continue;
-                    }
-                }
-
-                var db_refresh_worker = new BackgroundWorker();
-                db_refresh_worker.DoWork             += new DoWorkEventHandler(dbRefreshWorker_DoWork);
-                db_refresh_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(dbRefreshWorker_RunWorkerCompleted);
-                db_refresh_worker.ProgressChanged    += new ProgressChangedEventHandler(dbRefreshWorker_ProgressChanged);
-
-                try {
-                    db_refresh_worker.RunWorkerAsync(tsc);
-                }
-                catch (Exception ex) {
-                    if (Debugger.IsAttached) { throw; }
-                    handleError(ex, "Threading error: creating new thread worker.");
-                }
-
-                MQD("Spawned DoWork Thread For Server: [{0}]", server_name);
-            }
-        }
-
-        private void startScreenRecordingIfNecessary(QueryResultSetRecord currentCallData, TimeSpan serverTimeOffset)
-        {
-            if (!this.m_screenRecordingEnabled) {
-                return;
-            }
-
-            List<string> textToAdd = new List<string>
-            {
-                "Testing",
-                "Testing2",
-                "Testing3"
-            };
-
-            string screen_recording_file_path = Path.GetTempPath() + "SCREEN.mp4";
-
-            MQD("ScreenCapture -- Start Screen Recording: " + screen_recording_file_path);
-
-            try
-            {
-                // Always overwrite for now... TODO, we should see if we still have a file left over and try and re-upload if we failed the last time
-
-                this.m_screenRecord.RecordingStart(screen_recording_file_path,
-                    // Callback for when recording is finished
-                    delegate (IntellaScreenRecordingResult result) {
-                        MQD("ScreenCapture -- End Screen Recording: " + screen_recording_file_path);
-                        MQD("ScreenCapture - File Upload Start (CallLogID: {0} -- CallSegmentID: {1})", currentCallData["call_log_id"], currentCallData["call_segment_id"]);
-
-                        MQD("Capture Start:    " + Utils.DateTimeToUnixTime(result.StartTime).ToString());
-                        MQD("ServerTimeOffSet: " + serverTimeOffset.TotalSeconds.ToString());
-
-                        // Starts a new thread behind the scenes
-                        Utils.UploadFileToURL(result.RecordingFilePath, m_screenRecordingUploadURL + 
-                            String.Format("?app=Toolbar&op=screencast/upload&token=abc&call_log_id={0}&call_segment_id={1}&capture_start_unixtime={2}", 
-                            currentCallData["call_log_id"], 
-                            currentCallData["call_segment_id"],
-                            (Utils.DateTimeToUnixTime(result.StartTime) + serverTimeOffset.TotalSeconds).ToString()
-                        ));
-
-                        MQD("ScreenCapture - File Upload Complete (CallLogID: {0} -- CallSegmentID: {1})", currentCallData["call_log_id"], currentCallData["call_segment_id"]);
-
-                        CanWeRestartAndUpdateSet(true);
-                    }
-                );
-
-                //}, textToAdd);
-            }
-            catch (Exception ex)
-            {
-                MQD("ScreenCapture - File Capture Failed (CallLogID: {0} -- CallSegmentID: {1})", currentCallData["call_log_id"], currentCallData["call_segment_id"] + "\r\n" + ex.ToString());
-            }
-        }
-
-        // The only reason we'll be stopping screen recording is if we're no longer in a call or the application is ending
-        // This gets called every data cycle (generally 2 seconds)
-        private void stopScreenRecordingIfNecessary()
-        {
-            if (this.m_screenRecord.IsRunning()) {
-                this.m_screenRecord.RecordingStop();
-                // RecordingStop event handler will CanWeRestartAndUpdateSet(true) once we know the file is done writing
-            }
-            else {
-                if (!CanWeRestartAndUpdate()) {
-                    CanWeRestartAndUpdateSet(true);
-                }
-            }
-        }
-
-        private Boolean screenPopIfNecessary(ToolbarServerConnection tsc) {
-            if (!tsc.m_isMainServer) {
-                // Only screenpops for the main server connection
-                return false;
-            }
-
-            QueryResultSet backlog_items;
-
-            backlog_items = tsc.m_db.DbSelect(@"
-                SELECT
-                    *
-                FROM
-                    live_queue.agents_event_backlog
-                WHERE
-                    agent_device = ?
-                    AND event_when_unixtime > ?::numeric
-                ORDER BY
-                    event_when",
-
-                m_agentDevice, m_lastAgentBackLogLastUnixTime
-            );
-
-            if (backlog_items.Count == 0) {
-                return false;
-            }
-
-            JsonHash event_additional_data_json;
-            JsonHash screenpop_data_json;
-
-            string screen_pop_data_string = "";
-
-            foreach (QueryResultSetRecord backlog_item in backlog_items) {
-                m_lastAgentBackLogLastUnixTime = backlog_item["event_when_unixtime"];
-
-                if (backlog_item["event_what"] == "CALL_START") {
-                    event_additional_data_json = new JsonHash(backlog_item["event_additional_data_json"]);
-
-                    string caller_channel_queue  = event_additional_data_json.GetStringOrEmpty("QueueCallerChannel");
-                    string caller_channel_dialer = event_additional_data_json.GetStringOrEmpty("DialerCalleeChannel");
-
-                    if ((caller_channel_queue == "") && (caller_channel_dialer == "")) {
-                        continue;
-                    }
-
-                    string caller_channel = (caller_channel_queue != "") ? caller_channel_queue : caller_channel_dialer;
-
-                    // TODO: We need a DbSelectSingleValue
-                    screen_pop_data_string = tsc.m_db.DbSelectSingleValueString("SELECT live_queue.agent_screenpop_data(?,?,?) as screenpop_data", backlog_item["backlog_item_id"], m_agentDevice, caller_channel);
-
-                    if (screen_pop_data_string == "") {
-                        MQD("SELECT live_queue.agent_screenpop_data({0}','{1}','{2}') as screenpop_data", backlog_item["backlog_item_id"], m_agentDevice, caller_channel);
-                        MQD("ScreenPop CALL_START with no active call to: {0}", caller_channel);
-
-                        if (backlog_item.Exists("event_callerid_num") && (backlog_item["event_callerid_num"] != null) && (backlog_item["event_callerid_num"].Length < 10)) {
-                            MQD("Note:  ScreenPops might be disabled server-side for less than 10-digit CallerID");
-                        }
-
-                        continue;
-                    }
-
-//                    if (Debugger.IsAttached) {
-//                        DataDumperForm df = new DataDumperForm();
-//                        df.Dumper("ScreenPop", screenpop_data);
-//                    }
-
-                    screenpop_data_json    = new JsonHash(screen_pop_data_string);
-                    screen_pop_data_string = System.Uri.EscapeUriString(screen_pop_data_string);
-
-                    // Full data related to the Screen Pop
-                    m_lastScreenPopData = new JsonHash(new Hashtable() { { "screenpop_data", screenpop_data_json.GetHashTable() }, { "event_additional_data_json", event_additional_data_json.GetHashTable() } });
-                    MQDU("LastScreenPopData", m_lastScreenPopData);
-
-                    if (!m_screenPopsEnabled || (m_screenPopURL == "") || (m_screenPopURL == null)) {
-                       return false; // Did everything else, but not screenpoping
-                    }
-
-                    // We're in the middle of a call now, we can't restart
-                    CanWeRestartAndUpdateSet(false);
-
-                    // MQDU("Screen Pop", screenpop_data_json);
-                    MQDU("URL", String.Format("{0}?data={1}", m_screenPopURL, screen_pop_data_string));
-                    System.Diagnostics.Process.Start(String.Format("{0}?data={1}", m_screenPopURL, screen_pop_data_string));
-                }
-            }
-
-            // TODO: Keep this in sync with API Docs /intellasoft/CallQueue/docs and with info in live_queue.agent_screenpop_data
-            //
-            // The following fields and specs are the same as in GetAgentEventBackLog
-            //   event_when                   String -  High precision timestamp of event as an ISO date string (with time zone offset from     UTC), Example: 2000-01-01 10:00:00.123456-04
-            //   event_when_unixtime          String -  High precision unixtime of event, Example: 946738800.123456
-            //   event_what                   String -  Type of event.  Current possible events include CALL_START/CALL_END
-            //   agent_device                 String -  Device (extension) where the agent is logged in from for the agent related to the event
-            //   agent_number                 Numeric - Agent Number (Agent Login) for the agent related to the event
-            //   agent_id                     Numeric - Unique identifier for the agent related to the event
-            //   session_id                   Numeric - Unique session id of the agent's session for the agent related to the event
-            //   event_call_log_id            Numeric - Internal Unique call log id of the connected call that the event is related to (if any)
-            //   event_case_number            String  - Case id of the related call (if any)
-            //   event_callerid_name          String  - Name of the caller related to the event (if any)
-            //   event_callerid_num           String  - Callerid number of the caller related to the event (if any)
-            //   event_additional_data_json   String  - JSON encoded data related to the event (reserved for future expansion)
-            //   event_userfield              String  - Current user defined data that has been attached to the call.  Best practice is to use JSON
-            //
-            // With the following additional fields:
-            //   queue_name                 String  - Queue name token
-            //   uniqueid                   Numeric - Related UniqueID of this call.  Internal tracking number
-            //   call_log_id                String  - Internal Unique call log id of the connected call that the event is related to (if any)
-            //   joined_when                String  - High precision timestamp of event as an ISO date string (with time zone offset from UTC),  Example: 2000-01-01 10:00:00.123456-04
-            //   picked_up_when             String  - High precision timestamp of event as an ISO date string (with time zone offset from UTC),  Example: 2000-01-01 10:00:00.123456-04
-            //   on_call_with_agent_device  String  - Device (extension) where the agent is logged in from for the agent related to the event
-            //   on_call_with_agent_number  Numeric - Agent Number (Agent Login) for the agent related to the event
-            //   on_call_with_agent_channel String  - Agent Channel that is/was currently talking to the caller
-            //   department_name            String  - Specific department name within the queue that this caller called into
-            //   department_num             String  - Specific department number within the queue that this caller called into
-            //   queue_id                   Numeric - Unique identifier for the queue
-            //   queue_dialer_channel       String  - Internal channel used for the agent dialer
-            //   priority                   Numeric - Priority of this queue for this agent
-            //   case_number                String  - Case number associated with this call
-            //   call_segment_id            String  - Specific Call Segment within the Call Log ID of this call
-            //   channel                    String  - Channel of the outside caller
-            //   joined_when_unixtime       Numeric - Time in seconds since the "epoch" (standard UnixTime) for when the caller joined the queue
-            //   waiting_seconds            Numeric - Time in seconds the caller waited in queue before getting answered by an agent
-            //   waiting_time               String  - HH:MM:SS formatted time of how long the caller waited in queue before getting answered by an agent
-            //
-            // Backwards Compatability
-            //   callerid_name               String - Name of the caller related to the event (if any)
-            //   callerid_num                String - Callerid number of the caller related to the event (if any)
-            //   agent_device                String - Device (extension) where the agent is logged in from for the agent related to the event
-            //
-
-            return true;
-        }
-
-        private void ScreenPop_LaunchLoginIfNeeded() {
-            if (this.m_screenPop_LoginLaunched == true) {
-                return;
-            }
-
-            this.m_screenPop_LoginLaunched = true;
-
-            if (this.m_screenPopLoginUrl != "") {
-                if (Debugger.IsAttached) {
-                    MQD("[ScreenPop] -- Launch ScreenPopLoginURL Skipped -- DEV-MODE Debugger Attached");
-                }
-                else {
-                    System.Diagnostics.Process.Start(this.m_screenPopLoginUrl);
-                }
-            }
-        }
-
-        ////
-        // Set our status for all queues we are assigned to
-        //
-        // WARNING:  In this function: newAgentStatus is expected to be the longname, 
-        // TODO: use .Tag on the combobox to store the agent status row so we can pass the status_code_name
-        // 
-        internal void setNewAgentStatus(string newAgentStatus) {
-            MQD("Set Agent Status [Self]: {0}", newAgentStatus);
-
-            try {
-                QueryResultSetRecord set_status = m_main_db.DbSelectSingleRow(@"
-                    SELECT
-                    live_queue.agent_set_status(
-                        {0},
-                        (SELECT status_code_name FROM live_queue.v_agent_status_codes_self WHERE agent_device = {0} AND status_code_longname = {1} LIMIT 1)
-                    )", m_agentDevice, newAgentStatus);
-
-                MQD("Agent Set Status -- Status: {0}, Device: {1} -- Result: {2}", newAgentStatus, m_agentDevice, set_status["agent_set_status"]);
-            }
-            catch (Exception e) {
-                handleError(e, "setNewAgentStatus(x) Failed");
-                if (Debugger.IsAttached) { throw; }
-            }
-        }
-
-        internal void setNewAgentStatus(string newAgentStatus, string agentDevice) {
-            MQD("Set Agent Status [{0}]: {1}", agentDevice, newAgentStatus);
-
-            try {
-                QueryResultSetRecord set_status = m_main_db.DbSelectSingleRow("SELECT live_queue.agent_set_status(?,?)", agentDevice, newAgentStatus);
-                MQD("Agent Set Status -- Status: {0}, Device: {1} -- Result: {2}", newAgentStatus, agentDevice, set_status["agent_set_status"]);
-            }
-            catch (Exception e) {
-                handleError(e, "setNewAgentStatus(x,x) Failed");
-                if (Debugger.IsAttached) { throw; }
-            }
-        }
-
-        // Note: make sure to pass in the *real* queue name, not the prefixed one
-        public void setNewAgentStatus(string newAgentStatus, string agentDevice, string queueName) {
-            if (agentDevice == null) {
-                agentDevice = m_agentDevice;
-            }
-
-            MQD("Set Agent Status [{0}]: {1} (Queue: {2}", agentDevice, newAgentStatus, queueName);
-
-            try {
-                QueryResultSetRecord set_status = m_main_db.DbSelectSingleRow("SELECT live_queue.agent_set_status(?,?,?)", agentDevice, newAgentStatus, queueName);
-                MQD("Agent Set Status -- Status: {0}, Device: {1}, Queue: {2} -- Result: {3}", newAgentStatus, agentDevice, queueName, set_status["agent_set_status"]);
-            }
-            catch (Exception e) {
-                handleError(e, "setNewAgentStatus(x,x,x) Failed");
-                if (Debugger.IsAttached) { throw; }
-            }
-        }
-        
-        private void UpdateQueueDisplayAndCatchExceptions() {
-            try {
-                UpdateQueueDisplay();
-            }
-            catch (DatabaseException ex) {
-                handleError("UpdateDisplayTimer_Tick caught database exception: " + ex.ToString());
-                if (Debugger.IsAttached) { throw; }
-
-                Error_DatabaseMainConnection_Failed();
-            }
-        }
-
         ////
         // This is called from a worker thread that has a failed db connection
         // Flag that we're going to try to reconnect and start again
@@ -1662,20 +895,7 @@ namespace intellaQueue
             MQD("!!! Attempting to reconnect to database and resume operations (Program Failures: {0})", this.m_program_failures.ToString());
             SetStatusBarMessage(Color.Red, "Connection interrupted.  Reconnecting...");
         }
-                
-        public void StopRefreshTimer() {
-            statusLight.BackgroundImage = queueResources.status_error;
-
-            m_updateDisplayTimer.Stop();
-            Debug.Print("Refresh Timer Stopped");
-        }
-
-        public void StartRefreshTimer() {
-            Debug.Print("Starting RefreshTimer!");
-
-            m_db_active = true;
-            m_updateDisplayTimer.Start();
-        }
+               
 
         /// <summary>
         /// Validate the admin password for when clicking on the Wrench Menu -> Admin
@@ -1778,6 +998,8 @@ namespace intellaQueue
             string connect_to_host = Config_Get_DB_Host();
             // connect_to_host = "comm"
 
+            m_iqc.SetLogCallback(MQD);
+
 			m_iqc_login = m_iqc.CreateAgentConnection(connect_to_host, "IntellaQueue", "IntellaQueue", "443", agentNumber, agentExtension);
             if (!m_iqc_login.success) {
                 MessageBox.Show("Login was not successful: \n" + m_iqc_login.reason);
@@ -1836,7 +1058,7 @@ namespace intellaQueue
             }
             */
 
-            config_result = m_main_db.DbSelectSingleRow("SELECT * FROM queue.toolbar_config");
+            config_result = m_main_db.DbSelectSingleRow("SELECT * FROM queue.toolbar_config WHERE tenant_name = {0}", m_tenantName);
 
             // TODO:  We should only be setting globals if we're completely successfully logged in (pin validation successful as well if there is one)
             m_isDeveloper                   = agent_info.GetBool("is_developer");
@@ -1846,6 +1068,11 @@ namespace intellaQueue
             m_multiSite                     = config_result.ToBoolean("multi_site");
             m_currentCallEnabled            = config_result.ToBoolean("current_call_enabled");
             m_dispositionCodesEnabled       = config_result.ToBoolean("disposition_codes_enabled");
+
+            // Only set config items if they exist from the server, otherwise use app-defaults
+            Utils.ConfigurationSetting_SetInteger(ref m_uploadLogFileIntervalSeconds, config_result.ToString("debug_upload_log_file_interval_seconds"));
+            Utils.ConfigurationSetting_SetInteger(ref m_UploadLogRetries,             config_result.ToString("debug_upload_log_file_retries"));
+            Utils.ConfigurationSetting_SetInteger(ref m_screenRecordingUploadRetries, config_result.ToString("screen_recording_upload_retries"));
 
             if (m_isManager) {
                 m_enableTeamView = true;
@@ -1945,11 +1172,16 @@ namespace intellaQueue
             // m_otherServers["hudson"]  = new Server("Hudson")
             // m_otherServers["passaic"] = new Server("Passaic")
             foreach (QueryResultSetRecord server in db_monitor_other_servers) {
-                MQD(String.Format("Additional Server Monitor: {0}", server["server_name"]));
+                string server_name = server["server_name"];
+
+                MQD(String.Format("Additional Server Monitor: {0}", server_name));
 
                 // m_toolbarConfig = Pass on our global toolbar configuration (AgentDevice, IsManager, and other global toolbar settings)
-                ToolbarServerConnection tsc   = new ToolbarServerConnection(server["server_name"], server["server_longname"], m_toolbarConfig);
-                string server_name            = server["server_name"];
+                ToolbarServerConnection tsc = new ToolbarServerConnection(server["server_name"], server["server_longname"], m_toolbarConfig);
+                tsc.SetErrorCallback(m_errorHandler);
+                tsc.SetLogCallback(MQD);
+                tsc.m_multiSite = m_multiSite;
+
                 m_toolbarServers[server_name] = tsc;
 
                 SimpleDbConnectionParameters connection_params = m_main_db.cloneConnectionParameters(server["server_addr"]);
@@ -2067,6 +1299,8 @@ namespace intellaQueue
             // catch (Exception ex) {
             //     MessageBox.Show(ex.StackTrace.ToString());
             // }
+
+            TryAndUploadCurrentLog();
         }
 
         public void _AgentLoginSuccess() {
@@ -2075,7 +1309,7 @@ namespace intellaQueue
 
             // Switch the db connection
             if (agent_specific_server != null) {
-                ToolBarHelper.DatabaseSetupCheck(ref m_main_db, agent_specific_server, null, StartupConfigurationFailure);
+                ToolBarHelper.DatabaseSetupCheck(m_main_db, agent_specific_server, null, StartupConfigurationFailure);
             }
 
             if (m_hideInterface) {
@@ -2337,7 +1571,7 @@ namespace intellaQueue
 
             ResizeMainGrid(true); // will also resize form and layoutForm
 
-            SetStatusBarMessage(Color.Green,"Successfully Connected");
+            SetStatusBarMessage(Color.Green, "Successfully Connected");
         }
 
         private void ShowAdminSettingsSuccess(string message) {
@@ -2352,12 +1586,19 @@ namespace intellaQueue
 
         //----------------------------------------------------------------------
 
+        /// <summary>
+        /// Call this to gracefully exit the application
+        /// </summary>
         public void ApplicationExit() {
             IntellaQueueForm.ApplicationExitStatic();
         }
 
+        /// <summary>
+        /// Call this if we need to reach out to IntellaQueueToolbar from another class to tell it to exit
+        /// </summary>
         public static void ApplicationExitStatic() {
             if (Thread.CurrentThread != IntellaQueueForm.GetGuiThread()) {
+                // FIXME: Why doesn't this work from ApplicationExceptionHandler()
                 IntellaQueueForm.IntellaQueueFormApplicationForm.Invoke((MethodInvoker) delegate() { IntellaQueueFormApplicationForm.ApplicationExitInvoke(); });
                 return;
              }
@@ -2392,10 +1633,14 @@ namespace intellaQueue
                 }
             }
 
-            // Make sure we don't continue to display the SysTray Icon after closing
-            cmpSysTrayIcon.Dispose();
+            ApplicationExit_GuiCleanup();
 
             Application.Exit();
+        }
+
+        public void ApplicationExit_GuiCleanup() {
+            // Make sure we don't continue to display the SysTray Icon after closing
+            cmpSysTrayIcon.Dispose();
         }
 
         // Event Handlers

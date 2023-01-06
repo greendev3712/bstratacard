@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Lib;
+using LibICP;
 
 namespace QueueLib
 {
@@ -14,7 +15,7 @@ namespace QueueLib
 	{
         // temp
         private ToolbarServerConnection m_mainServerTSC;
-        public Boolean m_multiSite = false;
+        public  Boolean                m_multiSite = false;
 
         private string m_agentDevice;
         public SortedList<string, Hashtable> m_subscribedQueues; // Pointer to main m_subscribedQueues... direct editing
@@ -84,42 +85,29 @@ namespace QueueLib
 			}
 		}
 
+        // CONVERTED
 		public bool UpdateToolbarConfiguration(ToolbarServerConnection tsc) {
-            DbHelper db = tsc.m_db;
-
             if (!tsc.m_isMainServer) {
                 // If we're not the main connection, just popularte per-queue settings (like colors)
-                return getPerQueueConfigFromDbAndSetToSubscribedQueues(tsc);
+                return GetPerQueueConfig_AndSetToSubscribedQueues(tsc);
             }
 
-            QueryResultSetRecord result = db.DbSelectSingleRow("SELECT database_settings_poll_time_seconds, display_poll_time_seconds FROM queue.toolbar_config");
+            JsonHashResult config_result = tsc.m_iqc.GetConfig();
 
-            try {
-                if (tsc.m_isMainServer) { 
-                    m_updateConfigurationInterval = Int32.Parse(result["database_settings_poll_time_seconds"]);
-                    m_updateDisplayInterval       = Int32.Parse(result["display_poll_time_seconds"]);
-                }
+            if (config_result.Success) {
+                Utils.ConfigurationSetting_SetInteger(ref m_updateConfigurationInterval, config_result.Data.GetString("database_settings_poll_time_seconds"));
+                Utils.ConfigurationSetting_SetInteger(ref m_updateDisplayInterval,       config_result.Data.GetString("display_poll_time_seconds"));
+                Utils.ConfigurationSetting_SetBoolean(ref m_showLocationField,           config_result.Data.GetString("show_location_field"));
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not retrieve toolbar configuration", "Error");
-                Debug.Print(ex.Message);
-                Application.Exit();
+            else {
+                // TODO: Add a logger to ToolbarConfiguration
+                Debug.Print("Failed getting toolbar config: {0} -- {1}", config_result.Code, config_result.Reason);
             }
 
-            // Additional config (use try because we might be connecting to an old version db)
-            try {
-                result = db.DbSelectSingleRow("SELECT show_location_field FROM queue.toolbar_config");
-                m_showLocationField = result.ToBoolean("show_location_field");
-            }
-            catch (Exception ex) {
-                Debug.Print(ex.Message);
-                // This is okay, if the field doesn't exist in this version, the default is true
-            }
+            JsonHashResult status_codes_result = tsc.m_iqc.GetAvailableStatusCodesAll();
 
-            // Agent Status Codes (use try because we might be connecting to an old version db)
-                
-            QueryResultSet status_codes         = db.DbSelect("SELECT * FROM queue.v_agent_status_codes");
+            // For backwards compat
+            QueryResultSet status_codes = status_codes_result.Data.ToQueryResultSet();
             List<OrderedDictionary> result_data = DbHelper.ConvertQueryResultSet_To_ListOfOrderedDictionary(status_codes);
 
             // var a = DbHelper.ConvertListOrderedDictionary_To_QueryResultSet(result_data);
@@ -139,35 +127,21 @@ namespace QueueLib
 
 			updateDisplayInterval();
 
-			return getPerQueueConfigFromDbAndSetToSubscribedQueues(tsc);
+			return GetPerQueueConfig_AndSetToSubscribedQueues(tsc);
 		}
 
-		private bool getPerQueueConfigFromDbAndSetToSubscribedQueues(ToolbarServerConnection tsc)
+		private bool GetPerQueueConfig_AndSetToSubscribedQueues(ToolbarServerConnection tsc)
 		{
-            DbHelper db = tsc.m_db;
-			bool result = true;
-
             if (m_subscribedQueues == null) {
                 return false;
             }
 
-            QueryResultSet tb_config_perqueue;
-            
-            if (m_multiSite) {
-                tb_config_perqueue = db.DbSelect(@"
-                    SELECT
-                        ?::text as server_name,
-                        ?::text || '-' || queue_name as prefixed_queue_name,
-                        c.* -- includes c.queue_name
-                    FROM
-                        queue.v_toolbar_config_perqueue c",
-                 tsc.m_serverName,
-                 tsc.m_serverName
-                 );
+            JsonHashResult config_per_queue_result = tsc.m_iqc.GetConfig_PerQueue();
+            if (!config_per_queue_result.Success) {
+                return false;
             }
-            else {
-                tb_config_perqueue = db.DbSelect("SELECT * FROM queue.v_toolbar_config_perqueue");
-            }
+
+            QueryResultSet tb_config_perqueue = config_per_queue_result.Data.ToQueryResultSet();
 
             /*KeyValuePair<string,List<OrderedDictionary>> */ 
             foreach (QueryResultSetRecord tb_config in tb_config_perqueue) {
@@ -197,7 +171,7 @@ namespace QueueLib
                 m_subscribedQueues[queueName]["Hold_time_threshold_warning3-Manager"] = Int32.Parse(tb_config["hold_time_seconds_threshold_red"]);
             }
 
-			return result;
+			return true;
 		}
 
         public string AgentDevice {

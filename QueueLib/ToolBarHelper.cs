@@ -218,7 +218,7 @@ namespace QueueLib
             return true;
         }
 
-        public static bool DatabaseSetupCheck(ref DbHelper db, string db_host, GenericCallbackSub successCallback, GenericCallbackSub failureCallback)
+        public static void DatabaseSetupCheck(DbHelper db, string db_host, GenericCallbackSub successCallback, GenericCallbackSub failureCallback)
         {
             string DB_Host = Registry_GetToolbarConfigItem(m_registryParent, "Config", "DB_Host");
             string DB_Port = Registry_GetToolbarConfigItem(m_registryParent, "Config", "DB_Port");
@@ -245,22 +245,59 @@ namespace QueueLib
 
                 DatabaseSettingsForm.SetDbHelper(db);
                 dbSettingsForm.Show();
-                return false;
+                return;
             }
 
+            Start_TryAndConnectToDatabase(db, DB_Host, DB_Port, DB_User, DB_Pass, DB_Name, successCallback);
+
+            return;
+        }
+
+        public static Timer m_dbReconnectTimer = new Timer();
+
+        private static void Start_TryAndConnectToDatabase(DbHelper db, string DB_Host, string DB_Port, string DB_User, string DB_Pass, string DB_Name, GenericCallbackSub successCallback) {
+           if (TryAndConnectToDatabase(db, DB_Host, DB_Port, DB_User, DB_Pass, DB_Name, successCallback)) {
+                // Success!
+                return;
+           }
+
+           // Otherwise, keep trying
+
+           m_dbReconnectTimer.Interval = 10 * 1000; // 10 Seconds;
+           m_dbReconnectTimer.Tick    += delegate (object sender, EventArgs e) {
+               if (TryAndConnectToDatabase(db, DB_Host, DB_Port, DB_User, DB_Pass, DB_Name, successCallback)) {
+                    // Success!
+                    m_dbReconnectTimer.Stop();
+
+               }
+           };
+
+           m_dbReconnectTimer.Start();
+        }
+
+        private static bool TryAndConnectToDatabase(DbHelper db, string DB_Host, string DB_Port, string DB_User, string DB_Pass, string DB_Name, GenericCallbackSub successCallback) {
             lock (db)
             {
-                // Already have a connection configured
+                #pragma warning disable CS0618 // Type or member is obsolete
+                SimpleDbConnectionParameters db_params = new SimpleDbConnectionParameters(new Hashtable()
+                {
+                    {"host",     DB_Host},
+                    {"port",     DB_Port},
+                    {"user",     DB_User},
+                    {"pass",     DB_Pass},
+                    {"database", DB_Name},
+                    {"useSSL",   true}
+                });
+                #pragma warning restore CS0618 // Type or member is obsolete
 
                 try {
-                    db.initConnection(DbHelper.generateConnectionDataObject(DB_Host, DB_Port, DB_User, DB_Pass, DB_Name));
+                    db.initConnection(db_params);
                 }
                 catch (Exception ex) {
                     MessageBox.Show("Connection Failed. Host: \r\n" + DB_Host + "\r\nError: " + ex.Message);
                     return false;
                 }
 
-                // NEW - Using new centralized DB connection handling
                 if (DoConnection(db) == false) {
                     return false;
                 }

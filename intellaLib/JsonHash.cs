@@ -11,7 +11,8 @@ using Newtonsoft.Json.Linq;
 namespace Lib {
     [JsonConverter(typeof(JsonHashSerializer))]
     public class JsonHash : IEnumerable {
-        private readonly Hashtable m_json_hash  = null;
+        private readonly Hashtable m_json_hash  = null; // If this element is a hashtable, then this is the hashtable we contain
+        private readonly ArrayList m_json_array = null; // If this element is an array, then this is the array we contain  -- Not yet used
 
         private bool m_valuePresent = false;
         private string m_valueString;
@@ -42,7 +43,7 @@ namespace Lib {
                 pos++;
             }
 
-            m_json_hash = h;
+            m_json_hash    = h;
             m_valuePresent = true;
         }
 
@@ -101,7 +102,24 @@ namespace Lib {
         }
 
         public void AddString(string key, string value) {
+            if (m_json_hash.Contains(key)) {
+                m_json_hash[key] = value;
+                return;
+            }
+
             m_json_hash.Add(key, value);
+        }
+        
+        public void AddHash(string key, JsonHash hashElement) {
+            m_json_hash.Add(key, hashElement);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void AddArrayElement(JsonHash jsonHash) {
+            int next_pos = this.Count + 1;
+            m_json_hash[next_pos] = jsonHash;
         }
 
         public QueryResultSetRecord ToQueryResultSetRecord() {
@@ -140,7 +158,6 @@ namespace Lib {
         public bool ValuePresent() {
             return m_valuePresent;
         }
-
 
         public JsonHash GetItem(string item) {
             object o = m_json_hash[item];
@@ -195,13 +212,25 @@ namespace Lib {
         public JsonHash GetHash(string item) {
             object o = m_json_hash[item];
 
-            var hashtable = o as Hashtable;
-            if (hashtable == null) {
-                return new JsonHash();
+            // Console.WriteLine(o.GetType().ToString());
+
+            Hashtable hashtable = o as Hashtable;
+            if (hashtable != null) {
+                return new JsonHash(hashtable);
             }
 
-            JsonHash jh = new JsonHash(hashtable);
-            return jh;
+            JsonHash json_hash = o as JsonHash;
+            if (json_hash != null) {
+                return json_hash;
+            }
+
+            List<Hashtable> json_list_of_hashtable = o as List<Hashtable>;
+            if (json_list_of_hashtable != null) {
+                return new JsonHash(json_list_of_hashtable);
+            }
+
+            // Not found or not a supported object
+            return new JsonHash();
         }
 
         public string GetString(string item) {
@@ -215,47 +244,6 @@ namespace Lib {
             return s;
         }
 
-        /// <summary>
-        /// If the current JsonHash element is a single string value, we can return the string value
-        /// </summary>
-        /// <returns></returns>
-        public string GetStringValue() {
-            return m_valueString;
-        }
-
-        /// <summary>
-        /// If the current JsonHash element is a boolean value, we can return it directly
-        /// </summary>
-        /// <returns></returns>
-        public bool GetBooleanValue() {
-            return Utils.StringToBoolean(m_valueString);
-        }
-
-        public int GetIntegerValue() {
-            try {
-                return int.Parse(m_valueString);
-            }
-            catch (Exception ex) {
-                ex.ToString(); // avoid unused variable warning
-            }
-
-            return 0;
-        }
-
-        public long GetInt64(string item) {
-            object o = m_json_hash[item];
-
-            var s = o as string;
-            if (s == null) {
-                return 0;
-            }
-
-            return Int64.Parse(s);
-        }
-
-        public long GetInt64Value() {
-            return Int64.Parse(m_valueString);
-        }
 
         public string GetStringOrEmpty(string item) {
             string string_item = GetString(item);
@@ -275,6 +263,64 @@ namespace Lib {
             }
 
             return Utils.StringToBoolean(s);
+        }
+
+       
+        public double GetDouble(string item) {
+            object o = m_json_hash[item];
+
+            var s = o as string;
+            if (s == null) {
+                return 0;
+            }
+        
+            return Double.Parse(s);
+        }
+
+        public long GetInt64(string item) {
+            object o = m_json_hash[item];
+
+            var s = o as string;
+            if (s == null) {
+                return 0;
+            }
+
+            return Int64.Parse(s);
+        }
+
+        /// <summary>
+        /// If the current JsonHash element is a single string value, we can return the string value
+        /// </summary>
+        /// <returns></returns>
+        public string GetStringValue() {
+            return m_valueString;
+        }
+                  
+        /// <summary>
+        /// If the current JsonHash element is a boolean value, we can return it directly
+        /// </summary>
+        /// <returns></returns>
+        public bool GetBooleanValue() {
+            return Utils.StringToBoolean(m_valueString);
+        }
+
+        /// <summary>
+        /// If the current JsonHash element is an integer value, we can return it directly
+        /// </summary>
+        /// <returns></returns>
+        public int GetIntegerValue() {
+            try {
+                return int.Parse(m_valueString);
+            }
+            catch (Exception ex) {
+                ex.ToString(); // avoid unused variable warning
+            }
+
+            return 0;
+        }
+
+        public long GetInt64Value() {
+            return Int64.Parse(m_valueString);
         }
 
         private static void JsonStringToHashTable(string json, Hashtable parentJsonHt, JsonTextReader reader, int stackLevel) {

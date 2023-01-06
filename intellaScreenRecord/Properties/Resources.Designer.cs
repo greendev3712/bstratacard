@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace intellaScreenRecord.Properties {
+namespace IntellaScreenRecord.Properties {
     using System;
     
     

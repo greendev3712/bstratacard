@@ -13,6 +13,11 @@ namespace Lib
         private System.Windows.Forms.Timer m_logFileUploaderTimer = new System.Windows.Forms.Timer();
         private LogFileUploadCallback m_logFileUploadCallback;
 
+        /// <summary>
+        /// Every so often, upload the latest log scrollback to a server
+        /// </summary>
+        /// <param name="timerInterval"></param>
+        /// <param name="logFileUploadCallback"></param>
         public LogFileUploader(int timerInterval, LogFileUploadCallback logFileUploadCallback) {
             this.m_logFileUploadCallback = logFileUploadCallback;
 

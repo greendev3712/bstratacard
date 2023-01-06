@@ -18,9 +18,11 @@ namespace intellaQueue
 {
     public partial class IntellaQueueForm
     {
+        public delegate void LogFileUploadCompleteCallback(List<JsonHashResult> upload_results);
+
         // Main QuickDebug (With logging)
         public static string MQD(string msg, params string[] msgFormat) {
-            string final_log_line = MQD_NL(msg, msgFormat);
+            string final_log_line = MQD_NL(1, msg, msgFormat);
 
             if (m_logFileReady) {
                 try {
@@ -36,10 +38,18 @@ namespace intellaQueue
             return final_log_line;
         }
 
-        // Main QuickDebug (Without logging)
-        public static string MQD_NL(string msg, params string[] msgFormat) {
-            string log_prefix = QD.GenerateLogLine_WthoutTimestamp();
+        /// <summary>
+        /// Main QuickDebug (Write to the debug window, without writing to the log file)
+        /// </summary>
+        /// <param name="stackFramesGoBack">How many stack frames to go back to pull our caller fn</param>
+        /// <param name="msg"></param>
+        /// <param name="msgFormat"></param>
+        /// <returns></returns>
+        public static string MQD_NL(int stackFramesGoBack, string msg, params string[] msgFormat) {
+            string log_prefix = QD.GenerateLogLine_WithoutTimestamp(stackFramesGoBack);
             string log_line;
+
+            if (msgFormat.Length == 0) { msgFormat = null; }
 
             if (msgFormat == null) {
                 log_line = (log_prefix + " " + msg);
@@ -57,6 +67,14 @@ namespace intellaQueue
             m_MainDF.Dumper(log_prefix + " " + desc, thing);
         }
 
+        public string GetTodaysLogFileName() {
+            DateTime today = DateTime.Today;
+
+            string logsuffix = string.Format("{0}{1,2:D2}{2,2:D2}", today.Year, today.Month, today.Day);
+            string todays_logfilename = (m_logFileBase + (logsuffix + ".log"));
+
+            return todays_logfilename;
+        }
 
         private void TryOpenAndRotateLog(string log_file) {
             try {
@@ -64,7 +82,7 @@ namespace intellaQueue
             }
             catch (Exception e) {
                 // TODO: Check if it's being used by another process... check process tree to see if intellaqueue is already running
-                MQD_NL("Exception while opening log file: {0}.  Exception: {1}", log_file, e.StackTrace.ToString());
+                MQD_NL(1, "Exception while opening log file: {0}.  Exception: {1}", log_file, e.StackTrace.ToString());
                 if (Debugger.IsAttached) { throw; }
             }
         }
@@ -129,24 +147,64 @@ namespace intellaQueue
             TryOpenAndRotateLog(log_file);
         }
 
-        private void TryAndUploadCurrentLog() {
+        /// <summary>
+        /// Upload the current backlog in a background thread.
+        /// Note: Exceptions are caught and logged internally
+        /// </summary>
+        private void TryAndUploadCurrentLog(LogFileUploadCompleteCallback completedCallback = null) {
             try {
-                TryAndUploadCurrentLog_Do();
+                TryAndUploadCurrentLog_Do_InThread(completedCallback);
             }
             catch (Exception ex) {
                 MQD("Exception while running: TryAndUploadCurrentLog_Do: {0}", ex.ToString());
             }
         }
 
-        private void TryAndUploadCurrentLog_Do() {
+        /// <summary>
+        /// [Helper] Upload the current backlog in a background thread.
+        /// Note: Exceptions are caught and logged internally
+        /// </summary>
+        private void TryAndUploadCurrentLog_Do_InThread(LogFileUploadCompleteCallback completedCallback = null) {
             string current_log_text = m_MainDF.GetLatestBacklogText();
 
-            if (current_log_text.Length != 0) {
-                this.m_iqc.UploadLogText("current.log", current_log_text);
-                MQD("Uploading log text -- Complete");
-            }
-            else {
+            if (current_log_text.Length == 0) {
                 MQD("Uploading log text -- Skipped (No new log lines to upload)");
+                return;
+            }
+
+            Task t = Task.Factory.StartNew(() => {
+                TryAndUploadCurrentLog_Do(current_log_text, completedCallback);
+            });
+        }
+
+        /// <summary>
+        /// [Worker] Upload the current backlog in the current thread (blocking)
+        /// Note: Exceptions are caught and logged internally
+        /// </summary>
+        private void TryAndUploadCurrentLog_Do(string currentLogText, LogFileUploadCompleteCallback completedCallback = null) {
+            int attempts = this.m_UploadLogRetries;
+
+            List<JsonHashResult> upload_results = new List<JsonHashResult>();
+
+            while (attempts-- > 0) {
+                JsonHashResult upload_result = this.m_iqc.UploadLogText("current.log", currentLogText);
+                upload_results.Add(upload_result);
+
+                if (upload_result.Success) {
+                    MQD("Uploading log text -- Complete");
+                    goto done;
+                }
+
+                MQD("Uploading log text failed: {0} -- {1}", upload_result.Code, upload_result.Reason);
+
+                System.Threading.Thread.Sleep(5000);
+            }
+
+            MQD("Uploading log text abort.  Too many failures.");
+
+           done:
+            if (completedCallback != null) {
+                completedCallback.Invoke(upload_results);
             }
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 // using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace Lib
 {
@@ -49,30 +50,67 @@ namespace Lib
         }
 
         public static string GenerateLogLine() {
-            StackTrace s = new StackTrace();
+            StackTrace s = new StackTrace(true);
             StackFrame[] stackFrames = s.GetFrames();
 
             DateTime time_stamp = DateTime.Now;
             string time_stamp_str = time_stamp.ToString();
 
-            StackFrame f = s.GetFrame(2); // Frame(1) is going to be the func that called GenerateLogLine... we want the one before that
-            return (String.Format("[{0}] {1}:{2} {3}:{4}()", time_stamp_str, f.GetFileName(), f.GetFileLineNumber().ToString(), f.GetMethod().Module.ToString(), f.GetMethod().Name));
+            StackFrame f = s.GetFrame(2); // Frame(1) is going to be the func that called GenerateLogLine... we want the one before that\
+            string filename = StackTrace_FilterFileName(f.GetFileName());
+
+            return (String.Format("[{0}] {1}:{2} {3}:{4}()", time_stamp_str, filename, f.GetFileLineNumber().ToString(), f.GetMethod().Module.ToString(), f.GetMethod().Name));
         }
 
-        public static string GenerateLogLine_WthoutTimestamp() {
-            StackTrace s = new StackTrace();
+        public static string GenerateLogLine_WithoutTimestamp(int stackFramesGoBack = 0) {
+            StackTrace s             = new StackTrace(true);
             StackFrame[] stackFrames = s.GetFrames();
 
-            StackFrame f = s.GetFrame(2); // Frame(1) is going to be the func that called GenerateLogLine... we want the one before that
-            return (String.Format("{0}:{1} {2}:{3}()", f.GetFileName(), f.GetFileLineNumber().ToString(), f.GetMethod().Module.ToString(), f.GetMethod().Name));
+            // By default go back to our caller, which will be 
+            StackFrame f = s.GetFrame(2 + stackFramesGoBack); // Frame(1) is going to be the func that called GenerateLogLine... we want the one before that
+
+            string caller_additional = "";
+
+            if (f.GetFileLineNumber() == 0) {
+                // Anonymous sub... also stick on the next frame
+                StackFrame f2 = s.GetFrame(3 + stackFramesGoBack);
+
+                if (f2 != null) {
+                    // Example: C:\intellaApps\intellaQueue\src\intellaQueue\IntellaQueueForm.Data.cs
+                    string filename_f2 = StackTrace_FilterFileName(f2.GetFileName());
+
+                    caller_additional = String.Format("{0}:{1} {2}:{3}() -> ", filename_f2, f2.GetFileLineNumber().ToString(), f2.GetMethod().Module.ToString(), f2.GetMethod().Name);
+                }
+            }
+
+            string filename = StackTrace_FilterFileName(f.GetFileName());
+            
+            return (String.Format("{0}{1}:{2} {3}:{4}()", caller_additional, filename, f.GetFileLineNumber().ToString(), f.GetMethod().Module.ToString(), f.GetMethod().Name));
+        }
+
+        /// <summary>
+        /// Strip out contextually irrelavent path prefix from a StackTrace filename
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static string StackTrace_FilterFileName(string fileName) {
+            // Example: C:\intellaApps\intellaQueue\src\intellaQueue\IntellaQueueForm.Data.cs
+
+            Regex regex   = new Regex(@".*src\\(.*)$");
+            Match matches = regex.Match(fileName);
+
+            if (matches.Success) {
+                fileName = matches.Groups[1].Value;
+            }
+
+            return fileName;
         }
 
         public static string p (string msg) {
-            StackTrace s = new StackTrace();
+            StackTrace s             = new StackTrace();
             StackFrame[] stackFrames = s.GetFrames();
 
-            DateTime time_stamp = DateTime.Now;
-            string time_stamp_str = time_stamp.ToString();
+            string time_stamp_str = Utils.DateTimePrettyString(DateTime.Now);
 
             StackFrame f = s.GetFrame(1);
 
@@ -85,8 +123,7 @@ namespace Lib
             StackTrace s = new StackTrace();
             StackFrame[] stackFrames = s.GetFrames();
 
-            DateTime time_stamp = DateTime.Now;
-            string time_stamp_str = time_stamp.ToString();
+            string time_stamp_str =  Utils.DateTimePrettyString(DateTime.Now);
 
             StackFrame f = s.GetFrame(2 + stackFramesGoBack);
 

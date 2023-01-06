@@ -12,7 +12,9 @@ using FFMediaToolkit.Encoding;
 
 using System.Drawing;
 using System.Drawing.Imaging;
+
 using System.IO;
+
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,8 +59,19 @@ namespace IntellaScreenRecord
         {
             Graphics g                = Graphics.FromHwnd(IntPtr.Zero);
             IntPtr desktop            = g.GetHdc();
+
             int LogicalScreenHeight   = GetDeviceCaps(desktop, (int) DeviceCap.VERTRES);
             int PhysicalScreenHeight  = GetDeviceCaps(desktop, (int) DeviceCap.DESKTOPVERTRES);
+
+            // ffmpeg does NOT like a non-even height
+            if ((LogicalScreenHeight % 2) != 0) {
+                LogicalScreenHeight -= 1;
+            }
+
+            if ((PhysicalScreenHeight % 2) != 0) {
+                PhysicalScreenHeight -= 1;
+            }
+
             float ScreenScalingFactor = (float) PhysicalScreenHeight / (float) LogicalScreenHeight;
 
             return ScreenScalingFactor; // 1.25 = 125%
@@ -198,7 +211,8 @@ namespace IntellaScreenRecord
             m_logger = loggerFn;
         }
 
-       public unsafe void FFMPegLogCallback(void* p0, int level, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, byte* vl)
+
+public unsafe void FFMPegLogCallback(void* p0, int level, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, byte* vl)
         {
             var lineSize = 1024;
             var lineBuffer = stackalloc byte[lineSize];

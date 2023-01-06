@@ -181,6 +181,16 @@ namespace Lib {
 
             return d_qrs;
         }
+
+        public JsonHash ToJsonHash() {
+            JsonHash jh = new JsonHash();
+
+            foreach (QueryResultSetRecord row in this) {
+                jh.AddArrayElement(row.ToJsohHash());
+            }
+
+            return jh;
+        }
     }
 
     [DebuggerDisplay("Count = {Count}, Contents = {InternalSortedList}")]
@@ -281,6 +291,23 @@ namespace Lib {
             return Double.Parse(m_resultSetRecord[index].ToString());
         }
 
+        /// <summary>
+        /// Get a column from the result set and return its string value
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>null if the item doesn't exist or is actually null</returns>
+        public string ToString(string index) {
+            if (!this.m_resultSetRecord.ContainsKey(index)) {
+                return null;
+            }
+
+            if (this.m_resultSetRecord[index] == null) {
+                return null;
+            }
+
+            return this.m_resultSetRecord[index].ToString();
+        }
+
         public Boolean ToBoolean(string index) {
             if (!this.m_resultSetRecord.ContainsKey(index)) {
                 return false;
@@ -347,6 +374,20 @@ namespace Lib {
             public HashtableDebugView(Hashtable hashtable) {
                 this.hashtable = hashtable;
             }
+        }
+
+        /// <summary>
+        /// Convert QueryResultSetRecord (Essentially a Hashtable) to a JsonHash
+        /// </summary>
+        /// <returns>JsonHash (Containing a HashTable)</returns>
+        public JsonHash ToJsohHash() {
+            JsonHash jh = new JsonHash();
+
+            foreach (string column_name in this.Keys()) {
+                jh.AddString(column_name, this[column_name]);
+            }
+
+            return jh;
         }
     }
 }

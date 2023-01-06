@@ -47,12 +47,15 @@ namespace LibICP
 
         private Boolean m_IsAgentLoggedIn = false;
 
-        public delegate void LogCallBackFunction(string errorMessage);
-        LogCallBackFunction m_logCallBack = null;
+        QD.QD_LoggerFunction m_logCallBack = null;
 
         // CONVERTED
         public void SetErrorCallback(QD.QE_ErrorCallbackFunction errorHandler) {
             m_errorHandler = errorHandler;
+        }
+
+        public void SetLogCallback(QD.QD_LoggerFunction logHandler) {
+            m_logCallBack = logHandler;
         }
         
         // CONVERTED
@@ -136,9 +139,13 @@ namespace LibICP
                 port = "80";
             }
 
+            if (host == "vbox-markm-64.intellasoft.lan") {
+                port = "80";
+            }
+
             JsonHashResult connect_result = CreateConnection(host, user, pass, port, api_handler_desc);
             if (!connect_result.Success) {
-                this.Log("IntellaQueueControl: Could not connect or authenticate:" + connect_result.ToString());
+                this.Log("IntellaQueueControl: Could not connect or authenticate with controller [Phase 1]:" + connect_result.ToString());
 
                 // Don't pass through Code/Message... Keep detailed postgres connection issues private
                 return new JsonQueueLoginLogoutResult { success = false, reason = "Connection Failed", code = connect_result.Code };
@@ -147,6 +154,8 @@ namespace LibICP
             JsonQueueLoginLogoutResult login_status = Agent_Auth(m_agentExtension, m_agentNumber);
 
             if (!login_status.success) {
+                this.Log("IntellaQueueControl: Could not connect or authenticate with server [Phase 2]:" + connect_result.ToString());
+
                 lock (m_icp_rc) {
                     m_icp_rc.Dispose();
                     m_icp_rc = null;
@@ -399,15 +408,6 @@ namespace LibICP
 
         // TODO
         /// <summary>
-        /// This will allow your application to receive inner debug/logging messages from the API calls
-        /// </summary>
-        /// <param name="logCallBack">Pointer to your own logging function</param>
-        public void SetLoggingCallBack(LogCallBackFunction logCallBack) {
-            // this.m_logCallBack = logCallBack;
-        }
-
-        // TODO
-        /// <summary>
         /// Set the number of times the API will try and reconnect upon a get/set failure
         /// </summary>
         /// <param name="attempts">Number of attempts to try and reconnect if an api command has run on a disconnected connection</param>
@@ -444,37 +444,6 @@ namespace LibICP
             m_connectionStarted = false;
 
             return logout_status;
-        }
-
-        // TODO
-        public QueryResultSet GetLoggedInQueues() {
-            if (!this.AgentConnected()) {
-                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
-            }
-
-            // return m_db.DbSelect("SELECT * FROM live_queue.v_agent_logins WHERE agent_device = ? ORDER BY queue_name", m_agentDevice);
-
-            return null;
-        }
-
-        public QueryResultSet GetAllQueues() {
-            if (!this.AgentConnected()) {
-                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
-            }
-
-            QueryResultSet result;
-
-            if (m_isManager) {
-                result = m_db.DbSelect("SELECT * FROM live_queue.v_queues ORDER BY queue_name");
-            }
-            else {
-                result = m_db.DbSelect(@"
-                    SELECT * FROM live_queue.v_queues 
-                    WHERE queue_name IN (SELECT * FROM live_queue.v_agent_logins WHERE agent_device = ?)
-                    ORDER BY queue_name", this.m_agentDevice);
-            }
-
-            return result;
         }
 
         public QueryResultSet GetAgentStatusPerQueue() {
@@ -516,6 +485,7 @@ namespace LibICP
             return events;
         }
 
+        // NOT CONVERTED
         public string RecordCallResult(string callLogId, string callResultCode) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -530,6 +500,7 @@ namespace LibICP
             return (string)result[0]["result"];
         }
 
+        // NOT CONVERTED
         public string RecordCallResult(string callLogId, string callResultCode, string callCaseNumber) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -544,6 +515,7 @@ namespace LibICP
             return (string)result[0]["result"];
         }
 
+        // NOT CONVERTED
         public CommandResult RecordStart(string channelName) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -554,6 +526,7 @@ namespace LibICP
             return new CommandResult(result);
         }
 
+        // NOT CONVERTED
         public CommandResult RecordStop(string channelName) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -567,6 +540,7 @@ namespace LibICP
             return new CommandResult(result);
         }
 
+        // NOT CONVERTED
         public string ClickToCall(string phoneNumber, string calleeName) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -581,6 +555,7 @@ namespace LibICP
             return (string)result[0]["result"];
         }
 
+        // NOT CONVERTED
         public string ClickToCall(string phoneNumber, string calleeName, string json_opts) {
             try {
                 JsonHash opts = new JsonHash(json_opts);
@@ -606,16 +581,43 @@ namespace LibICP
             return (string)result[0]["result"];
         }
 
-        public QueryResultSet GetAllAgentStatus() {
+        // --------------------------------------------------------------------
+        // Config related
+        // --------------------------------------------------------------------
+
+        public JsonHashResult GetConfig() {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
             }
 
-            QueryResultSet result = m_db.DbSelect("SELECT * FROM live_queue.agents_meta order by agent_firstname, agent_lastname");
+            JsonHash send_params = new JsonHash();
+            send_params.AddString("agent_extension", m_agentExtension);
+            send_params.AddString("agent_number",    m_agentNumber);
+
+            JsonHashResult result = this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/CFG_Toolbar", send_params);
 
             return result;
         }
-                 
+    
+        public JsonHashResult GetConfig_PerQueue(string prefixQueueName = null) {
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/CFG_Toolbar_PerQueue");
+        }
+
+        public JsonHashResult GetAvailableStatusCodesAll() {
+            if (!this.AgentConnected()) {
+                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
+            }
+
+            JsonHash send_params = new JsonHash();
+            send_params.AddString("agent_extension", m_agentExtension);
+            send_params.AddString("agent_number",    m_agentNumber);
+
+            JsonHashResult result = this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/GetLiveData_StatusCodesAll", send_params);
+
+            return result;
+        }
+
+        // CONVERTED
         public JsonHashResult GetQueuesShow(string prefixQueueName = null) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -635,69 +637,116 @@ namespace LibICP
         }
         
         public JsonHashResult GetQueuesAdditional(string prefixQueueName = null) {
-            if (!this.AgentConnected()) {
-                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
-            }
-
-            JsonHash send_params = new JsonHash();
-            send_params.AddString("agent_extension", m_agentExtension);
-            send_params.AddString("agent_number",    m_agentNumber);
-
-            if (prefixQueueName != null) {
-                send_params.AddString("prefix_queue_name", prefixQueueName);
-            }
-
-            JsonHashResult result = this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/CFG_GetQueues_Additional", send_params);
-
-            return result;
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/CFG_GetQueues_Additional");
         }
 
-        // Converted
-        public JsonHashResult GetAllAgentStatusPerQueue(string prefixQueueName = null) {
+        // --------------------------------------------------------------------
+        // Live Data Related
+        // --------------------------------------------------------------------
+
+        /// <summary>
+        /// Get ALL of the Live Data needed to show a toolbar
+        /// 
+        /// Example:
+        ///    JsonHashResult toolbar_live_data        = tsc.GetAllToolbarLiveData();
+        ///    JsonHash live_queue_data_jh             = toolbar_live_data.Data.GetHash("Queues");
+        ///    JsonHash live_caller_data_jh            = toolbar_live_data.Data.GetHash("Callers");
+        ///    JsonHash live_agent_data_jh             = toolbar_live_data.Data.GetHash("Agents");
+        ///    JsonHash live_status_codes_self_data_jh = toolbar_live_data.Data.GetHash("StatusCodesSelf");
+        ///    JsonHash live_status_codes_all_data_jh  = toolbar_live_data.Data.GetHash("StatusCodesAll");
+        /// </summary>
+        /// <param name="prefixQueueName">For MultiSite, Prefix the queue name with the site name so we can tell the queues apart per-server</param>
+        /// <returns></returns>
+        public JsonHashResult GetAllToolbarLiveData(string prefixQueueName = null) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
             }
 
-            JsonHash send_params = new JsonHash();
+            JsonHash send_params          = new JsonHash();
+            JsonHash send_params_includes = new JsonHash();
+
             send_params.AddString("agent_extension", m_agentExtension);
             send_params.AddString("agent_number",    m_agentNumber);
+            send_params.AddHash("includes",          send_params_includes);
+            send_params_includes.AddString("StatusCodesAll", "1");
 
-            if (prefixQueueName != null) {
-                send_params.AddString("prefix_queue_name", prefixQueueName);
-             }
-
-            JsonHashResult result =  this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/GetLiveData_Agents", send_params);
+            JsonHashResult result = this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/GetLiveData_All", send_params);
 
             return result;
         }
 
         // CONVERTED
+        /// <summary>
+        /// Get all agent status for all queues, even queues we're not assigned to
+        /// </summary>
+        /// <returns></returns>
+        public JsonHashResult GetAllAgentStatus(string prefixQueueName = null) {
+            return this.GetAllQueueAgents(prefixQueueName);
+        }
+
+        // CONVERTED
+        // Don't really need this (the original Postgres-Backed IntellaQueueControl had this function but for naming consistency we now have GetAllQueueAgents()
+        public JsonHashResult GetAllAgentStatusPerQueue(string prefixQueueName = null) {
+            return this.GetAllQueueAgents(prefixQueueName);
+        }
+
+        // CONVERTED
+        /// <summary>
+        /// Get all agents per queue along with their status and who they are taiking to/etc
+        /// </summary>
+        /// <param name="prefixQueueName">Add this prefix to all queue names (for multisite)</param>
+        /// <returns></returns>
+        public JsonHashResult GetAllQueueAgents(string prefixQueueName = null) {
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/GetLiveData_Agents");
+        }
+
+        // CONVERTED
         public JsonHashResult GetAllQueueCallers(string prefixQueueName = null) {
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/GetLiveData_Callers");
+        }
+
+        public JsonHashResult GetAvailableStatusCodesSelf(string prefixQueueName = null) {
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/GetLiveData_StatusCodesSelf");
+        }
+
+
+        // TODO: NOT CONVERTED
+        public QueryResultSet GetLoggedInQueues() {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
             }
 
-            JsonHash send_params = new JsonHash();
-            send_params.AddString("agent_extension", m_agentExtension);
-            send_params.AddString("agent_number",    m_agentNumber);
+            // return m_db.DbSelect("SELECT * FROM live_queue.v_agent_logins WHERE agent_device = ? ORDER BY queue_name", m_agentDevice);
+
+            return null;
+        }
+
+        public JsonHashResult GetAllQueues(string prefixQueueName = null) {
+            return GetPerQueueData_Helper(prefixQueueName: prefixQueueName, apiRequestEndpointPath: "/api/public/CallQueue/GetLiveData_Queues");
+        }
+
+        private JsonHashResult GetPerQueueData_Helper(string apiRequestEndpointPath, string prefixQueueName = null, JsonHash sendParams = null) {
+            if (!this.AgentConnected()) {
+                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
+            }
+
+            if (sendParams == null) {
+                sendParams = new JsonHash();
+            }
+
+            sendParams.AddString("agent_extension", m_agentExtension);
+            sendParams.AddString("agent_number",    m_agentNumber);
 
             if (prefixQueueName != null) {
-                send_params.AddString("prefix_queue_name", prefixQueueName);
+                sendParams.AddString("prefix_queue_name", prefixQueueName);
              }
 
-            JsonHashResult result = this.RestRequest_SendJson(Method.Post, "/api/public/CallQueue/GetLiveData_Callers", send_params);
+            JsonHashResult result = this.RestRequest_SendJson(Method.Post, apiRequestEndpointPath, sendParams);
 
             return result;
         }
 
-        public QueryResultSet GetAvailableStatusCodes() {
-            if (!this.AgentConnected()) {
-                throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
-            }
-
-            return m_db.DbSelect("SELECT * FROM live_queue.v_agent_status_codes_self WHERE agent_device = ? order by queue_name, status_code_name", m_agentDevice);
-        }
-
+        // NOT CONVERTED
         public string SetAgentStatus(string statusCode, string queueName) {
             if (!this.AgentConnected()) {
                 throw new IntellaQueueNotConnectedException("Active IntellaQueue connection must exist for this function call");
@@ -739,6 +788,10 @@ namespace LibICP
 
             return result[0]["result"];
         }
+
+        // --------------------------------------------------------------------
+        // Debug/Logging Related
+        // --------------------------------------------------------------------
 
         public JsonHashResult UploadLogFile(string logFileName) {
             if (!this.AgentConnected()) {

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Security.Principal;
 using Microsoft.Win32;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 
 namespace Lib {
     public static class Utils {
@@ -258,6 +259,10 @@ namespace Lib {
             return Color.FromArgb(color.A, (int) red, (int) green, (int) blue);
         }
 
+        public static string DateTimePrettyString(DateTime theTime) {
+            return theTime.ToString("yyyy-MM-dd HH\\:mm\\:ss.fffffff K");
+        }
+
         public static double DateTimeToUnixTime(DateTime theTime)
         {
             return theTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
@@ -272,13 +277,83 @@ namespace Lib {
             return ret_date_time;
         }
 
-        public static Boolean UploadFileToURL(string localFile, string url)
+        public static DateTime TicksToDateTime(long ticks) {
+            DateTime the_time = new DateTime(ticks, DateTimeKind.Utc); // the_time is now the UTC time of the time that the ticks represent
+
+            // Convert to our timezone
+            TimeZoneInfo current_tz_info = TimeZoneInfo.Local;
+            the_time                     = TimeZoneInfo.ConvertTime(the_time, current_tz_info);
+
+            return the_time;
+        }
+
+        public static string File_MD5_Get(string full_file_path) {
+            using (var md5 = MD5.Create()) {
+                using (FileStream stream = File.OpenRead(full_file_path)) {
+                    byte[] md5_hash = md5.ComputeHash(stream); 
+                    return BitConverter.ToString(md5_hash).Replace("-", String.Empty).ToLowerInvariant();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="localFile"></param>
+        /// <param name="url"></param>
+        /// <param name="attempts">Use attempts = -1 for unlimited retries</param>
+        public static UploadFileToUrl_Result UploadFileToURL_WithRetries(string localFile, string url, int attempts = -1) {
+            UploadFileToUrl_Result overall_result = new UploadFileToUrl_Result(); // track a list of each upload attempt in case the caller wants to know
+            JsonHashResult upload_result          = new JsonHashResult();         // current upload attempt
+
+            do {
+                overall_result.Attempts++;
+                upload_result = UploadFileToURL(localFile, url);
+                overall_result.UploadAttempts.Add(upload_result);
+
+                if (upload_result.Success) {
+                    overall_result.Success = true;
+
+                    QD("Utils.UploadFileToURL_WithRetries: Completed Upload: {0} to {1}, Attempts: {2}", localFile, url, overall_result.Attempts.ToString());
+
+                    return overall_result;
+                }
+
+                if (attempts != -1) {
+                    attempts--;
+
+                    if (attempts <= 0) {
+                      return overall_result;
+                    }
+                }
+
+                if (upload_result.Code == "FILE_DOES_NOT_EXIST") {
+                    // Don't keep retrying if we have a local problem
+                    return overall_result;
+                }
+
+                QD("Utils.UploadFileToURL_WithRetries: Retry Upload: {0} to {1}, Attempts: {2}", localFile, url, overall_result.Attempts.ToString());
+
+                System.Threading.Thread.Sleep((int) TimeSpan.FromSeconds(30).TotalMilliseconds);
+            }
+            while (!upload_result.Success);
+
+            return overall_result;
+        }
+
+        public static JsonHashResult UploadFileToURL(string localFile, string url)
         {
+            JsonHashResult result = new JsonHashResult();
+
             WebClient myWebClient = new WebClient();
 
             if (!File.Exists(localFile)) {
                 QD("Utils::UploadFileToURL() Failed to upload file: {0} to [{1}] -- Local file does not exist", localFile, url);
-                return false;
+
+                result.Success = false;
+                result.Code    = "FILE_DOES_NOT_EXIST";
+
+                return result;
             }
 
             try
@@ -293,27 +368,41 @@ namespace Lib {
             }
             catch (System.Net.WebException e)
             {
+                result.Success = false;
+
                 if (e.Status == WebExceptionStatus.ProtocolError)
                 {
                     int response_code    = (int) ((HttpWebResponse) e.Response).StatusCode;
                     string response_desc = ((HttpWebResponse) e.Response).StatusDescription.ToString();
 
+                    result.Code   = response_code.ToString();
+                    result.Reason = response_desc;
+
                     QD("Utils::UploadFileToURL() Failed to upload file: {0} to [{1}] -- {2}: {3}", localFile, url, response_code.ToString(), response_desc);
                 }
                else
                 {
+                    result.Code   = "UNHANDLED_EXCEPTION";
+                    result.Reason = e.ToString();
+
                     QD("Utils::UploadFileToURL() Failed to upload file: {0} to [{1}] -- Unknown Error", localFile, url);
                 }
 
-                return false;
+                return result;
             }
             catch (Exception e)
             {
+                result.Code   = "UNHANDLED_EXCEPTION";
+                result.Reason = e.ToString();
+
                 QE(Lib.QD.ERROR_LEVEL.WARNING, "UtilsFileUploadException", null, "File upload has failed: " + e.ToString());
-                return false;
+
+                return result;
             }
 
-            return true;
+            result.Success = true;
+
+            return result;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -611,5 +700,34 @@ namespace Lib {
 
             return result;
         }
+
+        /// <summary>
+        /// If cfgValue is defined, set cfgVariable
+        /// </summary>
+        /// <param name="cfgVariable"></param>
+        /// <param name="cfgValue"></param>
+        public static void ConfigurationSetting_SetInteger(ref int cfgVariable, string cfgValue) {
+            if (cfgValue != null) {
+                int.TryParse(cfgValue, out cfgVariable);
+            }
+        }
+        
+        /// <summary>
+        /// If cfgValue is defined, set cfgVariable
+        /// </summary>
+        /// <param name="cfgVariable"></param>
+        /// <param name="cfgValue"></param>
+        public static void ConfigurationSetting_SetBoolean(ref bool cfgVariable, string cfgValue) {
+            if (cfgValue != null) {
+                cfgVariable = Utils.StringToBoolean(cfgValue);
+            }
+        }
+    }
+
+    public class UploadFileToUrl_Result
+    {
+        public bool Success = false;
+        public int Attempts = 0;
+        public List<JsonHashResult> UploadAttempts = new List<JsonHashResult>();
     }
 }

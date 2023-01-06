@@ -45,7 +45,11 @@ namespace IntellaScreenRecord
 
         private string appPath;
         private MediaOutput m_mediaOutput;
-        private bool m_currentlyRecording;
+
+        private bool m_currentlyActive    = false;
+        private bool m_currentlyRecording = false;
+        private bool m_currentlyStopping  = false;
+
         private IntellaScreenRecordingResult m_RecordingResult;
 
         /// ///////////////////////////////////////////////////////////////////
@@ -66,11 +70,22 @@ namespace IntellaScreenRecord
         {
             Graphics g                = Graphics.FromHwnd(IntPtr.Zero);
             IntPtr desktop            = g.GetHdc();
+
             int LogicalScreenHeight   = GetDeviceCaps(desktop, (int) DeviceCap.VERTRES);
             int PhysicalScreenHeight  = GetDeviceCaps(desktop, (int) DeviceCap.DESKTOPVERTRES);
+
+            // ffmpeg does NOT like a non-even height
+            if ((LogicalScreenHeight % 2) != 0) {
+                LogicalScreenHeight -= 1;
+            }
+
+            if ((PhysicalScreenHeight % 2) != 0) {
+                PhysicalScreenHeight -= 1;
+            }
+
             float ScreenScalingFactor = (float) PhysicalScreenHeight / (float) LogicalScreenHeight;
 
-            return ScreenScalingFactor; // 1.25 = 125%
+            return ScreenScalingFactor; // Example: 1.25 = 125%
         }
 
         public Bitmap TakeScreenShot()
@@ -123,6 +138,7 @@ namespace IntellaScreenRecord
                 return false;
             }
 
+            m_currentlyActive = true;
             m_currentlyRecording = true;
 
             if (System.IO.Path.GetDirectoryName(path) == "") {
@@ -139,9 +155,24 @@ namespace IntellaScreenRecord
 
             return true;
         }
+
+        /// <summary>
+        /// Anything regarding screen recording is currently running
+        /// Either 
+        ///  1) Recording
+        ///  2) Completion Callback is running
+        /// </summary>
+        /// <returns></returns>
+        public bool IsActive() {
+            return m_currentlyActive;
+        }
                 
         public bool IsRunning() {
             return m_currentlyRecording;
+        }
+        
+        public bool IsStopping() {
+            return m_currentlyStopping;
         }
 
         public bool RecordingStop()
@@ -149,6 +180,7 @@ namespace IntellaScreenRecord
             if (!m_currentlyRecording) return false;
 
             m_currentlyRecording = false;
+            m_currentlyStopping  = true;
 
             return true;
         }
@@ -203,7 +235,12 @@ namespace IntellaScreenRecord
                 m_RecordingResult.Success = true;
                 m_RecordingResult.EndTime = DateTime.Now;
 
+                // We're now stopped!
+                m_currentlyStopping = false;
+
                 m_screenRecordingCompleteCallback.Invoke(m_RecordingResult);
+
+                m_currentlyActive   = false;
             });
         }
         

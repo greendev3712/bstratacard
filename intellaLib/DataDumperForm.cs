@@ -126,11 +126,14 @@ namespace Lib {
             }
 
             // We're adding either the String.Format or the original line 
-            string new_line = String.Format("[{0}] {1}\r\n", DateTime.Now, string_format_result);
+            string new_line = String.Format("[{0}] {1}\r\n", Utils.DateTimePrettyString(DateTime.Now), string_format_result);
             return new_line;
         }
 
         private void doAppendText(string new_line) {
+            lock (m_recentLog) {
+                m_recentLog.Add(new_line);
+            }
 
             if (!this.Visible) {
                 if (m_pauseBuffer.Length > m_maxScrollBack) {
@@ -159,20 +162,20 @@ namespace Lib {
 
             this.cmpTextBox.AppendText(new_line);
 
-            lock (m_recentLog) {
-                m_recentLog.Add(new_line);
-            }
-
             return;
         }
 
         public string GetLatestBacklogText() {
             StringBuilder recent_log_string = new StringBuilder();
 
+            int recent_log_lines = 0;
+
             lock (m_recentLog) {
                 foreach (string line in m_recentLog) {
                     recent_log_string.Append(line);
                 }
+
+                recent_log_lines = m_recentLog.Count;
 
                 m_recentLog.Clear();
                 m_recentLogLastUpdated = DateTime.Now;
@@ -400,6 +403,5 @@ namespace Lib {
 
             this.D("Debug Window Opened");
         }
-
     }
 }

@@ -86,8 +86,6 @@ my %APPS = (
 
 my $DEVENV_REBUILD = 0;
 
-
-
 ################################################################################
 
 # TODO: Support multi-site uploads.. ie: KWI-A/B  BSSB-A/B  etc etc
@@ -291,6 +289,29 @@ sub build_new_version {
     say "Abort!";
     exit;
   }
+
+  ###############################
+  # Update the Build version info
+  
+  # Example /cygdrive/c/intellaApps/intellaQueue/src/intellaQueue/Properties/AssemblyInfo.cs
+  my $assembly_info_filename = $APPS{intellaQueue}{gitBase} . '/intellaQueue/src/intellaQueue/Properties/AssemblyInfo.cs';
+  my $assembly_info          = read_file($assembly_info_filename);
+     $assembly_info =~ 'Version\("(.*)"\)';
+  my $build_version          = BuildVersion($1);
+
+  $assembly_info =~ s/Version\(".*"\)/Version("$build_version")/g;
+  
+  write_file($assembly_info_filename, $assembly_info);
+
+  ##############################
+      
+  # NOTE: We MUST do a rebuild-all, otherwise Dlls and such will not be fully up to date in the source (intellaQueue/src/intellaQueue/bin/Debug)
+  # NOTE: Otherwise we'll have a brand-new .exe and old .dlls being deployed
+      
+  say "--> Rebuild-All ($APPS{intellaQueue}{project})";
+  build_application('/Rebuild');
+
+  # We have a compiled app!
   
   `mkdir -p "$new_deploy" > /dev/null 2>&1`;
   
@@ -312,7 +333,7 @@ sub build_new_version {
       exit;
     }
   }
-
+  
   my $app_binary_stat       = File::stat::stat($APPS{intellaQueue}{appBinary});
   my $app_binary_mtime      = $app_binary_stat->mtime();
   my $app_binary_build_time = POSIX::strftime("%c %Z", localtime($app_binary_mtime));
@@ -409,6 +430,20 @@ sub build_new_version {
   return 1;
 }
 
+sub build_application {
+  my ($build_op) = @_;
+    
+  `rm -f devenv.log`;
+  my $cmd = qq{$CMD_CC $APPS{intellaQueue}{project} $build_op Debug /Project $APPS{intellaQueue}{setupProject} /ProjectConfig Debug /Out devenv.log};
+  #say $cmd;
+  do_cmd($cmd);
+  if ($? ne '0') {
+    say "!!! Build Failed.  Check devenv.log for more details";
+
+    exit;
+  }
+}
+
 sub fix_versions {
   my ($current_version, $next_version) = getCurrentAppVersion('intellaQueue');
 
@@ -470,6 +505,20 @@ sub fix_versions {
   say "";
   say "DONE";
   say "";
+}
+
+sub BuildVersion {
+  my ($previous_build) = @_;
+
+  my $current_day = POSIX::strftime('%Y.%m.%d', localtime(time()));
+
+  my $build_number = 0;
+  
+  if ($previous_build =~ /^$current_day\.(\d+)/) {
+    $build_number = ($1 + 1);
+  }
+  
+  return "${current_day}.$build_number";
 }
 
 sub do_cmd {
@@ -548,16 +597,9 @@ if ($OP eq 'bs') {
 
   say "";
 
+  build_application();
+  
   my $build_op;
-
-  if ($DEVENV_REBUILD) {
-    say "--- Setup for: Rebuild BootStrapper + SetupProject -- Deploy: intellaQueue-setup.exe";
-    $build_op = '/Rebuild';
-  }
-  else {
-    say "--- Setup for: Build BootStrapper + SetupProject -- Deploy: intellaQueue-setup.exe";
-    $build_op = '/Build';
-  }
 
   my ($current_version, $next_version) = getCurrentAppVersion('intellaQueue');
   my $current_deploy                  = "$DEPLOYMENT_UPDATES/" . $current_version;
@@ -614,16 +656,17 @@ if ($OP eq 'bs') {
     `mv SetupProject/bin/Debug/SetupProject.msi SetupProject/bin/Debug/SetupProject.msi.old`;
   }
 
-  `rm -f devenv.log`;
-  my $cmd = qq{$CMD_CC $APPS{intellaQueue}{project} $build_op Debug /Project $APPS{intellaQueue}{setupProject} /ProjectConfig Debug /Out devenv.log};
-  #say $cmd;
-  do_cmd($cmd);
-  if ($? ne '0') {
-    say "!!! Build Failed.  Check devenv.log for more details";
-
-    exit;
+  if ($DEVENV_REBUILD) {
+    say "--- Setup for: Rebuild BootStrapper + SetupProject -- Deploy: intellaQueue-setup.exe";
+    $build_op = '/Rebuild';
   }
-
+  else {
+    say "--- Setup for: Build BootStrapper + SetupProject -- Deploy: intellaQueue-setup.exe";
+    $build_op = '/Build';
+  }
+  
+  build_application($build_op);
+  
   #######
 
   say "--> (Re)Build Bootstrapper...";
@@ -632,7 +675,7 @@ if ($OP eq 'bs') {
   }
 
   `rm -f devenv.log`;
-  $cmd = qq{$CMD_CC $APPS{intellaQueue}{project} $build_op Debug /Project $APPS{intellaQueue}{bootstrapProject} /ProjectConfig Debug /Out devenv.log};
+  my $cmd = qq{$CMD_CC $APPS{intellaQueue}{project} $build_op Debug /Project $APPS{intellaQueue}{bootstrapProject} /ProjectConfig Debug /Out devenv.log};
   #say $cmd;
   do_cmd($cmd);
   if (! -e 'intellaQueue/src/Bootstrapper/bin/Debug/intellaQueue-setup.exe') {

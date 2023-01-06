@@ -9,8 +9,10 @@ namespace intellaQueue
 {
     public static class Program
     {
+        public delegate void ApplicationExceptionHandler(Exception ex);
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static Boolean CatchUnhandledExceptions = false;
+        private static Boolean CatchUnhandledExceptions = true;
+        public static  Boolean HandlingException = false;
 
         public static string ParseException(Exception e) {
             var indent = new String((char)32, 4);
@@ -54,40 +56,59 @@ namespace intellaQueue
         }
 
         static void doMain(string[] args) {
-
             // So anywhere in the app we can access command line args!
             Utils.Globals.Add("ARGS", args);
+
+            // TODO: Start logging from here!
 
             // IntellaQueueForm.TryOpenAndRotateLog("c:\temp\foo.log");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+  
+            IntellaQueueForm main_form = new IntellaQueueForm();
 
-            if (CatchUnhandledExceptions && !Debugger.IsAttached)
-            {
-                Application.ThreadException += Application_ThreadException;
+            if (!Debugger.IsAttached) {
+                Application.Run(main_form);
+                return;
             }
 
-            Application.Run(new IntellaQueueForm());
+            if (CatchUnhandledExceptions) {
+                Application.ThreadException += delegate(object sender, System.Threading.ThreadExceptionEventArgs e) {
+                    if (Program.HandlingException) {
+                        return;
+                    }
 
-            /*
-                        try
-                        {
-                            Application.Run(new IntellaQueueForm());
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error("Unhandled exception: exception: \n" + ex.Message + "\n trace:" + ex.StackTrace + "\n");
-                            if (ex.InnerException != null)
-                                log.Error("Unhandled exception: inner exception: \n" + ex.InnerException.Message + "\n trace:" + ex.InnerException.StackTrace + "\n");
+                    Program.HandlingException = true;
 
-                            MessageBox.Show(ex.StackTrace.ToString());
-                        }
-            */
+                    Exception ex = e.Exception;
+
+                    main_form.ApplicationExceptionHandler(ex);
+
+                    DataDumperForm DDF = new DataDumperForm(true);
+
+                    DDF.SetTitle("Fatal Exception has occurred");
+                    DDF.D("Uncaught Exception: " + ex.ToString());
+                    DDF.D("Exiting after log upload...");
+
+                    Timer exit_timer = new Timer();
+                    exit_timer.Interval = 30000;
+                    exit_timer.Tick += delegate(object tsender, EventArgs te) {
+                        main_form.ApplicationExit_GuiCleanup();
+
+                        Application.Exit();
+                    };
+                    exit_timer.Start();
+
+                    Application.Run(DDF);
+                };
+
+                Application.Run(main_form);
+            }
         }
 
         static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e) {
-            //this was totally unhandled 
+            // this was totally unhandled 
    
             MessageBox.Show(ParseException(e.Exception));
         }
